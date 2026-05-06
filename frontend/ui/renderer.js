@@ -4843,7 +4843,15 @@ async function addUser() {
         body: JSON.stringify({ email: authEmail, password, displayName: name, returnSecureToken: false }) }
     );
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) {
+      if (data.error.message === "EMAIL_EXISTS") {
+        throw new Error(
+          `The username "${name}" was previously deleted but its auth account still exists. ` +
+          `Go to Firebase Console → Authentication → Users and delete the account with email: ${authEmail} — then try again.`
+        );
+      }
+      throw new Error(data.error.message);
+    }
 
     await _fireDb.collection("users").doc(data.localId).set({
       displayName: name, username: name.toLowerCase(), role,
