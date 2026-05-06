@@ -9,6 +9,9 @@ on:
 permissions:
   contents: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     strategy:
@@ -39,54 +42,93 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $pyVer = "3.12.9"
-          $dest  = "frontend\resources\python"
+          $dest = "frontend\resources\python"
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
 
-          # Embeddable package (no installer, no PATH changes)
-          Invoke-WebRequest -Uri "https://www.python.org/ftp/python/$pyVer/python-$pyVer-embed-amd64.zip" -OutFile py-embed.zip
+          # Find latest available 3.12.x embeddable
+          $pyVer = "3.12.10"
+          $url = "https://www.python.org/ftp/python/$pyVer/python-$pyVer-embed-amd64.zip"
+          try {
+            Invoke-WebRequest -Uri $url -OutFile py-embed.zip -ErrorAction Stop
+          } catch {
+            # Fall back to 3.12.9
+            $pyVer = "3.12.9"
+            $url = "https://www.python.org/ftp/python/$pyVer/python-$pyVer-embed-amd64.zip"
+            try {
+              Invoke-WebRequest -Uri $url -OutFile py-embed.zip -ErrorAction Stop
+            } catch {
+              # Fall back to 3.12.8
+              $pyVer = "3.12.8"
+              $url = "https://www.python.org/ftp/python/$pyVer/python-$pyVer-embed-amd64.zip"
+              Invoke-WebRequest -Uri $url -OutFile py-embed.zip
+            }
+          }
+          Write-Output "Using Python $pyVer"
           Expand-Archive py-embed.zip -DestinationPath $dest -Force
 
           # Enable import site so installed packages are importable
           $pth = Get-ChildItem $dest -Filter "python31*._pth" | Select-Object -First 1
           (Get-Content $pth.FullName) -replace '#import site','import site' | Set-Content $pth.FullName
 
-          # Bootstrap pip into the embeddable layout
+          # Bootstrap pip
           Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile get-pip.py
           & "$dest\python.exe" get-pip.py --no-warn-script-location
 
           # Install app dependencies
           & "$dest\python.exe" -m pip install nba_api openpyxl pandas --no-warn-script-location
+          Write-Output "Python bundle complete"
 
       # ── macOS: python-build-standalone (truly portable) ─────────────────
       - name: Bundle Python (macOS)
         if: runner.os == 'macOS'
         run: |
           set -e
-          PY_VER="3.12.9+20250401"
           DEST="frontend/resources/python"
           mkdir -p "$DEST"
 
-          ARCH=$(uname -m)   # arm64 or x86_64
-          if [ "$ARCH" = "arm64" ]; then
-            URL="https://github.com/indygreg/python-build-standalone/releases/download/20250401/cpython-${PY_VER}-aarch64-apple-darwin-install_only.tar.gz"
-          else
-            URL="https://github.com/indygreg/python-build-standalone/releases/download/20250401/cpython-${PY_VER}-x86_64-apple-darwin-install_only.tar.gz"
-          fi
+          ARCH=$(uname -m)  # arm64 or x86_64
 
-          curl -fsSL "$URL" | tar -xz -C "frontend/resources"
-          # tarball extracts to frontend/resources/python/ already
+          # Try multiple releases in order until one downloads successfully
+          for TAG in 20250402 20250401 20250317 20250212; do
+            if [ "$ARCH" = "arm64" ]; then
+              URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-3.12.9+${TAG}-aarch64-apple-darwin-install_only.tar.gz"
+            else
+              URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-3.12.9+${TAG}-x86_64-apple-darwin-install_only.tar.gz"
+            fi
+            echo "Trying: $URL"
+            if curl -fsSL --retry 3 "$URL" | tar -xz -C "frontend/resources"; then
+              echo "Downloaded from tag $TAG"
+              break
+            fi
+          done
+
+          # Verify python binary exists
+          ls frontend/resources/python/bin/
 
           # Install app dependencies
-          "frontend/resources/python/bin/pip3.12" install nba_api openpyxl pandas
+          frontend/resources/python/bin/pip3 install nba_api openpyxl pandas
+          echo "Python bundle complete"
 
       # ── Bundle project data files ────────────────────────────────────────
-      - name: Bundle data files
-        shell: bash
+      - name: Bundle data files (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "frontend\resources\data" | Out-Null
+          $dirs = @("NBA Site data", "Player Roles", "Playbook", "nba2k26_generator")
+          foreach ($d in $dirs) {
+            if (Test-Path $d) {
+              Copy-Item -Recurse -Force $d "frontend\resources\data\"
+              Write-Output "Copied: $d"
+            }
+          }
+
+      - name: Bundle data files (macOS)
+        if: runner.os == 'macOS'
         run: |
           mkdir -p frontend/resources/data
           for dir in "NBA Site data" "Player Roles" "Playbook" "nba2k26_generator"; do
-            [ -d "$dir" ] && cp -r "$dir" "frontend/resources/data/" || true
+            [ -d "$dir" ] && cp -r "$dir" "frontend/resources/data/" && echo "Copied: $dir" || true
           done
 
       # ── Node deps ────────────────────────────────────────────────────────
@@ -94,16 +136,20 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      # ── Build icons if none exist (placeholder so build doesn't fail) ────
+      # ── Create placeholder icons ─────────────────────────────────────────
       - name: Create placeholder icons (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           $dir = "frontend\build-assets"
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
           if (-not (Test-Path "$dir\icon.ico")) {
-            New-Item -ItemType Directory -Force -Path $dir | Out-Null
-            # 1x1 transparent ICO (minimal valid file) — replace with real icon
-            [System.IO.File]::WriteAllBytes("$dir\icon.ico", [byte[]](0,0,1,0,1,0,1,1,0,0,1,0,32,0,40,0,0,0,22,0,0,0,40,0,0,0,1,0,0,0,2,0,0,0,1,0,32,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0))
+            # Minimal valid 1x1 ICO
+            $bytes = [byte[]](0,0,1,0,1,0,1,1,0,0,1,0,32,0,40,0,0,0,22,0,0,0,
+              40,0,0,0,1,0,0,0,2,0,0,0,1,0,32,0,0,0,0,0,4,0,0,0,0,0,0,0,
+              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+            [System.IO.File]::WriteAllBytes("$dir\icon.ico", $bytes)
+            Write-Output "Created placeholder icon.ico"
           }
 
       - name: Create placeholder icons (macOS)
@@ -112,24 +158,21 @@ jobs:
           DIR="frontend/build-assets"
           mkdir -p "$DIR"
           if [ ! -f "$DIR/icon.icns" ]; then
-            # Generate a minimal PNG and convert to icns
             mkdir -p icon.iconset
             python3 -c "
           import struct, zlib
-          def png1x1(r,g,b):
-              raw = bytes([0,r,g,b,255])
-              idat = zlib.compress(raw)
-              def chunk(t,d): return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
-              return b'\\x89PNG\\r\\n\\x1a\\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',1,1,8,2,0,0,0))+chunk(b'IDAT',idat)+chunk(b'IEND',b'')
-          open('icon.iconset/icon_16x16.png','wb').write(png1x1(30,50,100))
+          def png1(r,g,b):
+            d=bytes([0,r,g,b,255])
+            c=zlib.compress(d)
+            def ch(t,b): return struct.pack('>I',len(b))+t+b+struct.pack('>I',zlib.crc32(t+b)&0xffffffff)
+            return b'\x89PNG\r\n\x1a\n'+ch(b'IHDR',struct.pack('>IIBBBBB',1,1,8,2,0,0,0))+ch(b'IDAT',c)+ch(b'IEND',b'')
+          open('icon.iconset/icon_16x16.png','wb').write(png1(30,50,100))
             "
-            cp icon.iconset/icon_16x16.png icon.iconset/icon_32x32.png
-            cp icon.iconset/icon_16x16.png icon.iconset/icon_128x128.png
-            cp icon.iconset/icon_16x16.png icon.iconset/icon_256x256.png
-            cp icon.iconset/icon_16x16.png icon.iconset/icon_512x512.png
-            iconutil -c icns icon.iconset -o "$DIR/icon.icns" 2>/dev/null || \
-              sips -s format icns icon.iconset/icon_16x16.png --out "$DIR/icon.icns" || \
-              cp icon.iconset/icon_16x16.png "$DIR/icon.icns"
+            for size in 32 128 256 512; do
+              cp icon.iconset/icon_16x16.png "icon.iconset/icon_${size}x${size}.png"
+            done
+            iconutil -c icns icon.iconset -o "$DIR/icon.icns" 2>/dev/null || cp icon.iconset/icon_16x16.png "$DIR/icon.icns"
+            echo "Created placeholder icon.icns"
           fi
 
       # ── Electron-builder: build & publish to GitHub Release ──────────────
@@ -137,11 +180,10 @@ jobs:
         working-directory: frontend
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Disable macOS code signing (no Apple cert in CI)
           CSC_IDENTITY_AUTO_DISCOVERY: false
         run: npm run dist
 
-      # ── Upload build artifacts ───────────────────────────────────────────
+      # ── Upload artifacts (also saves them as Actions artifacts) ──────────
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -152,3 +194,4 @@ jobs:
             frontend/dist/*.dmg
             frontend/dist/*.zip
             frontend/dist/latest*.yml
+          if-no-files-found: warn
