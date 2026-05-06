@@ -71,19 +71,37 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           set -e
-          mkdir -p frontend/resources/python
+          mkdir -p frontend/resources
           ARCH=$(uname -m)
-          for TAG in 20250402 20250401 20250317 20250212; do
-            if [ "$ARCH" = "arm64" ]; then
-              URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-3.12.9+${TAG}-aarch64-apple-darwin-install_only.tar.gz"
-            else
-              URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-3.12.9+${TAG}-x86_64-apple-darwin-install_only.tar.gz"
-            fi
-            echo "Trying $URL"
-            if curl -fsSL --retry 3 "$URL" | tar -xz -C frontend/resources; then
-              echo "Downloaded from tag $TAG"; break
-            fi
+          DOWNLOADED=false
+
+          for TAG in 20250316 20250212 20241219 20241010; do
+            for PY_VER in "3.12.9" "3.12.8"; do
+              if [ "$ARCH" = "arm64" ]; then
+                URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-aarch64-apple-darwin-install_only.tar.gz"
+              else
+                URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-x86_64-apple-darwin-install_only.tar.gz"
+              fi
+              echo "Trying: $URL"
+              if curl -fL --retry 2 --max-time 120 -o /tmp/py_standalone.tar.gz "$URL" 2>/dev/null; then
+                if file /tmp/py_standalone.tar.gz | grep -q "gzip\|tar"; then
+                  if tar -xzf /tmp/py_standalone.tar.gz -C frontend/resources 2>/dev/null; then
+                    if [ -d "frontend/resources/python/bin" ]; then
+                      echo "Success: Python ${PY_VER} from tag ${TAG}"
+                      DOWNLOADED=true
+                      break 2
+                    fi
+                  fi
+                fi
+              fi
+              echo "  -> Not available, trying next..."
+              rm -f /tmp/py_standalone.tar.gz
+            done
           done
+
+          [ "$DOWNLOADED" = "true" ] || (echo "ERROR: all downloads failed" && exit 1)
+
+          rm -f /tmp/py_standalone.tar.gz
           ls frontend/resources/python/bin/
           frontend/resources/python/bin/pip3 install nba_api openpyxl pandas
           echo "Python bundle complete"
