@@ -136,7 +136,7 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      # ── Create placeholder icons ─────────────────────────────────────────
+      # ── Create 256x256 placeholder icons ────────────────────────────────
       - name: Create placeholder icons (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -144,12 +144,29 @@ jobs:
           $dir = "frontend\build-assets"
           New-Item -ItemType Directory -Force -Path $dir | Out-Null
           if (-not (Test-Path "$dir\icon.ico")) {
-            # Minimal valid 1x1 ICO
-            $bytes = [byte[]](0,0,1,0,1,0,1,1,0,0,1,0,32,0,40,0,0,0,22,0,0,0,
-              40,0,0,0,1,0,0,0,2,0,0,0,1,0,32,0,0,0,0,0,4,0,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-            [System.IO.File]::WriteAllBytes("$dir\icon.ico", $bytes)
-            Write-Output "Created placeholder icon.ico"
+            python -c @"
+import struct, zlib
+
+def make_png(size, r, g, b):
+    raw = b''
+    for y in range(size):
+        raw += b'\x00'
+        for x in range(size):
+            raw += bytes([r, g, b, 255])
+    idat = zlib.compress(raw)
+    def ch(t, d):
+        return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t+d) & 0xffffffff)
+    ihdr = struct.pack('>IIBBBBB', size, size, 8, 6, 0, 0, 0)
+    return b'\x89PNG\r\n\x1a\n' + ch(b'IHDR', ihdr) + ch(b'IDAT', idat) + ch(b'IEND', b'')
+
+png = make_png(256, 30, 50, 100)
+# ICO: ICONDIR + ICONDIRENTRY (offset=22=6+16) + PNG data
+ico = struct.pack('<HHH', 0, 1, 1)
+ico += struct.pack('<BBBBHHII', 0, 0, 0, 0, 1, 32, len(png), 22)
+ico += png
+open(r'frontend\build-assets\icon.ico', 'wb').write(ico)
+print('icon.ico created')
+"@
           }
 
       - name: Create placeholder icons (macOS)
@@ -159,20 +176,28 @@ jobs:
           mkdir -p "$DIR"
           if [ ! -f "$DIR/icon.icns" ]; then
             mkdir -p icon.iconset
-            python3 -c "
-          import struct, zlib
-          def png1(r,g,b):
-            d=bytes([0,r,g,b,255])
-            c=zlib.compress(d)
-            def ch(t,b): return struct.pack('>I',len(b))+t+b+struct.pack('>I',zlib.crc32(t+b)&0xffffffff)
-            return b'\x89PNG\r\n\x1a\n'+ch(b'IHDR',struct.pack('>IIBBBBB',1,1,8,2,0,0,0))+ch(b'IDAT',c)+ch(b'IEND',b'')
-          open('icon.iconset/icon_16x16.png','wb').write(png1(30,50,100))
-            "
-            for size in 32 128 256 512; do
-              cp icon.iconset/icon_16x16.png "icon.iconset/icon_${size}x${size}.png"
-            done
-            iconutil -c icns icon.iconset -o "$DIR/icon.icns" 2>/dev/null || cp icon.iconset/icon_16x16.png "$DIR/icon.icns"
-            echo "Created placeholder icon.icns"
+            python3 - << 'PYEOF'
+import struct, zlib
+
+def make_png(size, r, g, b):
+    raw = b''
+    for y in range(size):
+        raw += b'\x00'
+        for x in range(size):
+            raw += bytes([r, g, b, 255])
+    idat = zlib.compress(raw)
+    def ch(t, d):
+        return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t+d) & 0xffffffff)
+    ihdr = struct.pack('>IIBBBBB', size, size, 8, 6, 0, 0, 0)
+    return b'\x89PNG\r\n\x1a\n' + ch(b'IHDR', ihdr) + ch(b'IDAT', idat) + ch(b'IEND', b'')
+
+for size, name in [(16,'icon_16x16'), (32,'icon_32x32'), (128,'icon_128x128'),
+                   (256,'icon_256x256'), (512,'icon_512x512')]:
+    open(f'icon.iconset/{name}.png', 'wb').write(make_png(size, 30, 50, 100))
+print('PNGs created')
+PYEOF
+            iconutil -c icns icon.iconset -o "$DIR/icon.icns"
+            echo "icon.icns created"
           fi
 
       # ── Electron-builder: build & publish to GitHub Release ──────────────
