@@ -124,6 +124,19 @@ jobs:
             [ -d "$dir" ] && cp -r "$dir" frontend/resources/data/ && echo "Copied: $dir" || true
           done
 
+      # ── Set package.json version from git tag ───────────────────────────
+      - name: Set version from tag
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME:-}"
+          if [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+            node -e "const fs=require('fs'),p=JSON.parse(fs.readFileSync('frontend/package.json','utf8')); p.version='$VERSION'; fs.writeFileSync('frontend/package.json',JSON.stringify(p,null,2)+'\n')"
+            echo "Set version to $VERSION"
+          else
+            echo "Not a version tag, skipping"
+          fi
+
       # ── Node deps ────────────────────────────────────────────────────────
       - name: Install Node dependencies
         working-directory: frontend
