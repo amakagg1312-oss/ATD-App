@@ -9,6 +9,63 @@ nba2k26_generator/models_export.json
 nba2k26_generator/ml_feature_stats.json
 nba2k26_generator/ml/models/
 
+# Debug / test / log files (root level)
+check_*.py
+debug_*.py
+trace_*.py
+test_*.py
+test_*.txt
+test_*.csv
+test_*.json
+test_*.xlsx
+*_log.txt
+*_out.txt
+*_out2.txt
+stderr.txt
+*.bak
+global_diag.json
+tendencies_curry.json
+luka_*.txt
+ml_3pt_out.txt
+*_test_*_players_*.txt
+unicorn_*.txt
+six_role_players.txt
+precompute_ml_stats.py
+save_feat_names.py
+extract_feat_names.py
+extract_features.py
+calibrate_ovr.py
+analyze_tendencies.py
+verify_models.py
+build_dist.ps1
+_workbook_descriptions.txt
+AI_GENERATION_FIXES.md
+Copilot_Optimized_ATD_Tendencies.xlsx
+.editorconfig
+
+# Playbook debugging artifacts (keep only editor + data)
+Playbook/*.py
+Playbook/*.bin
+Playbook/*.json
+Playbook/*.md
+Playbook/2K26 Tables/Old Patches/
+Playbook/2K26 Tables/*.CT
+Playbook/2K26 Tables/Todo.CT
+Playbook/game files/
+Playbook/RosterNBA*
+Playbook/screenshot/
+Playbook/research_summary.md
+Playbook/playdata_structure.md
+# Allow the files actually used by the app
+!Playbook/playbook_editor.py
+!Playbook/2K26 Tables/Mappings/NBA2K26_mappings.json
+!Playbook/outputs/dynamic_bases.json
+
+# Snapshots
+pb_snap_*.bin
+playbook_obj_*.bin
+playbook_snapshot*.json
+
 # Node / Electron
 frontend/node_modules/
 frontend/dist/
@@ -17,22 +74,14 @@ frontend/resources/
 # Previous local builds
 dist/
 
-# Playbook debugging artifacts (large binary/json snapshots)
-Playbook/*.bin
-Playbook/*.json
-Playbook/fast_snap*.json
-Playbook/screenshot/
-
-# Game binary files (extracted from NBA2K, not source code)
-Playbook/game files/
-Playbook/RosterNBA*
-Playbook/2K26 Tables/Old Patches/
+# Screenshots / media not used by the app
+2k ratings screenshot/
+Badges/*.jpg
+Badges/*.png
+Badges/*.jpeg
 
 # Large zip archives
 *.zip
-
-# Build assets (generated in CI — commit real icons here once you have them)
-# frontend/build-assets/   ← uncomment this line once you add real icons
 
 # OS
 .DS_Store
