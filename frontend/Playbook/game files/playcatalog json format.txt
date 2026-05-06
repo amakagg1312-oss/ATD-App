@@ -1,0 +1,3574 @@
+{
+	"name": "PlayCatalog",
+	"baseName": "PlayCatalog",
+	"type": "Group",
+	"stateList": [ 1, 0 ],
+	"children": [
+		{
+			"name": "Asset_BlurObj_Menu_133",
+			"baseName": "Asset_BlurObj_Menu",
+			"type": "Group",
+			"stateList": [ 1, 152 ],
+			"flags": 0
+		},
+		{
+			"name": "AssetHUDPanel_frontend_29",
+			"baseName": "AssetHUDPanel_frontend",
+			"type": "Group",
+			"stateList": [ 1, 348 ],
+			"children": [
+				{
+					"name": "asset_hud_panel_frontend_0_24",
+					"baseName": "asset_hud_panel_frontend",
+					"type": "Scene3d",
+					"stateList": [ 1, 432 ],
+					"children": [
+						{
+							"name": "asset_hud_panel_frontendBoneMod_joint_ul_0_24",
+							"baseName": "asset_hud_panel_frontendBoneMod_joint_ul",
+							"type": "BoneModifier",
+							"stateList": [ 1, 612 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_hud_panel_frontendBoneMod_joint_lr_0_24",
+							"baseName": "asset_hud_panel_frontendBoneMod_joint_lr",
+							"type": "BoneModifier",
+							"stateList": [ 1, 696 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_hud_panel_frontendBoneMod_joint_ll_0_24",
+							"baseName": "asset_hud_panel_frontendBoneMod_joint_ll",
+							"type": "BoneModifier",
+							"stateList": [ 1, 780 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_hud_panel_frontendBoneMod_joint_ur_0_24",
+							"baseName": "asset_hud_panel_frontendBoneMod_joint_ur",
+							"type": "BoneModifier",
+							"stateList": [ 1, 864 ],
+							"flags": 0
+						}
+					],
+					"flags": 32768
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "asset_panel_mask_1235",
+			"baseName": "asset_panel_mask",
+			"type": "Scene3d",
+			"stateList": [ 1, 948 ],
+			"flags": 0
+		},
+		{
+			"name": "asset_panel_reveal_1245",
+			"baseName": "asset_panel_reveal",
+			"type": "Scene3d",
+			"stateList": [ 1, 1092 ],
+			"flags": 0
+		},
+		{
+			"name": "my_gm_banner_fade_e_2",
+			"baseName": "my_gm_banner_fade_e",
+			"type": "Scene3d",
+			"stateList": [ 1, 1356 ],
+			"flags": 0
+		},
+		{
+			"name": "asset_panel_mask_1236",
+			"baseName": "asset_panel_mask",
+			"type": "Scene3d",
+			"stateList": [ 1, 1512 ],
+			"flags": 0
+		},
+		{
+			"name": "asset_panel_reveal_1246",
+			"baseName": "asset_panel_reveal",
+			"type": "Scene3d",
+			"stateList": [ 1, 1536 ],
+			"flags": 0
+		},
+		{
+			"name": "AFePanelGlobalB_7712",
+			"baseName": "AFePanelGlobalB",
+			"type": "Group",
+			"stateList": [ 1, 1688 ],
+			"children": [
+				{
+					"name": "a_fe_panel_global_b_7672",
+					"baseName": "a_fe_panel_global_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 2084 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_bBoneMod_UR_7702",
+							"baseName": "a_fe_panel_global_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 2366 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LL_7673",
+							"baseName": "a_fe_panel_global_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 2526 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LR_7670",
+							"baseName": "a_fe_panel_global_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 2690 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_UL_7701",
+							"baseName": "a_fe_panel_global_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 2856 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_mat_7673",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 3014 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat_1756",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 3144 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_teamcolor_mat_7671",
+							"baseName": "a_fe_panel_global_bMatCallback_teamcolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 3342 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_pattern_mat_7672",
+							"baseName": "a_fe_panel_global_bMatCallback_pattern_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 3692 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_b_7674",
+					"baseName": "a_fe_panel_global_b_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 3820 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UR_7671",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 4062 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LL_7681",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 4222 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LR_7671",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 4386 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UL_7674",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 4552 ],
+							"flags": 0
+						}
+					],
+					"flags": 32768
+				},
+				{
+					"name": "a_fe_panel_global_b_overlays_7670",
+					"baseName": "a_fe_panel_global_b_overlays",
+					"type": "Scene3d",
+					"stateList": [ 1, 4710 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UR_7680",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 4924 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LL_7684",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 5084 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LR_7677",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 5248 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UL_7732",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 5414 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat_7671",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 5572 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat_7674",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 5700 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_mat_7671",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 5834 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat_7675",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 5962 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat_7687",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 6092 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat_7670",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 6228 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat_7671",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 6360 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat_7670",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 6494 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_projection_mat_1756",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_projection_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 6632 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat_0_1236",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 6768 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_c_1756",
+					"baseName": "a_fe_panel_global_b_c",
+					"type": "Scene3d",
+					"stateList": [ 1, 6898 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat_1756",
+							"baseName": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 7072 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UR_1756",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7184 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LL_1756",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7208 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LR_1756",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7232 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UL_1756",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7256 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AFePanelGlobalB_8527",
+			"baseName": "AFePanelGlobalB",
+			"type": "Group",
+			"stateList": [ 1, 7280 ],
+			"children": [
+				{
+					"name": "a_fe_panel_global_b_0_259",
+					"baseName": "a_fe_panel_global_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 7660 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_bBoneMod_UR_0_259",
+							"baseName": "a_fe_panel_global_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7696 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LL_0_259",
+							"baseName": "a_fe_panel_global_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7720 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LR_0_259",
+							"baseName": "a_fe_panel_global_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7744 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_UL_0_259",
+							"baseName": "a_fe_panel_global_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7768 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_mat_0_259",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 7792 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat_0_584",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 7816 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_teamcolor_mat_0_250",
+							"baseName": "a_fe_panel_global_bMatCallback_teamcolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 7840 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_pattern_mat_0_259",
+							"baseName": "a_fe_panel_global_bMatCallback_pattern_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 7864 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_b_0_259",
+					"baseName": "a_fe_panel_global_b_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 7888 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UR_0_259",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7924 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LL_0_259",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7948 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LR_0_259",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7972 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UL_0_259",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 7996 ],
+							"flags": 0
+						}
+					],
+					"flags": 32768
+				},
+				{
+					"name": "a_fe_panel_global_b_overlays_0_259",
+					"baseName": "a_fe_panel_global_b_overlays",
+					"type": "Scene3d",
+					"stateList": [ 1, 8020 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UR_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8056 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LL_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8080 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LR_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8104 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UL_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8128 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8152 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8176 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_mat_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8200 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8224 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8248 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8272 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8296 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat_0_259",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8320 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_projection_mat_0_584",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_projection_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8344 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat_0_1237",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8368 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_c_0_584",
+					"baseName": "a_fe_panel_global_b_c",
+					"type": "Scene3d",
+					"stateList": [ 1, 8392 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat_0_584",
+							"baseName": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 8428 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UR_0_584",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8452 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LL_0_584",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8476 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LR_0_584",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8500 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UL_0_584",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8524 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AFePanelGlobalB_8526",
+			"baseName": "AFePanelGlobalB",
+			"type": "Group",
+			"stateList": [ 1, 8548 ],
+			"children": [
+				{
+					"name": "a_fe_panel_global_b_0_257",
+					"baseName": "a_fe_panel_global_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 8928 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_bBoneMod_UR_0_257",
+							"baseName": "a_fe_panel_global_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8964 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LL_0_257",
+							"baseName": "a_fe_panel_global_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 8988 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LR_0_257",
+							"baseName": "a_fe_panel_global_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9012 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_UL_0_257",
+							"baseName": "a_fe_panel_global_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9036 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_mat_0_257",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9060 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat_0_583",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9084 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_teamcolor_mat_0_249",
+							"baseName": "a_fe_panel_global_bMatCallback_teamcolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9108 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_pattern_mat_0_257",
+							"baseName": "a_fe_panel_global_bMatCallback_pattern_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9132 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_b_0_257",
+					"baseName": "a_fe_panel_global_b_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 9156 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UR_0_257",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9192 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LL_0_257",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9216 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LR_0_257",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9240 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UL_0_257",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9264 ],
+							"flags": 0
+						}
+					],
+					"flags": 32768
+				},
+				{
+					"name": "a_fe_panel_global_b_overlays_0_257",
+					"baseName": "a_fe_panel_global_b_overlays",
+					"type": "Scene3d",
+					"stateList": [ 1, 9288 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UR_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9324 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LL_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9348 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LR_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9372 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UL_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9396 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9420 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9444 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_mat_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9468 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9492 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9516 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9540 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9564 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat_0_257",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9588 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_projection_mat_0_583",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_projection_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9612 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat_0_1238",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9636 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_c_0_583",
+					"baseName": "a_fe_panel_global_b_c",
+					"type": "Scene3d",
+					"stateList": [ 1, 9660 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat_0_583",
+							"baseName": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 9696 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UR_0_583",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9720 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LL_0_583",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9744 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LR_0_583",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9768 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UL_0_583",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 9792 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AFePanelGlobalB_5745",
+			"baseName": "AFePanelGlobalB",
+			"type": "Group",
+			"stateList": [ 1, 9816 ],
+			"children": [
+				{
+					"name": "a_fe_panel_global_b_5726",
+					"baseName": "a_fe_panel_global_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 10196 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_bBoneMod_UR_5756",
+							"baseName": "a_fe_panel_global_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10232 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LL_5727",
+							"baseName": "a_fe_panel_global_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10256 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LR_5725",
+							"baseName": "a_fe_panel_global_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10280 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_UL_5756",
+							"baseName": "a_fe_panel_global_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10304 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_mat_5727",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10328 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat_0_288",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10352 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_teamcolor_mat_5726",
+							"baseName": "a_fe_panel_global_bMatCallback_teamcolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10376 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_pattern_mat_5726",
+							"baseName": "a_fe_panel_global_bMatCallback_pattern_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10400 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_b_5728",
+					"baseName": "a_fe_panel_global_b_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 10424 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UR_5726",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10460 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LL_5734",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10484 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LR_5726",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10508 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UL_5726",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10532 ],
+							"flags": 0
+						}
+					],
+					"flags": 32768
+				},
+				{
+					"name": "a_fe_panel_global_b_overlays_5725",
+					"baseName": "a_fe_panel_global_b_overlays",
+					"type": "Scene3d",
+					"stateList": [ 1, 10556 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UR_5735",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10592 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LL_5739",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10616 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LR_5729",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10640 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UL_5784",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10664 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat_5725",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10688 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat_5729",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10712 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_mat_5726",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10736 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat_5728",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10760 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat_5742",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10784 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat_5725",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10808 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat_5726",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10832 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat_5725",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10856 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_projection_mat_0_288",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_projection_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10880 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat_0_1239",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10904 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_c_0_288",
+					"baseName": "a_fe_panel_global_b_c",
+					"type": "Scene3d",
+					"stateList": [ 1, 10928 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat_0_288",
+							"baseName": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 10964 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UR_0_288",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 10988 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LL_0_288",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 11012 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LR_0_288",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 11036 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UL_0_288",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 11060 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "PlayPreview_0",
+			"baseName": "PlayPreview",
+			"type": "Group",
+			"isWidget": true,
+			"stateList": [ 1, 11084 ],
+			"children": [
+				{
+					"name": "a_hud_panel_white_3_134",
+					"baseName": "a_hud_panel_white",
+					"type": "Scene3d",
+					"stateList": [ 1, 11306 ],
+					"children": [
+						{
+							"name": "a_hud_panel_whiteMatCallback_CORNER_UL_65_8",
+							"baseName": "a_hud_panel_whiteMatCallback_CORNER_UL",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 11518 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_panel_whiteMatCallback_CORNER_UR_65_8",
+							"baseName": "a_hud_panel_whiteMatCallback_CORNER_UR",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 11646 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_panel_whiteMatCallback_CORNER_LR_65_8",
+							"baseName": "a_hud_panel_whiteMatCallback_CORNER_LR",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 11774 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_panel_whiteMatCallback_CORNER_LL_65_8",
+							"baseName": "a_hud_panel_whiteMatCallback_CORNER_LL",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 11902 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_panel_whiteBoneMod_UR_65_8",
+							"baseName": "a_hud_panel_whiteBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 12030 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_panel_whiteBoneMod_LL_65_8",
+							"baseName": "a_hud_panel_whiteBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 12162 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_panel_whiteBoneMod_LR_65_8",
+							"baseName": "a_hud_panel_whiteBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 12298 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_panel_whiteBoneMod_UL_66_8",
+							"baseName": "a_hud_panel_whiteBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 12436 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "shot_track_graphic_1_2",
+					"baseName": "shot_track_graphic",
+					"type": "Scene3d",
+					"stateList": [ 1, 12566 ],
+					"children": [
+						{
+							"name": "shot_track_graphicMatCallback_mat_frontcourt_0_2",
+							"baseName": "shot_track_graphicMatCallback_mat_frontcourt",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 12694 ],
+							"flags": 0
+						},
+						{
+							"name": "shot_track_graphicMatCallback_mat_backcourt_0_2",
+							"baseName": "shot_track_graphicMatCallback_mat_backcourt",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 12778 ],
+							"flags": 0
+						},
+						{
+							"name": "shot_track_graphicMatCallback_mat_frontcourt_white_0_7",
+							"baseName": "shot_track_graphicMatCallback_mat_frontcourt_white",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 12862 ],
+							"flags": 0
+						},
+						{
+							"name": "shot_track_graphicMatCallback_mat_backcourt_white_0_7",
+							"baseName": "shot_track_graphicMatCallback_mat_backcourt_white",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 12946 ],
+							"flags": 0
+						},
+						{
+							"name": "shot_track_graphicMatCallback_mat_frontcourt_grey_0_6",
+							"baseName": "shot_track_graphicMatCallback_mat_frontcourt_grey",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 13030 ],
+							"flags": 0
+						}
+					],
+					"flags": 16384
+				},
+				{
+					"name": "icon_pos_1_2",
+					"baseName": "icon_pos",
+					"type": "Scene3d",
+					"stateList": [ 1, 13114 ],
+					"children": [
+						{
+							"name": "icon_posText_txt1_1_2",
+							"baseName": "icon_posText_txt1",
+							"type": "SceneText",
+							"stateList": [ 1, 13402 ],
+							"flags": 0
+						}
+					],
+					"flags": 8192
+				},
+				{
+					"name": "icon_pos_2_1",
+					"baseName": "icon_pos",
+					"type": "Scene3d",
+					"stateList": [ 1, 13484 ],
+					"children": [
+						{
+							"name": "icon_posText_txt1_0_2",
+							"baseName": "icon_posText_txt1",
+							"type": "SceneText",
+							"stateList": [ 1, 13636 ],
+							"flags": 0
+						}
+					],
+					"flags": 8192
+				},
+				{
+					"name": "icon_pos_3_1",
+					"baseName": "icon_pos",
+					"type": "Scene3d",
+					"stateList": [ 1, 13718 ],
+					"children": [
+						{
+							"name": "icon_posText_txt1_2_2",
+							"baseName": "icon_posText_txt1",
+							"type": "SceneText",
+							"stateList": [ 1, 13870 ],
+							"flags": 0
+						}
+					],
+					"flags": 8192
+				},
+				{
+					"name": "icon_pos_4_1",
+					"baseName": "icon_pos",
+					"type": "Scene3d",
+					"stateList": [ 1, 13952 ],
+					"children": [
+						{
+							"name": "icon_posText_txt1_3_2",
+							"baseName": "icon_posText_txt1",
+							"type": "SceneText",
+							"stateList": [ 1, 14104 ],
+							"flags": 0
+						}
+					],
+					"flags": 8192
+				},
+				{
+					"name": "icon_pos_5_1",
+					"baseName": "icon_pos",
+					"type": "Scene3d",
+					"stateList": [ 1, 14186 ],
+					"children": [
+						{
+							"name": "icon_posText_txt1_4_2",
+							"baseName": "icon_posText_txt1",
+							"type": "SceneText",
+							"stateList": [ 1, 14338 ],
+							"flags": 0
+						}
+					],
+					"flags": 8192
+				},
+				{
+					"name": "icon_ball_1_2",
+					"baseName": "icon_ball",
+					"type": "Scene3d",
+					"stateList": [ 1, 14420 ],
+					"children": [
+						{
+							"name": "icon_ballMatCallback_mat_icon_ball_0_22",
+							"baseName": "icon_ballMatCallback_mat_icon_ball",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 14596 ],
+							"flags": 0
+						}
+					],
+					"flags": 16384
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AssetLineGrey_47",
+			"baseName": "AssetLineGrey",
+			"type": "Group",
+			"stateList": [ 1, 14680 ],
+			"children": [
+				{
+					"name": "asset_line_grey_0_31",
+					"baseName": "asset_line_grey",
+					"type": "Scene3d",
+					"stateList": [ 1, 14828 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_line_grey_1_31",
+					"baseName": "asset_line_grey",
+					"type": "Scene3d",
+					"stateList": [ 1, 15004 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_line_grey_2_31",
+					"baseName": "asset_line_grey",
+					"type": "Scene3d",
+					"stateList": [ 1, 15148 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_line_grey_3_31",
+					"baseName": "asset_line_grey",
+					"type": "Scene3d",
+					"stateList": [ 1, 15304 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_line_grey_4_31",
+					"baseName": "asset_line_grey",
+					"type": "Scene3d",
+					"stateList": [ 1, 15460 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_line_grey_11_89",
+					"baseName": "asset_line_grey",
+					"type": "Scene3d",
+					"stateList": [ 1, 15616 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_line_grey_11_185",
+					"baseName": "asset_line_grey",
+					"type": "Scene3d",
+					"stateList": [ 1, 15760 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_line_grey_11_281",
+					"baseName": "asset_line_grey",
+					"type": "Scene3d",
+					"stateList": [ 1, 15796 ],
+					"flags": 0
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "asset_hud_stat_boxa_19",
+			"baseName": "asset_hud_stat_boxa",
+			"type": "Scene3d",
+			"stateList": [ 1, 15832 ],
+			"children": [
+				{
+					"name": "asset_hud_stat_boxaMatCallback_STROKE_18",
+					"baseName": "asset_hud_stat_boxaMatCallback_STROKE",
+					"type": "MaterialCallback",
+					"stateList": [ 1, 16008 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaMatCallback_vcFxShader1_18",
+					"baseName": "asset_hud_stat_boxaMatCallback_vcFxShader1",
+					"type": "MaterialCallback",
+					"stateList": [ 1, 16080 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_stroke_ul4_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_stroke_ul4",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16152 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_inner_ur2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_inner_ur2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16236 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_inner_lr2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_inner_lr2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16320 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_inner_ll2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_inner_ll2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16392 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_inner_ul2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_inner_ul2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16464 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_box_ur2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_box_ur2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16548 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_box_lr2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_box_lr2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16632 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_box_ll2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_box_ll2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16704 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_box_ul2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_box_ul2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16776 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_stroke_ur2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_stroke_ur2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16860 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_stroke_lr2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_stroke_lr2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 16944 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_stroke_ll2_17",
+					"baseName": "asset_hud_stat_boxaBoneMod_stroke_ll2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17016 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaMatCallback_vcFxShader2_12",
+					"baseName": "asset_hud_stat_boxaMatCallback_vcFxShader2",
+					"type": "MaterialCallback",
+					"stateList": [ 1, 17088 ],
+					"flags": 0
+				}
+			],
+			"flags": 49152
+		},
+		{
+			"name": "asset_hud_stat_boxa_20",
+			"baseName": "asset_hud_stat_boxa",
+			"type": "Scene3d",
+			"stateList": [ 1, 17160 ],
+			"children": [
+				{
+					"name": "asset_hud_stat_boxaMatCallback_STROKE_19",
+					"baseName": "asset_hud_stat_boxaMatCallback_STROKE",
+					"type": "MaterialCallback",
+					"stateList": [ 1, 17324 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaMatCallback_vcFxShader1_19",
+					"baseName": "asset_hud_stat_boxaMatCallback_vcFxShader1",
+					"type": "MaterialCallback",
+					"stateList": [ 1, 17348 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_stroke_ul4_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_stroke_ul4",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17372 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_inner_ur2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_inner_ur2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17396 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_inner_lr2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_inner_lr2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17420 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_inner_ll2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_inner_ll2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17444 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_inner_ul2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_inner_ul2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17468 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_box_ur2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_box_ur2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17492 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_box_lr2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_box_lr2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17516 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_box_ll2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_box_ll2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17540 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_box_ul2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_box_ul2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17564 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_stroke_ur2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_stroke_ur2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17588 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_stroke_lr2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_stroke_lr2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17612 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaBoneMod_stroke_ll2_18",
+					"baseName": "asset_hud_stat_boxaBoneMod_stroke_ll2",
+					"type": "BoneModifier",
+					"stateList": [ 1, 17636 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_stat_boxaMatCallback_vcFxShader2_13",
+					"baseName": "asset_hud_stat_boxaMatCallback_vcFxShader2",
+					"type": "MaterialCallback",
+					"stateList": [ 1, 17660 ],
+					"flags": 0
+				}
+			],
+			"flags": 49152
+		},
+		{
+			"name": "a_fe_header_bullet_a_1",
+			"baseName": "a_fe_header_bullet_a",
+			"type": "Scene3d",
+			"stateList": [ 1, 17684 ],
+			"flags": 0
+		},
+		{
+			"name": "asset_rating_long_47",
+			"baseName": "asset_rating_long",
+			"type": "Scene3d",
+			"stateList": [ 1, 17820 ],
+			"children": [
+				{
+					"name": "asset_rating_longText_txt1_21",
+					"baseName": "asset_rating_longText_txt1",
+					"type": "SceneText",
+					"stateList": [ 1, 18168 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_rating_longText_txt2_21",
+					"baseName": "asset_rating_longText_txt2",
+					"type": "SceneText",
+					"stateList": [ 1, 18266 ],
+					"flags": 0
+				}
+			],
+			"flags": 8192
+		},
+		{
+			"name": "asset_rating_long_48",
+			"baseName": "asset_rating_long",
+			"type": "Scene3d",
+			"stateList": [ 1, 18372 ],
+			"children": [
+				{
+					"name": "asset_rating_longText_txt1_22",
+					"baseName": "asset_rating_longText_txt1",
+					"type": "SceneText",
+					"stateList": [ 1, 18552 ],
+					"flags": 0
+				},
+				{
+					"name": "asset_rating_longText_txt2_22",
+					"baseName": "asset_rating_longText_txt2",
+					"type": "SceneText",
+					"stateList": [ 1, 18650 ],
+					"flags": 0
+				}
+			],
+			"flags": 8192
+		},
+		{
+			"name": "a_fe_header_bullet_a_2",
+			"baseName": "a_fe_header_bullet_a",
+			"type": "Scene3d",
+			"stateList": [ 1, 18756 ],
+			"flags": 0
+		},
+		{
+			"name": "AFePanelGlobalB_5746",
+			"baseName": "AFePanelGlobalB",
+			"type": "Group",
+			"stateList": [ 1, 18892 ],
+			"children": [
+				{
+					"name": "a_fe_panel_global_b_5727",
+					"baseName": "a_fe_panel_global_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 19272 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_bBoneMod_UR_5757",
+							"baseName": "a_fe_panel_global_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19308 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LL_5728",
+							"baseName": "a_fe_panel_global_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19332 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_LR_5726",
+							"baseName": "a_fe_panel_global_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19356 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bBoneMod_UL_5757",
+							"baseName": "a_fe_panel_global_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19380 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_mat_5728",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19404 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat_0_289",
+							"baseName": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19428 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_teamcolor_mat_5727",
+							"baseName": "a_fe_panel_global_bMatCallback_teamcolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19452 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_bMatCallback_pattern_mat_5727",
+							"baseName": "a_fe_panel_global_bMatCallback_pattern_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19476 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_b_5729",
+					"baseName": "a_fe_panel_global_b_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 19500 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UR_5727",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19536 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LL_5735",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19560 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_LR_5727",
+							"baseName": "a_fe_panel_global_b_bBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19584 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_bBoneMod_UL_5727",
+							"baseName": "a_fe_panel_global_b_bBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19608 ],
+							"flags": 0
+						}
+					],
+					"flags": 32768
+				},
+				{
+					"name": "a_fe_panel_global_b_overlays_5726",
+					"baseName": "a_fe_panel_global_b_overlays",
+					"type": "Scene3d",
+					"stateList": [ 1, 19632 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UR_5736",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19668 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LL_5740",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19692 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_LR_5730",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19716 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysBoneMod_UL_5785",
+							"baseName": "a_fe_panel_global_b_overlaysBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 19740 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat_5726",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19764 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat_5730",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19788 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_mat_5727",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19812 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat_5729",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19836 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat_5743",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19860 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat_5726",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19884 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat_5727",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19908 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat_5726",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19932 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_projection_mat_0_289",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_projection_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19956 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat_0_1240",
+							"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 19980 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "a_fe_panel_global_b_c_0_289",
+					"baseName": "a_fe_panel_global_b_c",
+					"type": "Scene3d",
+					"stateList": [ 1, 20004 ],
+					"children": [
+						{
+							"name": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat_0_289",
+							"baseName": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 20040 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UR_0_289",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 20064 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LL_0_289",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 20088 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_LR_0_289",
+							"baseName": "a_fe_panel_global_b_cBoneMod_LR",
+							"type": "BoneModifier",
+							"stateList": [ 1, 20112 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_panel_global_b_cBoneMod_UL_0_289",
+							"baseName": "a_fe_panel_global_b_cBoneMod_UL",
+							"type": "BoneModifier",
+							"stateList": [ 1, 20136 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "PlayCatalog_Spreadsheet_0",
+			"baseName": "PlayCatalog_Spreadsheet",
+			"type": "Spreadsheet",
+			"stateList": [ 1, 20160 ],
+			"children": [
+				{
+					"name": "PlayCatalog_Page_0_0",
+					"baseName": "PlayCatalog_Page",
+					"type": "Spreadsheet_Page",
+					"stateList": [ 1, 20488 ],
+					"children": [
+						{
+							"name": "PlayDataName_1_0_0",
+							"baseName": "PlayDataName",
+							"type": "Spreadsheet_Column",
+							"stateList": [ 1, 20702 ],
+							"flags": 0
+						},
+						{
+							"name": "PlayDataType_1_0_0",
+							"baseName": "PlayDataType",
+							"type": "Spreadsheet_Column",
+							"stateList": [ 1, 20900 ],
+							"flags": 0
+						}
+					],
+					"flags": 0
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AssetToggleLeftJustified_86",
+			"baseName": "AssetToggleLeftJustified",
+			"type": "Group",
+			"stateList": [ 1, 21098 ],
+			"children": [
+				{
+					"name": "asset_toggle_l_justified_0_68",
+					"baseName": "asset_toggle_l_justified",
+					"type": "Scene3d",
+					"stateList": [ 1, 21230 ],
+					"children": [
+						{
+							"name": "asset_toggle_l_justifiedText_txt_toggle_0_68",
+							"baseName": "asset_toggle_l_justifiedText_txt_toggle",
+							"type": "SceneText",
+							"stateList": [ 1, 21414 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_l_justifiedBoneMod_joint_ul_0_68",
+							"baseName": "asset_toggle_l_justifiedBoneMod_joint_ul",
+							"type": "BoneModifier",
+							"stateList": [ 1, 21508 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_l_justifiedBoneMod_joint_ur_0_63",
+							"baseName": "asset_toggle_l_justifiedBoneMod_joint_ur",
+							"type": "BoneModifier",
+							"stateList": [ 1, 21592 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_l_justifiedBoneMod_joint_ll_0_68",
+							"baseName": "asset_toggle_l_justifiedBoneMod_joint_ll",
+							"type": "BoneModifier",
+							"stateList": [ 1, 21688 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_l_justifiedBoneMod_joint_lr_0_68",
+							"baseName": "asset_toggle_l_justifiedBoneMod_joint_lr",
+							"type": "BoneModifier",
+							"stateList": [ 1, 21784 ],
+							"flags": 0
+						}
+					],
+					"flags": 40960
+				},
+				{
+					"name": "asset_toggle_l_justified_teamselect_0_88",
+					"baseName": "asset_toggle_l_justified_teamselect",
+					"type": "Scene3d",
+					"stateList": [ 1, 21892 ],
+					"children": [
+						{
+							"name": "asset_toggle_l_justified_teamselectText_txt_toggle_0_88",
+							"baseName": "asset_toggle_l_justified_teamselectText_txt_toggle",
+							"type": "SceneText",
+							"stateList": [ 1, 22156 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_l_justified_teamselectBoneMod_joint_ul_0_88",
+							"baseName": "asset_toggle_l_justified_teamselectBoneMod_joint_ul",
+							"type": "BoneModifier",
+							"stateList": [ 1, 22250 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_l_justified_teamselectBoneMod_joint_ur_0_88",
+							"baseName": "asset_toggle_l_justified_teamselectBoneMod_joint_ur",
+							"type": "BoneModifier",
+							"stateList": [ 1, 22274 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_l_justified_teamselectBoneMod_joint_ll_0_88",
+							"baseName": "asset_toggle_l_justified_teamselectBoneMod_joint_ll",
+							"type": "BoneModifier",
+							"stateList": [ 1, 22378 ],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_l_justified_teamselectBoneMod_joint_lr_0_88",
+							"baseName": "asset_toggle_l_justified_teamselectBoneMod_joint_lr",
+							"type": "BoneModifier",
+							"stateList": [ 1, 22474 ],
+							"flags": 0
+						}
+					],
+					"flags": 40960
+				},
+				{
+					"name": "AssetToggleLeftTriggers_2_9",
+					"baseName": "AssetToggleLeftTriggers",
+					"type": "Group",
+					"stateList": [ 1, 22582 ],
+					"children": [
+						{
+							"name": "AFePanelGlobalB_5034",
+							"baseName": "AFePanelGlobalB",
+							"type": "Group",
+							"stateList": [ 1, 22650 ],
+							"children": [
+								{
+									"name": "a_fe_panel_global_b_5015",
+									"baseName": "a_fe_panel_global_b",
+									"type": "Scene3d",
+									"stateList": [ 1, 23042 ],
+									"children": [
+										{
+											"name": "a_fe_panel_global_bBoneMod_UR_5045",
+											"baseName": "a_fe_panel_global_bBoneMod_UR",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23078 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_bBoneMod_LL_5016",
+											"baseName": "a_fe_panel_global_bBoneMod_LL",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23102 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_bBoneMod_LR_5014",
+											"baseName": "a_fe_panel_global_bBoneMod_LR",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23126 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_bBoneMod_UL_5045",
+											"baseName": "a_fe_panel_global_bBoneMod_UL",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23150 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_bMatCallback_gradient_mat_5016",
+											"baseName": "a_fe_panel_global_bMatCallback_gradient_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23174 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat_0_5_0_45",
+											"baseName": "a_fe_panel_global_bMatCallback_gradient_gamemodecolor_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23198 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_bMatCallback_teamcolor_mat_5015",
+											"baseName": "a_fe_panel_global_bMatCallback_teamcolor_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23222 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_bMatCallback_pattern_mat_5015",
+											"baseName": "a_fe_panel_global_bMatCallback_pattern_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23246 ],
+											"flags": 0
+										}
+									],
+									"flags": 49152
+								},
+								{
+									"name": "a_fe_panel_global_b_b_5014",
+									"baseName": "a_fe_panel_global_b_b",
+									"type": "Scene3d",
+									"stateList": [ 1, 23270 ],
+									"children": [
+										{
+											"name": "a_fe_panel_global_b_bBoneMod_UR_5015",
+											"baseName": "a_fe_panel_global_b_bBoneMod_UR",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23306 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_bBoneMod_LL_5023",
+											"baseName": "a_fe_panel_global_b_bBoneMod_LL",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23330 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_bBoneMod_LR_5015",
+											"baseName": "a_fe_panel_global_b_bBoneMod_LR",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23354 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_bBoneMod_UL_5015",
+											"baseName": "a_fe_panel_global_b_bBoneMod_UL",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23378 ],
+											"flags": 0
+										}
+									],
+									"flags": 32768
+								},
+								{
+									"name": "a_fe_panel_global_b_overlays_5014",
+									"baseName": "a_fe_panel_global_b_overlays",
+									"type": "Scene3d",
+									"stateList": [ 1, 23402 ],
+									"children": [
+										{
+											"name": "a_fe_panel_global_b_overlaysBoneMod_UR_5021",
+											"baseName": "a_fe_panel_global_b_overlaysBoneMod_UR",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23438 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysBoneMod_LL_5028",
+											"baseName": "a_fe_panel_global_b_overlaysBoneMod_LL",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23462 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysBoneMod_LR_5018",
+											"baseName": "a_fe_panel_global_b_overlaysBoneMod_LR",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23486 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysBoneMod_UL_5073",
+											"baseName": "a_fe_panel_global_b_overlaysBoneMod_UL",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23510 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat_5014",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_edge_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23534 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat_5018",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_edge_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23558 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_outline_mat_5015",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23582 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat_5017",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_top_solid_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23606 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat_5031",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_bottom_solid_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23630 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat_5014",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_left_solid_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23654 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat_5015",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_right_solid_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23678 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat_5014",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_inner_shadow_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23702 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_projection_mat_0_5_0_45",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_projection_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23726 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat_0_17_0_45",
+											"baseName": "a_fe_panel_global_b_overlaysMatCallback_outline_proam_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23750 ],
+											"flags": 0
+										}
+									],
+									"flags": 49152
+								},
+								{
+									"name": "a_fe_panel_global_b_c_0_5_0_45",
+									"baseName": "a_fe_panel_global_b_c",
+									"type": "Scene3d",
+									"stateList": [ 1, 23774 ],
+									"children": [
+										{
+											"name": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat_0_5_0_45",
+											"baseName": "a_fe_panel_global_b_cTexCallback_gamemodecolor_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 23810 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_cBoneMod_UR_0_5_0_45",
+											"baseName": "a_fe_panel_global_b_cBoneMod_UR",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23834 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_cBoneMod_LL_0_5_0_45",
+											"baseName": "a_fe_panel_global_b_cBoneMod_LL",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23858 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_cBoneMod_LR_0_5_0_45",
+											"baseName": "a_fe_panel_global_b_cBoneMod_LR",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23882 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_panel_global_b_cBoneMod_UL_0_5_0_45",
+											"baseName": "a_fe_panel_global_b_cBoneMod_UL",
+											"type": "BoneModifier",
+											"stateList": [ 1, 23906 ],
+											"flags": 0
+										}
+									],
+									"flags": 49152
+								}
+							],
+							"flags": 0
+						},
+						{
+							"name": "asset_toggle_triggers_0_1_67",
+							"baseName": "asset_toggle_triggers",
+							"type": "Scene3d",
+							"stateList": [ 1, 23930 ],
+							"children": [
+								{
+									"name": "asset_toggle_triggersText_txt_left_trigger_0_1_67",
+									"baseName": "asset_toggle_triggersText_txt_left_trigger",
+									"type": "SceneText",
+									"stateList": [ 1, 24070 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_toggle_triggersText_txt_right_trigger_0_1_67",
+									"baseName": "asset_toggle_triggersText_txt_right_trigger",
+									"type": "SceneText",
+									"stateList": [ 1, 24164 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_toggle_triggersBoneMod_joint_ul_0_1_67",
+									"baseName": "asset_toggle_triggersBoneMod_joint_ul",
+									"type": "BoneModifier",
+									"stateList": [ 1, 24246 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_toggle_triggersBoneMod_joint_ur_0_1_67",
+									"baseName": "asset_toggle_triggersBoneMod_joint_ur",
+									"type": "BoneModifier",
+									"stateList": [ 1, 24270 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_toggle_triggersBoneMod_joint_ll_0_1_67",
+									"baseName": "asset_toggle_triggersBoneMod_joint_ll",
+									"type": "BoneModifier",
+									"stateList": [ 1, 24354 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_toggle_triggersBoneMod_joint_lr_0_0_67",
+									"baseName": "asset_toggle_triggersBoneMod_joint_lr",
+									"type": "BoneModifier",
+									"stateList": [ 1, 24450 ],
+									"flags": 0
+								}
+							],
+							"flags": 40960
+						},
+						{
+							"name": "AssetTriggerButton1_3_0_507",
+							"baseName": "AssetTriggerButton1",
+							"type": "Group",
+							"stateList": [ 1, 24546 ],
+							"children": [
+								{
+									"name": "asset_trigger_button_mouse_on_2_3_0_72",
+									"baseName": "asset_trigger_button_mouse_on",
+									"type": "Scene3d",
+									"stateList": [ 1, 24786 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_trigger_button_4_3_0_72",
+									"baseName": "asset_trigger_button",
+									"type": "Scene3d",
+									"stateList": [ 1, 25014 ],
+									"children": [
+										{
+											"name": "asset_trigger_buttonText_txt_toggle_3_3_0_72",
+											"baseName": "asset_trigger_buttonText_txt_toggle",
+											"type": "SceneText",
+											"stateList": [ 1, 25202 ],
+											"flags": 0
+										}
+									],
+									"flags": 8192
+								},
+								{
+									"name": "asset_pc_hit_box_216_3_0_72",
+									"baseName": "asset_pc_hit_box",
+									"type": "Scene3d",
+									"stateList": [ 1, 25284 ],
+									"children": [
+										{
+											"name": "asset_pc_hit_boxText_PC_HIT_1_99_3_0_72",
+											"baseName": "asset_pc_hit_boxText_PC_HIT_1",
+											"type": "SceneText",
+											"stateList": [ 1, 25512 ],
+											"flags": 0
+										}
+									],
+									"flags": 8192
+								}
+							],
+							"flags": 0
+						},
+						{
+							"name": "AssetTriggerButton1_3_0_594",
+							"baseName": "AssetTriggerButton1",
+							"type": "Group",
+							"stateList": [ 1, 25606 ],
+							"children": [
+								{
+									"name": "asset_trigger_button_mouse_on_2_4_0_72",
+									"baseName": "asset_trigger_button_mouse_on",
+									"type": "Scene3d",
+									"stateList": [ 1, 25754 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_trigger_button_4_4_0_72",
+									"baseName": "asset_trigger_button",
+									"type": "Scene3d",
+									"stateList": [ 1, 25790 ],
+									"children": [
+										{
+											"name": "asset_trigger_buttonText_txt_toggle_3_4_0_72",
+											"baseName": "asset_trigger_buttonText_txt_toggle",
+											"type": "SceneText",
+											"stateList": [ 1, 25826 ],
+											"flags": 0
+										}
+									],
+									"flags": 8192
+								},
+								{
+									"name": "asset_pc_hit_box_216_4_0_72",
+									"baseName": "asset_pc_hit_box",
+									"type": "Scene3d",
+									"stateList": [ 1, 25908 ],
+									"children": [
+										{
+											"name": "asset_pc_hit_boxText_PC_HIT_1_99_4_0_72",
+											"baseName": "asset_pc_hit_boxText_PC_HIT_1",
+											"type": "SceneText",
+											"stateList": [ 1, 25940 ],
+											"flags": 0
+										}
+									],
+									"flags": 8192
+								}
+							],
+							"flags": 0
+						},
+						{
+							"name": "FeTriggers_1_0_65",
+							"baseName": "FeTriggers",
+							"type": "Group",
+							"stateList": [ 1, 26034 ],
+							"children": [
+								{
+									"name": "AFeButtonTrigger_LT_1_3_1_0_65",
+									"baseName": "AFeButtonTrigger_LT_1",
+									"type": "Group",
+									"stateList": [ 1, 26142 ],
+									"children": [
+										{
+											"name": "animation_scale_down_up_1_9_1_1_0_65",
+											"baseName": "animation_scale_down_up_1",
+											"type": "Scene3d",
+											"stateList": [ 1, 26238 ],
+											"flags": 0
+										},
+										{
+											"name": "txt_fe_button_trigger_14_1_1_0_65",
+											"baseName": "txt_fe_button_trigger",
+											"type": "Scene3d",
+											"stateList": [ 1, 26494 ],
+											"children": [
+												{
+													"name": "txt10Text_txt1_4_1_1_0_65",
+													"baseName": "txt10Text_txt1",
+													"type": "SceneText",
+													"stateList": [ 1, 26838 ],
+													"flags": 0
+												}
+											],
+											"flags": 10240
+										},
+										{
+											"name": "a_pc_hit_545_1_1_0_65",
+											"baseName": "a_pc_hit",
+											"type": "Scene3d",
+											"stateList": [ 1, 27328 ],
+											"children": [
+												{
+													"name": "asset_pc_hitText_PC_HIT_1_176_1_1_0_65",
+													"baseName": "asset_pc_hitText_PC_HIT_1",
+													"type": "SceneText",
+													"stateList": [ 1, 27540 ],
+													"flags": 0
+												},
+												{
+													"name": "asset_pc_hitMatCallback_hit_box_176_1_1_0_65",
+													"baseName": "asset_pc_hitMatCallback_hit_box",
+													"type": "MaterialCallback",
+													"stateList": [ 1, 27658 ],
+													"flags": 0
+												}
+											],
+											"flags": 24576
+										}
+									],
+									"flags": 0
+								},
+								{
+									"name": "AFeButtonTrigger_RT_1_3_1_0_65",
+									"baseName": "AFeButtonTrigger_RT_1",
+									"type": "Group",
+									"stateList": [ 1, 27754 ],
+									"children": [
+										{
+											"name": "animation_scale_down_up_1_10_1_1_0_65",
+											"baseName": "animation_scale_down_up_1",
+											"type": "Scene3d",
+											"stateList": [ 1, 27858 ],
+											"flags": 0
+										},
+										{
+											"name": "txt_fe_button_trigger_15_1_1_0_65",
+											"baseName": "txt_fe_button_trigger",
+											"type": "Scene3d",
+											"stateList": [ 1, 27922 ],
+											"children": [
+												{
+													"name": "txt10Text_txt1_5_1_1_0_65",
+													"baseName": "txt10Text_txt1",
+													"type": "SceneText",
+													"stateList": [ 1, 28122 ],
+													"flags": 0
+												}
+											],
+											"flags": 10240
+										},
+										{
+											"name": "a_pc_hit_547_1_1_0_65",
+											"baseName": "a_pc_hit",
+											"type": "Scene3d",
+											"stateList": [ 1, 28612 ],
+											"children": [
+												{
+													"name": "asset_pc_hitText_PC_HIT_1_179_1_1_0_65",
+													"baseName": "asset_pc_hitText_PC_HIT_1",
+													"type": "SceneText",
+													"stateList": [ 1, 28652 ],
+													"flags": 0
+												},
+												{
+													"name": "asset_pc_hitMatCallback_hit_box_179_1_1_0_65",
+													"baseName": "asset_pc_hitMatCallback_hit_box",
+													"type": "MaterialCallback",
+													"stateList": [ 1, 28770 ],
+													"flags": 0
+												}
+											],
+											"flags": 24576
+										}
+									],
+									"flags": 0
+								}
+							],
+							"flags": 0
+						},
+						{
+							"name": "FeButtons_4_0_91",
+							"baseName": "FeButtons",
+							"type": "Group",
+							"stateList": [ 1, 28794 ],
+							"children": [
+								{
+									"name": "AFeButtonTrigger_LB_1_1_4_0_66",
+									"baseName": "AFeButtonTrigger_LB_1",
+									"type": "Group",
+									"stateList": [ 1, 28902 ],
+									"children": [
+										{
+											"name": "animation_scale_down_up_1_7_1_4_0_66",
+											"baseName": "animation_scale_down_up_1",
+											"type": "Scene3d",
+											"stateList": [ 1, 28958 ],
+											"flags": 0
+										},
+										{
+											"name": "txt_fe_button_trigger_12_1_4_0_66",
+											"baseName": "txt_fe_button_trigger",
+											"type": "Scene3d",
+											"stateList": [ 1, 29022 ],
+											"children": [
+												{
+													"name": "txt10Text_txt1_1_1_4_0_66",
+													"baseName": "txt10Text_txt1",
+													"type": "SceneText",
+													"stateList": [ 1, 29222 ],
+													"flags": 0
+												}
+											],
+											"flags": 10240
+										},
+										{
+											"name": "a_pc_hit_540_1_4_0_66",
+											"baseName": "a_pc_hit",
+											"type": "Scene3d",
+											"stateList": [ 1, 29712 ],
+											"children": [
+												{
+													"name": "asset_pc_hitText_PC_HIT_1_133_1_4_0_66",
+													"baseName": "asset_pc_hitText_PC_HIT_1",
+													"type": "SceneText",
+													"stateList": [ 1, 29752 ],
+													"flags": 0
+												},
+												{
+													"name": "asset_pc_hitMatCallback_hit_box_133_1_4_0_66",
+													"baseName": "asset_pc_hitMatCallback_hit_box",
+													"type": "MaterialCallback",
+													"stateList": [ 1, 29858 ],
+													"flags": 0
+												}
+											],
+											"flags": 24576
+										}
+									],
+									"flags": 0
+								},
+								{
+									"name": "AFeButtonTrigger_RB_1_1_4_0_66",
+									"baseName": "AFeButtonTrigger_RB_1",
+									"type": "Group",
+									"stateList": [ 1, 29882 ],
+									"children": [
+										{
+											"name": "animation_scale_down_up_1_8_1_4_0_66",
+											"baseName": "animation_scale_down_up_1",
+											"type": "Scene3d",
+											"stateList": [ 1, 29938 ],
+											"flags": 0
+										},
+										{
+											"name": "txt_fe_button_trigger_13_1_4_0_66",
+											"baseName": "txt_fe_button_trigger",
+											"type": "Scene3d",
+											"stateList": [ 1, 30002 ],
+											"children": [
+												{
+													"name": "txt10Text_txt1_3_1_4_0_66",
+													"baseName": "txt10Text_txt1",
+													"type": "SceneText",
+													"stateList": [ 1, 30202 ],
+													"flags": 0
+												}
+											],
+											"flags": 10240
+										},
+										{
+											"name": "a_pc_hit_543_1_4_0_66",
+											"baseName": "a_pc_hit",
+											"type": "Scene3d",
+											"stateList": [ 1, 30692 ],
+											"children": [
+												{
+													"name": "asset_pc_hitText_PC_HIT_1_154_1_4_0_66",
+													"baseName": "asset_pc_hitText_PC_HIT_1",
+													"type": "SceneText",
+													"stateList": [ 1, 30732 ],
+													"flags": 0
+												},
+												{
+													"name": "asset_pc_hitMatCallback_hit_box_154_1_4_0_66",
+													"baseName": "asset_pc_hitMatCallback_hit_box",
+													"type": "MaterialCallback",
+													"stateList": [ 1, 30756 ],
+													"flags": 0
+												}
+											],
+											"flags": 24576
+										}
+									],
+									"flags": 0
+								}
+							],
+							"flags": 0
+						}
+					],
+					"flags": 0
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AssetHUDTextBoxA_17",
+			"baseName": "AssetHUDTextBoxA",
+			"type": "Group",
+			"stateList": [ 1, 30780 ],
+			"children": [
+				{
+					"name": "AssetHUDBoxA_10_11",
+					"baseName": "AHudBoxA",
+					"type": "Group",
+					"stateList": [ 1, 30924 ],
+					"children": [
+						{
+							"name": "asset_hud_boxa_0_5_11",
+							"baseName": "a_hud_box_a_1",
+							"type": "Scene3d",
+							"stateList": [ 1, 31168 ],
+							"children": [
+								{
+									"name": "asset_hud_boxaBoneMod_ul_1_3_11",
+									"baseName": "asset_hud_boxaBoneMod_ul1",
+									"type": "BoneModifier",
+									"stateList": [ 1, 31340 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_hud_boxaBoneMod_ur_1_3_11",
+									"baseName": "asset_hud_boxaBoneMod_ur1",
+									"type": "BoneModifier",
+									"stateList": [ 1, 31498 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_hud_boxaBoneMod_lr_1_3_11",
+									"baseName": "asset_hud_boxaBoneMod_lr1",
+									"type": "BoneModifier",
+									"stateList": [ 1, 31658 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_hud_boxaBoneMod_ll_1_3_11",
+									"baseName": "asset_hud_boxaBoneMod_ll1",
+									"type": "BoneModifier",
+									"stateList": [ 1, 31824 ],
+									"flags": 0
+								}
+							],
+							"flags": 32768
+						}
+					],
+					"flags": 0
+				},
+				{
+					"name": "AssetHUDBoxC_1_11",
+					"baseName": "AHudBoxC",
+					"type": "Group",
+					"stateList": [ 1, 31988 ],
+					"children": [
+						{
+							"name": "asset_hud_boxc_1_1_11",
+							"baseName": "asset_hud_boxc",
+							"type": "Scene3d",
+							"stateList": [ 1, 32220 ],
+							"children": [
+								{
+									"name": "asset_hud_boxcBoneMod_joint_ul_0_1_11",
+									"baseName": "asset_hud_boxcBoneMod_joint_ul",
+									"type": "BoneModifier",
+									"stateList": [ 1, 32324 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_hud_boxcBoneMod_joint_ur_0_1_11",
+									"baseName": "asset_hud_boxcBoneMod_joint_ur",
+									"type": "BoneModifier",
+									"stateList": [ 1, 32460 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_hud_boxcBoneMod_joint_ll_0_1_11",
+									"baseName": "asset_hud_boxcBoneMod_joint_ll",
+									"type": "BoneModifier",
+									"stateList": [ 1, 32596 ],
+									"flags": 0
+								},
+								{
+									"name": "asset_hud_boxcBoneMod_joint_lr_0_1_11",
+									"baseName": "asset_hud_boxcBoneMod_joint_lr",
+									"type": "BoneModifier",
+									"stateList": [ 1, 32732 ],
+									"flags": 0
+								}
+							],
+							"flags": 32768
+						}
+					],
+					"flags": 0
+				},
+				{
+					"name": "asset_hud_text_help_0_11",
+					"baseName": "asset_hud_text_help",
+					"type": "Scene3d",
+					"stateList": [ 1, 32868 ],
+					"children": [
+						{
+							"name": "asset_hud_text_helpText_txt1_0_11",
+							"baseName": "asset_hud_text_helpText_txt1",
+							"type": "SceneText",
+							"stateList": [ 1, 33020 ],
+							"flags": 0
+						}
+					],
+					"flags": 8192
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "asset_line_grey_12",
+			"baseName": "asset_line_grey",
+			"type": "Scene3d",
+			"stateList": [ 1, 33138 ],
+			"flags": 0
+		},
+		{
+			"name": "UIArena3DMenu_312",
+			"baseName": "UIArena3DMenu",
+			"type": "Group",
+			"stateList": [ 1, 33306 ],
+			"flags": 0
+		},
+		{
+			"name": "play_catalog_0",
+			"baseName": "play_catalog",
+			"type": "Scene3d",
+			"stateList": [ 1, 33390 ],
+			"children": [
+				{
+					"name": "play_catalogText_txt1_0",
+					"baseName": "play_catalogText_txt1",
+					"type": "SceneText",
+					"stateList": [ 1, 33690 ],
+					"flags": 0
+				}
+			],
+			"flags": 8192
+		},
+		{
+			"name": "AHudHeaderWhite_115",
+			"baseName": "AHudHeaderWhite",
+			"type": "Group",
+			"stateList": [ 1, 33772 ],
+			"children": [
+				{
+					"name": "a_hud_header_white_0_151",
+					"baseName": "a_hud_header_white",
+					"type": "Scene3d",
+					"stateList": [ 1, 34144 ],
+					"children": [
+						{
+							"name": "a_hud_header_whiteBoneMod_UR1_0_86",
+							"baseName": "a_hud_header_whiteBoneMod_UR1",
+							"type": "BoneModifier",
+							"stateList": [ 1, 34286 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_header_whiteBoneMod_LL1_0_86",
+							"baseName": "a_hud_header_whiteBoneMod_LL1",
+							"type": "BoneModifier",
+							"stateList": [ 1, 34446 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_header_whiteBoneMod_LR1_0_86",
+							"baseName": "a_hud_header_whiteBoneMod_LR1",
+							"type": "BoneModifier",
+							"stateList": [ 1, 34610 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_header_whiteBoneMod_UL1_0_86",
+							"baseName": "a_hud_header_whiteBoneMod_UL1",
+							"type": "BoneModifier",
+							"stateList": [ 1, 34776 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_header_whiteTexCallback_CORNER_LL_0_86",
+							"baseName": "a_hud_header_whiteTexCallback_CORNER_LL",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 34934 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_header_whiteTexCallback_CORNER_UL_0_86",
+							"baseName": "a_hud_header_whiteTexCallback_CORNER_UL",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 35076 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_header_whiteTexCallback_CORNER_UR_0_86",
+							"baseName": "a_hud_header_whiteTexCallback_CORNER_UR",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 35218 ],
+							"flags": 0
+						},
+						{
+							"name": "a_hud_header_whiteTexCallback_CORNER_LR_0_86",
+							"baseName": "a_hud_header_whiteTexCallback_CORNER_LR",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 35360 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				},
+				{
+					"name": "txt_hud_header_7_144",
+					"baseName": "txt_hud_header",
+					"type": "Scene3d",
+					"stateList": [ 1, 35502 ],
+					"children": [
+						{
+							"name": "asset_hud_text_headerText_header_txt_11_146",
+							"baseName": "asset_hud_text_headerText_header_txt",
+							"type": "SceneText",
+							"stateList": [ 1, 36134 ],
+							"flags": 0
+						}
+					],
+					"flags": 8192
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "BFeToggleBarA_89",
+			"baseName": "BFeToggleBarA",
+			"type": "Group",
+			"stateList": [ 1, 36908 ],
+			"children": [
+				{
+					"name": "BFeButtonTrigger_0_42",
+					"baseName": "BFeButtonTrigger",
+					"type": "Group",
+					"stateList": [ 1, 37062 ],
+					"children": [
+						{
+							"name": "AFeButtonBacking_0_0_68",
+							"baseName": "AFeButtonBacking",
+							"type": "Group",
+							"stateList": [ 1, 37244 ],
+							"children": [
+								{
+									"name": "a_fe_button_backing_1_0_0_68",
+									"baseName": "a_fe_button_backing",
+									"type": "Scene3d",
+									"stateList": [ 1, 37614 ],
+									"children": [
+										{
+											"name": "a_fe_button_backingBoneMod_UR_0_0_0_201",
+											"baseName": "a_fe_button_backingBoneMod_UR_3",
+											"type": "BoneModifier",
+											"stateList": [ 1, 37802 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_button_backingBoneMod_LL_0_0_0_201",
+											"baseName": "a_fe_button_backingBoneMod_LL_3",
+											"type": "BoneModifier",
+											"stateList": [ 1, 37962 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_button_backingBoneMod_LR_0_0_0_201",
+											"baseName": "a_fe_button_backingBoneMod_LR_3",
+											"type": "BoneModifier",
+											"stateList": [ 1, 38126 ],
+											"flags": 0
+										},
+										{
+											"name": "a_fe_button_backingBoneMod_UL_0_0_0_201",
+											"baseName": "a_fe_button_backingBoneMod_UL_3",
+											"type": "BoneModifier",
+											"stateList": [ 1, 38292 ],
+											"flags": 0
+										}
+									],
+									"flags": 32768
+								}
+							],
+							"flags": 0
+						},
+						{
+							"name": "FeButtons_0_0_55",
+							"baseName": "FeButtons",
+							"type": "Group",
+							"stateList": [ 1, 38450 ],
+							"children": [
+								{
+									"name": "AFeButtonTrigger_LB_1_1_0_0_55",
+									"baseName": "AFeButtonTrigger_LB_1",
+									"type": "Group",
+									"stateList": [ 1, 38588 ],
+									"children": [
+										{
+											"name": "animation_scale_down_up_1_7_1_0_0_55",
+											"baseName": "animation_scale_down_up_1",
+											"type": "Scene3d",
+											"stateList": [ 1, 38656 ],
+											"flags": 0
+										},
+										{
+											"name": "txt_fe_button_trigger_12_1_0_0_55",
+											"baseName": "txt_fe_button_trigger",
+											"type": "Scene3d",
+											"stateList": [ 1, 38700 ],
+											"children": [
+												{
+													"name": "txt10Text_txt1_1_1_0_0_55",
+													"baseName": "txt10Text_txt1",
+													"type": "SceneText",
+													"stateList": [ 1, 38900 ],
+													"flags": 0
+												}
+											],
+											"flags": 10240
+										},
+										{
+											"name": "a_pc_hit_540_1_0_0_55",
+											"baseName": "a_pc_hit",
+											"type": "Scene3d",
+											"stateList": [ 1, 38924 ],
+											"children": [
+												{
+													"name": "asset_pc_hitText_PC_HIT_1_133_1_0_0_55",
+													"baseName": "asset_pc_hitText_PC_HIT_1",
+													"type": "SceneText",
+													"stateList": [ 1, 38964 ],
+													"flags": 0
+												},
+												{
+													"name": "asset_pc_hitMatCallback_hit_box_133_1_0_0_55",
+													"baseName": "asset_pc_hitMatCallback_hit_box",
+													"type": "MaterialCallback",
+													"stateList": [ 1, 39082 ],
+													"flags": 0
+												}
+											],
+											"flags": 24576
+										}
+									],
+									"flags": 0
+								},
+								{
+									"name": "AFeButtonTrigger_RB_1_1_0_0_55",
+									"baseName": "AFeButtonTrigger_RB_1",
+									"type": "Group",
+									"stateList": [ 1, 39106 ],
+									"children": [
+										{
+											"name": "animation_scale_down_up_1_8_1_0_0_55",
+											"baseName": "animation_scale_down_up_1",
+											"type": "Scene3d",
+											"stateList": [ 1, 39174 ],
+											"flags": 0
+										},
+										{
+											"name": "txt_fe_button_trigger_13_1_0_0_55",
+											"baseName": "txt_fe_button_trigger",
+											"type": "Scene3d",
+											"stateList": [ 1, 39218 ],
+											"children": [
+												{
+													"name": "txt10Text_txt1_3_1_0_0_55",
+													"baseName": "txt10Text_txt1",
+													"type": "SceneText",
+													"stateList": [ 1, 39418 ],
+													"flags": 0
+												}
+											],
+											"flags": 10240
+										},
+										{
+											"name": "a_pc_hit_543_1_0_0_55",
+											"baseName": "a_pc_hit",
+											"type": "Scene3d",
+											"stateList": [ 1, 39442 ],
+											"children": [
+												{
+													"name": "asset_pc_hitText_PC_HIT_1_154_1_0_0_55",
+													"baseName": "asset_pc_hitText_PC_HIT_1",
+													"type": "SceneText",
+													"stateList": [ 1, 39482 ],
+													"flags": 0
+												},
+												{
+													"name": "asset_pc_hitMatCallback_hit_box_154_1_0_0_55",
+													"baseName": "asset_pc_hitMatCallback_hit_box",
+													"type": "MaterialCallback",
+													"stateList": [ 1, 39600 ],
+													"flags": 0
+												}
+											],
+											"flags": 24576
+										}
+									],
+									"flags": 0
+								}
+							],
+							"flags": 0
+						},
+						{
+							"name": "FeTriggers_0_0_55",
+							"baseName": "FeTriggers",
+							"type": "Group",
+							"stateList": [ 1, 39624 ],
+							"children": [
+								{
+									"name": "AFeButtonTrigger_LT_1_3_0_0_55",
+									"baseName": "AFeButtonTrigger_LT_1",
+									"type": "Group",
+									"stateList": [ 1, 39764 ],
+									"children": [
+										{
+											"name": "animation_scale_down_up_1_9_1_0_0_55",
+											"baseName": "animation_scale_down_up_1",
+											"type": "Scene3d",
+											"stateList": [ 1, 39832 ],
+											"flags": 0
+										},
+										{
+											"name": "txt_fe_button_trigger_14_1_0_0_55",
+											"baseName": "txt_fe_button_trigger",
+											"type": "Scene3d",
+											"stateList": [ 1, 39876 ],
+											"children": [
+												{
+													"name": "txt10Text_txt1_4_1_0_0_56",
+													"baseName": "txt10Text_txt1",
+													"type": "SceneText",
+													"stateList": [ 1, 40076 ],
+													"flags": 0
+												}
+											],
+											"flags": 10240
+										},
+										{
+											"name": "a_pc_hit_545_1_0_0_55",
+											"baseName": "a_pc_hit",
+											"type": "Scene3d",
+											"stateList": [ 1, 40100 ],
+											"children": [
+												{
+													"name": "asset_pc_hitText_PC_HIT_1_176_1_0_0_55",
+													"baseName": "asset_pc_hitText_PC_HIT_1",
+													"type": "SceneText",
+													"stateList": [ 1, 40140 ],
+													"flags": 0
+												},
+												{
+													"name": "asset_pc_hitMatCallback_hit_box_176_1_0_0_55",
+													"baseName": "asset_pc_hitMatCallback_hit_box",
+													"type": "MaterialCallback",
+													"stateList": [ 1, 40164 ],
+													"flags": 0
+												}
+											],
+											"flags": 24576
+										}
+									],
+									"flags": 0
+								},
+								{
+									"name": "AFeButtonTrigger_RT_1_3_0_0_55",
+									"baseName": "AFeButtonTrigger_RT_1",
+									"type": "Group",
+									"stateList": [ 1, 40188 ],
+									"children": [
+										{
+											"name": "animation_scale_down_up_1_10_1_0_0_55",
+											"baseName": "animation_scale_down_up_1",
+											"type": "Scene3d",
+											"stateList": [ 1, 40256 ],
+											"flags": 0
+										},
+										{
+											"name": "txt_fe_button_trigger_15_1_0_0_55",
+											"baseName": "txt_fe_button_trigger",
+											"type": "Scene3d",
+											"stateList": [ 1, 40300 ],
+											"children": [
+												{
+													"name": "txt10Text_txt1_5_1_0_0_55",
+													"baseName": "txt10Text_txt1",
+													"type": "SceneText",
+													"stateList": [ 1, 40500 ],
+													"flags": 0
+												}
+											],
+											"flags": 10240
+										},
+										{
+											"name": "a_pc_hit_547_1_0_0_55",
+											"baseName": "a_pc_hit",
+											"type": "Scene3d",
+											"stateList": [ 1, 40524 ],
+											"children": [
+												{
+													"name": "asset_pc_hitText_PC_HIT_1_179_1_0_0_55",
+													"baseName": "asset_pc_hitText_PC_HIT_1",
+													"type": "SceneText",
+													"stateList": [ 1, 40564 ],
+													"flags": 0
+												},
+												{
+													"name": "asset_pc_hitMatCallback_hit_box_179_1_0_0_55",
+													"baseName": "asset_pc_hitMatCallback_hit_box",
+													"type": "MaterialCallback",
+													"stateList": [ 1, 40588 ],
+													"flags": 0
+												}
+											],
+											"flags": 24576
+										}
+									],
+									"flags": 0
+								}
+							],
+							"flags": 0
+						}
+					],
+					"flags": 0
+				},
+				{
+					"name": "BFeBreadCrumbAList_11_35",
+					"baseName": "BFeBreadCrumbAList",
+					"type": "Group",
+					"stateList": [ 1, 40612 ],
+					"children": [
+						{
+							"name": "AFeBreadCrumbA_0_1_45",
+							"baseName": "AFeBreadCrumbA",
+							"type": "Group",
+							"isWidget": true,
+							"stateList": [ 1, 40734 ],
+							"children": [
+								{
+									"name": "a_fe_breadcrumb_0_1_1_45",
+									"baseName": "a_fe_breadcrumb",
+									"type": "Scene3d",
+									"stateList": [ 1, 41018 ],
+									"children": [
+										{
+											"name": "a_fe_breadcrumbMatCallback_notification_mat_0_0_0_74",
+											"baseName": "a_fe_breadcrumbMatCallback_notification_mat",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 41218 ],
+											"flags": 0
+										}
+									],
+									"flags": 16384
+								},
+								{
+									"name": "a_pc_hit_1_1_1_45",
+									"baseName": "a_pc_hit",
+									"type": "Scene3d",
+									"stateList": [ 1, 41342 ],
+									"children": [
+										{
+											"name": "asset_pc_hitText_PC_HIT_1_29_1_1_45",
+											"baseName": "asset_pc_hitText_PC_HIT_1",
+											"type": "SceneText",
+											"stateList": [ 1, 41526 ],
+											"flags": 0
+										},
+										{
+											"name": "asset_pc_hitMatCallback_hit_box_29_1_1_45",
+											"baseName": "asset_pc_hitMatCallback_hit_box",
+											"type": "MaterialCallback",
+											"stateList": [ 1, 41550 ],
+											"flags": 0
+										}
+									],
+									"flags": 24576
+								}
+							],
+							"flags": 0
+						}
+					],
+					"flags": 0
+				},
+				{
+					"name": "ToggleBarLabel_0_69",
+					"baseName": "ToggleBarLabel",
+					"type": "Group",
+					"stateList": [ 1, 41574 ],
+					"children": [
+						{
+							"name": "a_fe_button_backing_0_0_155",
+							"baseName": "a_fe_button_backing",
+							"type": "Scene3d",
+							"stateList": [ 1, 41826 ],
+							"children": [
+								{
+									"name": "a_fe_button_backingBoneMod_UR_3_0_0_69",
+									"baseName": "a_fe_button_backingBoneMod_UR_3",
+									"type": "BoneModifier",
+									"stateList": [ 1, 42220 ],
+									"flags": 0
+								},
+								{
+									"name": "a_fe_button_backingBoneMod_LL_3_0_0_69",
+									"baseName": "a_fe_button_backingBoneMod_LL_3",
+									"type": "BoneModifier",
+									"stateList": [ 1, 42316 ],
+									"flags": 0
+								},
+								{
+									"name": "a_fe_button_backingBoneMod_LR_3_0_0_69",
+									"baseName": "a_fe_button_backingBoneMod_LR_3",
+									"type": "BoneModifier",
+									"stateList": [ 1, 42400 ],
+									"flags": 0
+								},
+								{
+									"name": "a_fe_button_backingBoneMod_UL_3_0_0_69",
+									"baseName": "a_fe_button_backingBoneMod_UL_3",
+									"type": "BoneModifier",
+									"stateList": [ 1, 42496 ],
+									"flags": 0
+								}
+							],
+							"flags": 32768
+						},
+						{
+							"name": "txt_fe_header_a1_1425_0_69",
+							"baseName": "txt_fe_header_a1",
+							"type": "Scene3d",
+							"stateList": [ 1, 42580 ],
+							"children": [
+								{
+									"name": "text_baseText_txt2_449_0_69",
+									"baseName": "text_baseText_txt2",
+									"type": "SceneText",
+									"stateList": [ 1, 42760 ],
+									"flags": 0
+								}
+							],
+							"flags": 8192
+						}
+					],
+					"flags": 0
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AFeDividerB_62",
+			"baseName": "AFeDividerB",
+			"type": "Group",
+			"stateList": [ 1, 43300 ],
+			"children": [
+				{
+					"name": "a_fe_divider_b_0_35",
+					"baseName": "a_fe_divider_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 43452 ],
+					"children": [
+						{
+							"name": "a_fe_divider_bBoneMod_L_0_35",
+							"baseName": "a_fe_divider_bBoneMod_L",
+							"type": "BoneModifier",
+							"stateList": [ 1, 43600 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_divider_bBoneMod_R_0_35",
+							"baseName": "a_fe_divider_bBoneMod_R",
+							"type": "BoneModifier",
+							"stateList": [ 1, 43712 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_divider_bMatCallback_mat1_0_35",
+							"baseName": "a_fe_divider_bMatCallback_mat1",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 43824 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_divider_bMatCallback_mat2_0_35",
+							"baseName": "a_fe_divider_bMatCallback_mat2",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 43956 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_divider_bMatCallback_mat3_0_35",
+							"baseName": "a_fe_divider_bMatCallback_mat3",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 44088 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_divider_bMatCallback_mat4_0_37",
+							"baseName": "a_fe_divider_bMatCallback_mat4",
+							"type": "MaterialCallback",
+							"stateList": [ 1, 44218 ],
+							"flags": 0
+						}
+					],
+					"flags": 49152
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AFeDividerD_17",
+			"baseName": "AFeDividerD",
+			"type": "Group",
+			"stateList": [ 1, 44346 ],
+			"children": [
+				{
+					"name": "a_fe_divider_d_0_14",
+					"baseName": "a_fe_divider_d",
+					"type": "Scene3d",
+					"stateList": [ 1, 44442 ],
+					"children": [
+						{
+							"name": "a_fe_divider_dBoneMod_joint_l1_0_14",
+							"baseName": "a_fe_divider_dBoneMod_joint_l1",
+							"type": "BoneModifier",
+							"stateList": [ 1, 44558 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_divider_dBoneMod_joint_r1_0_14",
+							"baseName": "a_fe_divider_dBoneMod_joint_r1",
+							"type": "BoneModifier",
+							"stateList": [ 1, 44670 ],
+							"flags": 0
+						}
+					],
+					"flags": 32768
+				}
+			],
+			"flags": 0
+		},
+		{
+			"name": "AFeHelpC_Left_30",
+			"baseName": "AFeHelpC_Left",
+			"type": "Group",
+			"stateList": [ 1, 44782 ],
+			"children": [
+				{
+					"name": "a_fe_header_help_b_44_18",
+					"baseName": "a_fe_header_help_b",
+					"type": "Scene3d",
+					"stateList": [ 1, 45016 ],
+					"children": [
+						{
+							"name": "a_fe_header_help_bBoneMod_joint_ul_3_18",
+							"baseName": "a_fe_header_help_bBoneMod_joint_ul",
+							"type": "BoneModifier",
+							"stateList": [ 1, 45174 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_header_help_bBoneMod_joint_ur_3_18",
+							"baseName": "a_fe_header_help_bBoneMod_joint_ur",
+							"type": "BoneModifier",
+							"stateList": [ 1, 45258 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_header_help_bBoneMod_joint_ll_3_18",
+							"baseName": "a_fe_header_help_bBoneMod_joint_ll",
+							"type": "BoneModifier",
+							"stateList": [ 1, 45354 ],
+							"flags": 0
+						},
+						{
+							"name": "a_fe_header_help_bBoneMod_joint_lr_3_18",
+							"baseName": "a_fe_header_help_bBoneMod_joint_lr",
+							"type": "BoneModifier",
+							"stateList": [ 1, 45438 ],
+							"flags": 0
+						}
+					],
+					"flags": 32768
+				},
+				{
+					"name": "txt_fe_header_a1_1175_18",
+					"baseName": "txt_fe_header_a1",
+					"type": "Scene3d",
+					"stateList": [ 1, 45534 ],
+					"children": [
+						{
+							"name": "text_baseText_txt2_624_18",
+							"baseName": "text_baseText_txt2",
+							"type": "SceneText",
+							"stateList": [ 1, 45726 ],
+							"flags": 0
+						}
+					],
+					"flags": 8192
+				}
+			],
+			"flags": 0
+		}
+	],
+	"flags": 128,
+	"totalElements": 477
+}

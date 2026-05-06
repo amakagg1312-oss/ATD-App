@@ -1,0 +1,1128 @@
+﻿python : <frozen runpy>:128: RuntimeWarning: 'nba2k26_generator.generator_cli' found in sys.modules after import of pac
+kage 'nba2k26_generator', but prior to execution of 'nba2k26_generator.generator_cli'; this may result in unpredictable
+ behaviour
+At line:1 char:1
++ python -m nba2k26_generator.generator_cli --team LAL --season 2025-26 ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (<frozen runpy>:...table behaviour:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+============================================================================================
+Team Generation | Team: LAL | Season: 2025-26 | Players: 17
+============================================================================================
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Adou Thiero | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, MIC, RR, SWI, GRAV
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 63
+Shooting                  68
+Playmaking                53
+Defense                   58
+Physical                  69
+Intangibles               48
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             87
+Standing Dunk             67
+Driving Dunk              78
+Close Shot                73
+Mid-Range Shot            59
+Three-Point Shot          50
+Free Throw                70
+Post Hook                 48
+Post Fade                 42
+Post Control              53
+Draw Foul                 63
+Shot IQ                   90
+Ball Handle               51
+Speed with Ball           67
+Hands                     58
+Pass Accuracy             49
+Pass IQ                   51
+Pass Vision               49
+Offensive Consistency     69
+Interior Defense          54
+Perimeter Defense         51
+Steal                     64
+Block                     55
+Offensive Rebound         73
+Defensive Rebound         70
+Help Defense IQ           54
+Pass Perception           61
+Defensive Consistency     42
+Speed                     69
+Agility                   75
+Strength                  65
+Vertical                  57
+Stamina                   78
+Intangibles               25
+Hustle                    60
+Overall Durability        41
+Potential                 60
+--------------------------------------------------------------------------------------------
+Badges (1 total: 1 Bronze)
+  Finishing:
+    Aerial Wizard            Bronze   (47)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Austin Reaves | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: T3, CLO, 3L, BHW, SCR
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 66
+Shooting                  84
+Playmaking                79
+Defense                   60
+Physical                  75
+Intangibles               61
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             95
+Standing Dunk             41
+Driving Dunk              70
+Close Shot                72
+Mid-Range Shot            80
+Three-Point Shot          78
+Free Throw                91
+Post Hook                 50
+Post Fade                 52
+Post Control              55
+Draw Foul                 78
+Shot IQ                   77
+Ball Handle               81
+Speed with Ball           82
+Hands                     79
+Pass Accuracy             76
+Pass IQ                   75
+Pass Vision               83
+Offensive Consistency     95
+Interior Defense          54
+Perimeter Defense         60
+Steal                     71
+Block                     49
+Offensive Rebound         50
+Defensive Rebound         64
+Help Defense IQ           62
+Pass Perception           69
+Defensive Consistency     62
+Speed                     74
+Agility                   76
+Strength                  55
+Vertical                  80
+Stamina                   88
+Intangibles               25
+Hustle                    74
+Overall Durability        65
+Potential                 84
+--------------------------------------------------------------------------------------------
+Badges (18 total: 1 Bronze, 11 Silver, 5 Gold, 1 HOF)
+  Finishing:
+    Layup Mixmaster          HOF      (81)
+    Float Game               Gold     (78)
+    Physical Finisher        Gold     (70)
+    Posterizer               Silver   (64)
+    Paint Prodigy            Silver   (59)
+  Shooting:
+    Mini Marksman            Silver   (65)
+    Set Shot Specialist      Silver   (65)
+    Deadeye                  Silver   (64)
+    Limitless Range          Silver   (57)
+    Shifty Shooter           Bronze   (52)
+  Playmaking:
+    Handles for Days         Gold     (75)
+    Lightning Launch         Gold     (72)
+    Ankle Assassin           Gold     (70)
+    Dimer                    Silver   (63)
+    Versatile Visionary      Silver   (62)
+    Unpluckable              Silver   (62)
+    Break Starter            Silver   (60)
+  Off-Ball:
+    Slippery Off-Ball        Silver   (59)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Bronny James | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, CON, WING, LOCK, FILL2
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 53
+Shooting                  74
+Playmaking                68
+Defense                   57
+Physical                  64
+Intangibles               49
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             70
+Standing Dunk             36
+Driving Dunk              63
+Close Shot                58
+Mid-Range Shot            73
+Three-Point Shot          59
+Free Throw                84
+Post Hook                 39
+Post Fade                 56
+Post Control              43
+Draw Foul                 48
+Shot IQ                   90
+Ball Handle               62
+Speed with Ball           70
+Hands                     62
+Pass Accuracy             69
+Pass IQ                   67
+Pass Vision               71
+Offensive Consistency     65
+Interior Defense          45
+Perimeter Defense         74
+Steal                     76
+Block                     49
+Offensive Rebound         47
+Defensive Rebound         49
+Help Defense IQ           56
+Pass Perception           70
+Defensive Consistency     50
+Speed                     74
+Agility                   76
+Strength                  49
+Vertical                  43
+Stamina                   78
+Intangibles               25
+Hustle                    61
+Overall Durability        46
+Potential                 60
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Chris Ma├▒on | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, ENG, WING, LOCK, SCR
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 51
+Shooting                  74
+Playmaking                53
+Defense                   71
+Physical                  68
+Intangibles               50
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             83
+Standing Dunk             36
+Driving Dunk              55
+Close Shot                56
+Mid-Range Shot            74
+Three-Point Shot          47
+Free Throw                95
+Post Hook                 40
+Post Fade                 48
+Post Control              42
+Draw Foul                 48
+Shot IQ                   88
+Ball Handle               61
+Speed with Ball           61
+Hands                     54
+Pass Accuracy             48
+Pass IQ                   48
+Pass Vision               48
+Offensive Consistency     66
+Interior Defense          64
+Perimeter Defense         80
+Steal                     87
+Block                     54
+Offensive Rebound         59
+Defensive Rebound         77
+Help Defense IQ           74
+Pass Perception           85
+Defensive Consistency     55
+Speed                     80
+Agility                   82
+Strength                  54
+Vertical                  44
+Stamina                   78
+Intangibles               25
+Hustle                    73
+Overall Durability        40
+Potential                 51
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Dalton Knecht | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, CLO, WING, INT, GLUE
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 55
+Shooting                  69
+Playmaking                51
+Defense                   51
+Physical                  57
+Intangibles               47
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             79
+Standing Dunk             48
+Driving Dunk              59
+Close Shot                65
+Mid-Range Shot            72
+Three-Point Shot          52
+Free Throw                63
+Post Hook                 46
+Post Fade                 43
+Post Control              44
+Draw Foul                 50
+Shot IQ                   86
+Ball Handle               57
+Speed with Ball           56
+Hands                     58
+Pass Accuracy             46
+Pass IQ                   48
+Pass Vision               48
+Offensive Consistency     74
+Interior Defense          49
+Perimeter Defense         49
+Steal                     40
+Block                     56
+Offensive Rebound         59
+Defensive Rebound         65
+Help Defense IQ           54
+Pass Perception           41
+Defensive Consistency     45
+Speed                     48
+Agility                   60
+Strength                  55
+Vertical                  46
+Stamina                   78
+Intangibles               25
+Hustle                    54
+Overall Durability        54
+Potential                 62
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Deandre Ayton | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, GLUE, RR, SWI, BUL
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 71
+Shooting                  67
+Playmaking                54
+Defense                   70
+Physical                  69
+Intangibles               54
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             95
+Standing Dunk             92
+Driving Dunk              63
+Close Shot                81
+Mid-Range Shot            67
+Three-Point Shot          42
+Free Throw                55
+Post Hook                 67
+Post Fade                 50
+Post Control              68
+Draw Foul                 62
+Shot IQ                   86
+Ball Handle               57
+Speed with Ball           59
+Hands                     62
+Pass Accuracy             48
+Pass IQ                   52
+Pass Vision               53
+Offensive Consistency     85
+Interior Defense          79
+Perimeter Defense         65
+Steal                     54
+Block                     74
+Offensive Rebound         81
+Defensive Rebound         82
+Help Defense IQ           70
+Pass Perception           57
+Defensive Consistency     67
+Speed                     60
+Agility                   53
+Strength                  80
+Vertical                  69
+Stamina                   84
+Intangibles               25
+Hustle                    70
+Overall Durability        74
+Potential                 67
+--------------------------------------------------------------------------------------------
+Badges (9 total: 1 Bronze, 5 Silver, 3 Gold)
+  Finishing:
+    Rise Up                  Gold     (71)
+    Hook Specialist          Silver   (67)
+    Aerial Wizard            Silver   (61)
+    Paint Prodigy            Bronze   (51)
+  Defense:
+    Post Lockdown            Gold     (71)
+    Paint Patroller          Silver   (66)
+    High-Flying Denier       Silver   (60)
+  Post:
+    Post Powerhouse          Gold     (72)
+    Post-Up Poet             Silver   (58)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Drew Timme | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, SPT, WING, HELP, SCAN
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 64
+Shooting                  69
+Playmaking                58
+Defense                   51
+Physical                  63
+Intangibles               44
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             87
+Standing Dunk             78
+Driving Dunk              66
+Close Shot                69
+Mid-Range Shot            73
+Three-Point Shot          51
+Free Throw                50
+Post Hook                 60
+Post Fade                 51
+Post Control              56
+Draw Foul                 48
+Shot IQ                   92
+Ball Handle               56
+Speed with Ball           63
+Hands                     63
+Pass Accuracy             56
+Pass IQ                   58
+Pass Vision               57
+Offensive Consistency     81
+Interior Defense          52
+Perimeter Defense         51
+Steal                     46
+Block                     46
+Offensive Rebound         68
+Defensive Rebound         65
+Help Defense IQ           47
+Pass Perception           45
+Defensive Consistency     43
+Speed                     57
+Agility                   67
+Strength                  63
+Vertical                  50
+Stamina                   78
+Intangibles               25
+Hustle                    54
+Overall Durability        40
+Potential                 54
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Jake LaRavia | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, SPT, LOB, BHW, SCR
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 65
+Shooting                  76
+Playmaking                62
+Defense                   69
+Physical                  74
+Intangibles               58
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             87
+Standing Dunk             75
+Driving Dunk              70
+Close Shot                68
+Mid-Range Shot            70
+Three-Point Shot          70
+Free Throw                73
+Post Hook                 53
+Post Fade                 47
+Post Control              53
+Draw Foul                 58
+Shot IQ                   92
+Ball Handle               60
+Speed with Ball           71
+Hands                     70
+Pass Accuracy             58
+Pass IQ                   59
+Pass Vision               63
+Offensive Consistency     75
+Interior Defense          59
+Perimeter Defense         63
+Steal                     86
+Block                     64
+Offensive Rebound         71
+Defensive Rebound         66
+Help Defense IQ           65
+Pass Perception           85
+Defensive Consistency     65
+Speed                     82
+Agility                   79
+Strength                  63
+Vertical                  60
+Stamina                   84
+Intangibles               25
+Hustle                    78
+Overall Durability        81
+Potential                 72
+--------------------------------------------------------------------------------------------
+Badges (5 total: 2 Bronze, 2 Silver, 1 Gold)
+  Shooting:
+    Deadeye                  Bronze   (54)
+    Set Shot Specialist      Bronze   (52)
+  Defense:
+    Glove                    Silver   (65)
+    Interceptor              Silver   (65)
+  Off-Ball:
+    Slippery Off-Ball        Gold     (76)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Jarred Vanderbilt | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, ENG, RR, GLS, SCREENIQ
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 61
+Shooting                  65
+Playmaking                59
+Defense                   71
+Physical                  73
+Intangibles               55
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             82
+Standing Dunk             79
+Driving Dunk              71
+Close Shot                66
+Mid-Range Shot            61
+Three-Point Shot          51
+Free Throw                53
+Post Hook                 47
+Post Fade                 39
+Post Control              49
+Draw Foul                 54
+Shot IQ                   91
+Ball Handle               56
+Speed with Ball           66
+Hands                     63
+Pass Accuracy             56
+Pass IQ                   58
+Pass Vision               58
+Offensive Consistency     70
+Interior Defense          55
+Perimeter Defense         75
+Steal                     79
+Block                     64
+Offensive Rebound         79
+Defensive Rebound         79
+Help Defense IQ           69
+Pass Perception           79
+Defensive Consistency     64
+Speed                     79
+Agility                   79
+Strength                  68
+Vertical                  58
+Stamina                   80
+Intangibles               25
+Hustle                    72
+Overall Durability        64
+Potential                 67
+--------------------------------------------------------------------------------------------
+Badges (6 total: 4 Bronze, 1 Silver, 1 Gold)
+  Finishing:
+    Rise Up                  Bronze   (53)
+    Aerial Wizard            Bronze   (52)
+  Defense:
+    Glove                    Silver   (58)
+    Off-Ball Pest            Bronze   (54)
+    Interceptor              Bronze   (54)
+  Off-Ball:
+    Slippery Off-Ball        Gold     (75)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Jaxson Hayes | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, FILL, RR, SWI, RHY
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 68
+Shooting                  69
+Playmaking                53
+Defense                   67
+Physical                  66
+Intangibles               53
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             95
+Standing Dunk             93
+Driving Dunk              63
+Close Shot                80
+Mid-Range Shot            66
+Three-Point Shot          47
+Free Throw                58
+Post Hook                 59
+Post Fade                 41
+Post Control              60
+Draw Foul                 64
+Shot IQ                   93
+Ball Handle               52
+Speed with Ball           56
+Hands                     60
+Pass Accuracy             50
+Pass IQ                   53
+Pass Vision               52
+Offensive Consistency     82
+Interior Defense          69
+Perimeter Defense         68
+Steal                     52
+Block                     72
+Offensive Rebound         77
+Defensive Rebound         75
+Help Defense IQ           69
+Pass Perception           57
+Defensive Consistency     67
+Speed                     68
+Agility                   42
+Strength                  71
+Vertical                  69
+Stamina                   80
+Intangibles               25
+Hustle                    65
+Overall Durability        68
+Potential                 70
+--------------------------------------------------------------------------------------------
+Badges (5 total: 2 Bronze, 3 Silver)
+  Finishing:
+    Rise Up                  Silver   (64)
+    Aerial Wizard            Bronze   (56)
+  Defense:
+    Post Lockdown            Silver   (60)
+    Paint Patroller          Silver   (58)
+    High-Flying Denier       Bronze   (56)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: LeBron James | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: T1, VET, FIN, BHW, SETUP
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 73
+Shooting                  76
+Playmaking                82
+Defense                   69
+Physical                  73
+Intangibles               52
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             95
+Standing Dunk             74
+Driving Dunk              84
+Close Shot                72
+Mid-Range Shot            76
+Three-Point Shot          67
+Free Throw                72
+Post Hook                 59
+Post Fade                 59
+Post Control              63
+Draw Foul                 74
+Shot IQ                   77
+Ball Handle               75
+Speed with Ball           78
+Hands                     80
+Pass Accuracy             85
+Pass IQ                   86
+Pass Vision               88
+Offensive Consistency     89
+Interior Defense          71
+Perimeter Defense         72
+Steal                     72
+Block                     70
+Offensive Rebound         59
+Defensive Rebound         72
+Help Defense IQ           68
+Pass Perception           72
+Defensive Consistency     68
+Speed                     73
+Agility                   75
+Strength                  71
+Vertical                  54
+Stamina                   92
+Intangibles               25
+Hustle                    69
+Overall Durability        65
+Potential                 62
+--------------------------------------------------------------------------------------------
+Badges (20 total: 7 Bronze, 8 Silver, 5 Gold)
+  Finishing:
+    Layup Mixmaster          Gold     (70)
+    Float Game               Silver   (67)
+    Physical Finisher        Silver   (60)
+    Paint Prodigy            Bronze   (50)
+  Shooting:
+    Deadeye                  Bronze   (52)
+  Playmaking:
+    Dimer                    Gold     (79)
+    Versatile Visionary      Gold     (76)
+    Bail Out                 Gold     (75)
+    Break Starter            Gold     (73)
+    Handles for Days         Silver   (68)
+    Lightning Launch         Silver   (65)
+    Strong Handles           Silver   (63)
+    Unpluckable              Silver   (62)
+    Ankle Assassin           Silver   (58)
+  Defense:
+    Brick Wall               Bronze   (67)
+    Paint Patroller          Bronze   (55)
+    Glove                    Bronze   (55)
+    Off-Ball Pest            Bronze   (54)
+  Post:
+    Post Powerhouse          Bronze   (51)
+  Off-Ball:
+    Slippery Off-Ball        Silver   (58)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Luka Don─ìi─ç | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: T1, S1, ISO, 3L, POA, SCE
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 69
+Shooting                  85
+Playmaking                90
+Defense                   61
+Physical                  72
+Intangibles               65
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             87
+Standing Dunk             42
+Driving Dunk              69
+Close Shot                69
+Mid-Range Shot            84
+Three-Point Shot          89
+Free Throw                81
+Post Hook                 59
+Post Fade                 63
+Post Control              64
+Draw Foul                 85
+Shot IQ                   75
+Ball Handle               89
+Speed with Ball           87
+Hands                     86
+Pass Accuracy             89
+Pass IQ                   91
+Pass Vision               94
+Offensive Consistency     95
+Interior Defense          53
+Perimeter Defense         65
+Steal                     64
+Block                     53
+Offensive Rebound         49
+Defensive Rebound         78
+Help Defense IQ           62
+Pass Perception           60
+Defensive Consistency     64
+Speed                     78
+Agility                   80
+Strength                  66
+Vertical                  43
+Stamina                   95
+Intangibles               25
+Hustle                    82
+Overall Durability        75
+Potential                 89
+--------------------------------------------------------------------------------------------
+Badges (18 total: 1 Bronze, 3 Silver, 11 Gold, 3 HOF)
+  Finishing:
+    Layup Mixmaster          Gold     (86)
+    Physical Finisher        Silver   (84)
+    Float Game               Gold     (82)
+    Paint Prodigy            Silver   (65)
+  Shooting:
+    Deadeye                  Gold     (78)
+    Limitless Range          Gold     (75)
+    Set Shot Specialist      Gold     (71)
+    Shifty Shooter           Silver   (67)
+  Playmaking:
+    Handles for Days         HOF      (89)
+    Dimer                    HOF      (88)
+    Ankle Assassin           HOF      (87)
+    Bail Out                 Gold     (86)
+    Versatile Visionary      Gold     (83)
+    Lightning Launch         Gold     (82)
+    Strong Handles           Gold     (80)
+    Break Starter            Gold     (80)
+    Unpluckable              Gold     (76)
+  Off-Ball:
+    Slippery Off-Ball        Bronze   (56)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Luke Kennard | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, SPT, FIN, INT, AWARE
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 56
+Shooting                  89
+Playmaking                68
+Defense                   53
+Physical                  70
+Intangibles               50
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             84
+Standing Dunk             37
+Driving Dunk              62
+Close Shot                67
+Mid-Range Shot            81
+Three-Point Shot          89
+Free Throw                95
+Post Hook                 44
+Post Fade                 53
+Post Control              42
+Draw Foul                 54
+Shot IQ                   93
+Ball Handle               59
+Speed with Ball           82
+Hands                     63
+Pass Accuracy             64
+Pass IQ                   65
+Pass Vision               68
+Offensive Consistency     87
+Interior Defense          53
+Perimeter Defense         51
+Steal                     57
+Block                     46
+Offensive Rebound         50
+Defensive Rebound         57
+Help Defense IQ           55
+Pass Perception           51
+Defensive Consistency     53
+Speed                     86
+Agility                   88
+Strength                  51
+Vertical                  45
+Stamina                   82
+Intangibles               25
+Hustle                    63
+Overall Durability        74
+Potential                 63
+--------------------------------------------------------------------------------------------
+Badges (6 total: 1 Bronze, 1 Silver, 4 Gold)
+  Shooting:
+    Set Shot Specialist      Gold     (75)
+    Mini Marksman            Gold     (74)
+    Deadeye                  Gold     (68)
+    Limitless Range          Silver   (67)
+  Defense:
+    Pick Dodger              Bronze   (75)
+  Off-Ball:
+    Slippery Off-Ball        Gold     (74)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Marcus Smart | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, ISO, C&S, LOCK, SCR
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 55
+Shooting                  77
+Playmaking                70
+Defense                   72
+Physical                  66
+Intangibles               54
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             76
+Standing Dunk             36
+Driving Dunk              66
+Close Shot                60
+Mid-Range Shot            69
+Three-Point Shot          74
+Free Throw                79
+Post Hook                 44
+Post Fade                 49
+Post Control              46
+Draw Foul                 53
+Shot IQ                   91
+Ball Handle               70
+Speed with Ball           78
+Hands                     67
+Pass Accuracy             64
+Pass IQ                   65
+Pass Vision               71
+Offensive Consistency     74
+Interior Defense          56
+Perimeter Defense         88
+Steal                     89
+Block                     50
+Offensive Rebound         51
+Defensive Rebound         53
+Help Defense IQ           85
+Pass Perception           88
+Defensive Consistency     86
+Speed                     74
+Agility                   76
+Strength                  53
+Vertical                  42
+Stamina                   85
+Intangibles               25
+Hustle                    76
+Overall Durability        67
+Potential                 60
+--------------------------------------------------------------------------------------------
+Badges (9 total: 1 Bronze, 5 Silver, 3 Gold)
+  Shooting:
+    Set Shot Specialist      Silver   (62)
+    Mini Marksman            Silver   (61)
+    Deadeye                  Silver   (58)
+    Limitless Range          Bronze   (49)
+  Defense:
+    Glove                    Gold     (74)
+    Interceptor              Gold     (71)
+    Challenger               Gold     (70)
+    Off-Ball Pest            Silver   (68)
+  Off-Ball:
+    Slippery Off-Ball        Silver   (62)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Maxi Kleber | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, ROL, RR, BHW, LOB2
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 61
+Shooting                  63
+Playmaking                52
+Defense                   67
+Physical                  67
+Intangibles               49
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             74
+Standing Dunk             84
+Driving Dunk              71
+Close Shot                67
+Mid-Range Shot            61
+Three-Point Shot          47
+Free Throw                50
+Post Hook                 52
+Post Fade                 41
+Post Control              54
+Draw Foul                 50
+Shot IQ                   91
+Ball Handle               49
+Speed with Ball           58
+Hands                     60
+Pass Accuracy             50
+Pass IQ                   53
+Pass Vision               51
+Offensive Consistency     67
+Interior Defense          65
+Perimeter Defense         59
+Steal                     67
+Block                     75
+Offensive Rebound         78
+Defensive Rebound         67
+Help Defense IQ           66
+Pass Perception           67
+Defensive Consistency     55
+Speed                     65
+Agility                   73
+Strength                  67
+Vertical                  52
+Stamina                   78
+Intangibles               25
+Hustle                    65
+Overall Durability        50
+Potential                 57
+--------------------------------------------------------------------------------------------
+Badges (1 total: 1 Gold)
+  Off-Ball:
+    Slippery Off-Ball        Gold     (68)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Nick Smith Jr. | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, STBLY, FLO, INT, FLARE
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 51
+Shooting                  68
+Playmaking                68
+Defense                   46
+Physical                  68
+Intangibles               48
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             72
+Standing Dunk             36
+Driving Dunk              54
+Close Shot                61
+Mid-Range Shot            67
+Three-Point Shot          69
+Free Throw                55
+Post Hook                 40
+Post Fade                 47
+Post Control              44
+Draw Foul                 47
+Shot IQ                   80
+Ball Handle               70
+Speed with Ball           83
+Hands                     61
+Pass Accuracy             60
+Pass IQ                   62
+Pass Vision               64
+Offensive Consistency     70
+Interior Defense          44
+Perimeter Defense         54
+Steal                     45
+Block                     46
+Offensive Rebound         44
+Defensive Rebound         49
+Help Defense IQ           46
+Pass Perception           42
+Defensive Consistency     42
+Speed                     85
+Agility                   87
+Strength                  43
+Vertical                  44
+Stamina                   79
+Intangibles               25
+Hustle                    53
+Overall Durability        50
+Potential                 65
+--------------------------------------------------------------------------------------------
+Badges (3 total: 2 Bronze, 1 Silver)
+  Shooting:
+    Mini Marksman            Bronze   (56)
+  Defense:
+    Pick Dodger              Bronze   (73)
+  Off-Ball:
+    Slippery Off-Ball        Silver   (65)
+
+############################################################################################
+
+============================================================================================
+NBA 2K26 Generator - Attributes Report
+============================================================================================
+Player: Rui Hachimura | Season: 2025-26 | Team: LAL | Source: NBA Site data (normalized)
+Roles: S3, STBLY, ARC, HELP, MOVE
+Range Guardrail: 25-95
+--------------------------------------------------------------------------------------------
+Attribute Families (Averages)
+Finishing                 59
+Shooting                  82
+Playmaking                54
+Defense                   55
+Physical                  62
+Intangibles               51
+--------------------------------------------------------------------------------------------
+Attributes
+Driving Layup             69
+Standing Dunk             69
+Driving Dunk              62
+Close Shot                60
+Mid-Range Shot            77
+Three-Point Shot          88
+Free Throw                67
+Post Hook                 50
+Post Fade                 60
+Post Control              49
+Draw Foul                 50
+Shot IQ                   93
+Ball Handle               56
+Speed with Ball           64
+Hands                     61
+Pass Accuracy             47
+Pass IQ                   51
+Pass Vision               52
+Offensive Consistency     83
+Interior Defense          53
+Perimeter Defense         54
+Steal                     46
+Block                     54
+Offensive Rebound         59
+Defensive Rebound         66
+Help Defense IQ           57
+Pass Perception           47
+Defensive Consistency     58
+Speed                     57
+Agility                   63
+Strength                  59
+Vertical                  48
+Stamina                   85
+Intangibles               25
+Hustle                    64
+Overall Durability        71
+Potential                 65
+--------------------------------------------------------------------------------------------
+Badges (3 total: 1 Silver, 2 Gold)
+  Shooting:
+    Set Shot Specialist      Gold     (76)
+    Deadeye                  Gold     (68)
+    Limitless Range          Silver   (66)

@@ -1,0 +1,26 @@
+const { contextBridge, ipcRenderer } = require("electron");
+
+contextBridge.exposeInMainWorld("nba2kDesktop", {
+  runGenerator: async (params) => ipcRenderer.invoke("generator:run", params),
+  runTeamGenerator: async (params) => ipcRenderer.invoke("generator:team", params),
+  getTeamRoster: async (params) => ipcRenderer.invoke("generator:team-roster", params),
+  searchPlayers: async (params) => ipcRenderer.invoke("generator:search", params),
+  generateProfile: async (params) => ipcRenderer.invoke("generator:profile", params),
+  generateTeamBatch: async (params) => ipcRenderer.invoke("generator:team-batch", params),
+  exportPlayerJson: async (params) => ipcRenderer.invoke("generator:export-player-json", params),
+  exportTeamZip: async (params) => ipcRenderer.invoke("generator:export-team-zip", params),
+  exportTeamExcel: async (params) => ipcRenderer.invoke("generator:export-team-excel", params),
+  importToGame: async (params) => ipcRenderer.invoke("generator:import-to-game", params),
+  getPlaybook: async (params) => ipcRenderer.invoke("playbook:get", params),
+  setPlaybook: async (params) => ipcRenderer.invoke("playbook:set", params),
+  getPlayCatalog: async (params) => ipcRenderer.invoke("playbook:plays", params),
+  sheetLookup: async (params) => ipcRenderer.invoke("generator:sheet-lookup", params),
+  fetchPlayerStats: async (params) => ipcRenderer.invoke("stats:players", params),
+  fetchTeamStats: async (params) => ipcRenderer.invoke("stats:teams", params),
+  fetchLeagueLeaders: async (params) => ipcRenderer.invoke("stats:leaders", params),
+  fetchTrackingStats: async (params) => ipcRenderer.invoke("stats:tracking", params),
+  fetchHustleStats: async (params) => ipcRenderer.invoke("stats:hustle", params),
+  fetchPlayerBio: async (params) => ipcRenderer.invoke("stats:player-bio", params),
+  fetchPlayerCareer: async (params) => ipcRenderer.invoke("stats:player-career", params),
+  fetchShotChart: async (params) => ipcRenderer.invoke("stats:shot-chart", params),
+});

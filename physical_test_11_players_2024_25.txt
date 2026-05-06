@@ -1,0 +1,15 @@
+Legend: SPD=Speed | AGI=Agility | STR=Strength | VERT=Vertical | STA=Stamina | DUR=Overall Durability
+
+Player | SPD | AGI | STR | VERT | STA | DUR
+-------------------------------------------
+Stephen Curry | 78 | 78 | 39 | 52 | 81 | 78
+Kevin Durant | 68 | 74 | 79 | 70 | 87 | 72
+Shai Gilgeous-Alexander | 85 | 88 | 44 | 68 | 84 | 83
+Nikola Jokic | 55 | 64 | 89 | 50 | 86 | 92
+Luka Doncic | 77 | 86 | 50 | 57 | 85 | 88
+Giannis Antetokounmpo | 71 | 74 | 92 | 95 | 86 | 86
+Jayson Tatum | 69 | 78 | 82 | 71 | 85 | 92
+Anthony Edwards | 86 | 81 | 42 | 70 | 87 | 95
+De'Aaron Fox | 84 | 88 | 39 | 61 | 78 | 87
+LeBron James | 71 | 80 | 79 | 77 | 87 | 77
+Kawhi Leonard | 71 | 82 | 54 | 71 | 75 | 78

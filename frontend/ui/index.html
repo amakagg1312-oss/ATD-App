@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NBA 2K26 Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ══ Set Password Page (forced on first login) ══ -->
+  <div id="setPasswordPage" class="login-overlay hidden">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="brand-mark"><span>2K</span></div>
+        <div class="login-logo-text">
+          <span class="login-title">NBA 2K26</span>
+          <span class="login-sub">ATD Tool</span>
+        </div>
+      </div>
+      <div class="setpwd-header">
+        <p class="setpwd-greeting">Welcome, <strong id="setPasswordName"></strong></p>
+        <p class="setpwd-sub">Your account was created with a temporary password. Please set a new password to continue.</p>
+      </div>
+      <div class="login-form">
+        <div class="login-field">
+          <label class="login-label">New Password</label>
+          <input id="newPassword" type="password" placeholder="Minimum 6 characters" class="login-input" autocomplete="new-password" />
+        </div>
+        <div class="login-field">
+          <label class="login-label">Confirm Password</label>
+          <input id="confirmPassword" type="password" placeholder="Repeat new password" class="login-input" autocomplete="new-password" />
+        </div>
+        <div id="setPasswordError" class="login-error hidden"></div>
+        <button id="setPasswordBtn" class="btn-primary login-btn">Set Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Login Page ══ -->
+  <div id="loginPage" class="login-overlay">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="brand-mark"><span>2K</span></div>
+        <div class="login-logo-text">
+          <span class="login-title">NBA 2K26</span>
+          <span class="login-sub">ATD Tool</span>
+        </div>
+      </div>
+      <div class="login-form">
+        <div class="login-field">
+          <label class="login-label">Username</label>
+          <input id="loginUsername" type="text" placeholder="Your username" class="login-input" autocomplete="username" />
+        </div>
+        <div class="login-field">
+          <label class="login-label">Password</label>
+          <input id="loginPassword" type="password" placeholder="••••••••" class="login-input" autocomplete="current-password" />
+        </div>
+        <div id="loginError" class="login-error hidden"></div>
+        <button id="loginBtn" class="btn-primary login-btn">Sign In</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ambient background -->
+  <div class="bg-canvas">
+    <div class="bg-orb bg-orb-a"></div>
+    <div class="bg-orb bg-orb-b"></div>
+    <div id="teamLayer" class="bg-team-layer"></div>
+  </div>
+
+  <!-- App shell (hidden until logged in) -->
+  <div class="app-shell hidden">
+
+    <!-- ── Sidebar ── -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark">
+          <span>2K</span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">NBA 2K26</span>
+          <span class="brand-sub">ATD Tool</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section-label">Main</div>
+      <div class="sidebar-nav">
+        <button class="nav-item nav-active" id="navDashboardBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="2" width="7" height="7" rx="2" fill="currentColor" opacity=".8"/>
+            <rect x="11" y="2" width="7" height="7" rx="2" fill="currentColor" opacity=".5"/>
+            <rect x="2" y="11" width="7" height="7" rx="2" fill="currentColor" opacity=".5"/>
+            <rect x="11" y="11" width="7" height="7" rx="2" fill="currentColor" opacity=".3"/>
+          </svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" id="openTeamPageBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <circle cx="7" cy="6" r="3" fill="currentColor" opacity=".8"/>
+            <circle cx="13" cy="6" r="3" fill="currentColor" opacity=".5"/>
+            <path d="M1 17c0-3.314 2.686-6 6-6h6c3.314 0 6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+          </svg>
+          <span>Teams</span>
+        </button>
+
+        <button class="nav-item" id="openPlaybookBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5" opacity=".7"/>
+            <path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
+          </svg>
+          <span>Playbook</span>
+        </button>
+
+        <button class="nav-item" id="openStatsBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="10" width="3" height="8" rx="1" fill="currentColor" opacity=".7"/>
+            <rect x="7" y="6" width="3" height="12" rx="1" fill="currentColor" opacity=".85"/>
+            <rect x="12" y="2" width="3" height="16" rx="1" fill="currentColor"/>
+            <path d="M3.5 9L8.5 5.5L13.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
+          </svg>
+          <span>NBA Stats</span>
+        </button>
+
+        <button class="nav-item" id="openNotesBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5" opacity=".8"/>
+            <path d="M6 7h8M6 10h8M6 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".9"/>
+            <circle cx="15" cy="5" r="3" fill="var(--orange)" opacity=".9"/>
+          </svg>
+          <span>Notes</span>
+        </button>
+
+        <button class="nav-item hidden" id="openUsersBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <circle cx="7" cy="6" r="2.5" stroke="currentColor" stroke-width="1.5" opacity=".9"/>
+            <circle cx="13" cy="6" r="2.5" stroke="currentColor" stroke-width="1.5" opacity=".6"/>
+            <path d="M1 17c0-2.761 2.239-5 5-5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
+            <circle cx="15" cy="14" r="3.5" stroke="currentColor" stroke-width="1.5" opacity=".9"/>
+            <path d="M15 12.5v1.5l1 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
+          </svg>
+          <span>Users</span>
+        </button>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="sidebar-footer">
+        <div class="status-indicator">
+          <span class="status-dot" id="authStatusDot"></span>
+          <span class="status-label" id="authStatusLabel">Connecting…</span>
+        </div>
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebarAvatar">?</div>
+          <div class="user-info">
+            <span class="user-name" id="sidebarUserName">—</span>
+            <span class="user-role" id="sidebarUserRole">—</span>
+          </div>
+          <button id="logoutBtn" class="sidebar-logout-btn" title="Sign out">
+            <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+              <path d="M7 3H4a1 1 0 00-1 1v12a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M13 14l3-4-3-4M16 10H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Main content ── -->
+    <main class="main-content">
+
+      <!-- ══ Dashboard Page ══ -->
+      <section id="dashboardPage" class="page">
+        <div class="page-header">
+          <div class="page-header-left">
+            <p class="page-eyebrow">Generator Panel</p>
+            <h1 class="page-title">Build Player Profiles</h1>
+          </div>
+          <div class="page-header-right">
+            <span id="status" class="status-text">Idle</span>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- Search card -->
+          <div class="dash-card search-card">
+            <div class="card-label">Player Search</div>
+            <div class="search-block">
+              <div class="search-wrap">
+                <svg class="search-icon" viewBox="0 0 20 20" fill="none">
+                  <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M15 15l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <input id="playerSearch" type="text" placeholder="Search player from Supabase…" autocomplete="off" class="search-input" />
+                <kbd class="search-kbd">⌘K</kbd>
+                <div id="searchResults" class="search-results hidden"></div>
+              </div>
+            </div>
+
+            <div class="search-controls">
+              <div class="control-group">
+                <label class="control-label">Season</label>
+                <select id="season" class="select-sm">
+                  <option value="2025-26">2025–26</option>
+                  <option value="2024-25" selected>2024–25</option>
+                  <option value="2023-24">2023–24</option>
+                  <option value="2022-23">2022–23</option>
+                  <option value="2021-22">2021–22</option>
+                  <option value="2020-21">2020–21</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label class="control-label">Mode</label>
+                <div class="mode-toggle">
+                  <label class="mode-opt"><input type="radio" name="genMode" value="ml" checked /><span>ML</span></label>
+                  <label class="mode-opt"><input type="radio" name="genMode" value="heuristic" /><span>Rules</span></label>
+                  <label class="mode-opt"><input type="radio" name="genMode" value="both" /><span>Both</span></label>
+                </div>
+              </div>
+              <button id="runBtn" class="btn-primary">
+                <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+                  <polygon points="6,4 16,10 6,16" fill="currentColor"/>
+                </svg>
+                Generate
+              </button>
+            </div>
+
+            <div class="selection-bar">
+              <div class="selected-wrap">
+                <span id="selectedPill" class="selected-pill">No player selected</span>
+                <button id="clearSelectionBtn" class="clear-btn" title="Clear selection">&times;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick actions card -->
+          <div class="dash-card actions-card">
+            <div class="card-label">Quick Actions</div>
+            <div class="quick-actions">
+              <button class="action-tile action-teams" onclick="document.getElementById('openTeamPageBtn').click()">
+                <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                  <circle cx="8" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="16" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M2 21c0-4 2.686-7 6-7h8c3.314 0 6 3 6 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span class="action-name">Team Generator</span>
+                <span class="action-desc">Build full rosters</span>
+                <svg class="action-arrow" viewBox="0 0 16 16" fill="none" width="14" height="14">
+                  <path d="M4 8h8M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button class="action-tile action-playbook" onclick="document.getElementById('openPlaybookBtn').click()">
+                <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                  <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span class="action-name">Playbook Editor</span>
+                <span class="action-desc">Edit team plays</span>
+                <svg class="action-arrow" viewBox="0 0 16 16" fill="none" width="14" height="14">
+                  <path d="M4 8h8M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button class="action-tile action-users" disabled>
+                <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                  <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span class="action-name">Manage Users</span>
+                <span class="action-desc">Coming soon</span>
+                <span class="action-soon-tag">Soon</span>
+              </button>
+            </div>
+            <div class="dash-qs-wrap">
+              <div class="dash-qs-header">
+                <span class="dash-qs-title">Top Scorers</span>
+                <span class="dash-qs-season">2025–26</span>
+              </div>
+              <div id="dashTopPlayers" class="dash-top-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output -->
+        <pre id="output" class="hidden output-console">Output will appear here.</pre>
+
+        <!-- Recent players -->
+        <section id="recentPlayers" class="recent-section hidden">
+          <div class="section-header">
+            <h3 class="section-title">Recent Players</h3>
+          </div>
+          <div id="recentList" class="recent-grid"></div>
+        </section>
+
+        <div id="toastContainer" class="toast-container"></div>
+      </section>
+
+      <!-- ══ Team Page ══ -->
+      <section id="teamPage" class="page hidden">
+        <div class="page-header">
+          <div class="page-header-left">
+            <button id="teamBackBtn" class="back-btn">
+              <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+                <path d="M12 4L6 10l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Dashboard
+            </button>
+            <p class="page-eyebrow">Team Generator</p>
+            <h1 class="page-title">Build Team Profiles</h1>
+          </div>
+        </div>
+
+        <div class="team-toolbar">
+          <div class="toolbar-group">
+            <label class="control-label">Season</label>
+            <select id="teamSeason" class="select-sm">
+              <option value="2025-26">2025–26</option>
+              <option value="2024-25" selected>2024–25</option>
+              <option value="2023-24">2023–24</option>
+              <option value="2022-23">2022–23</option>
+              <option value="2021-22">2021–22</option>
+              <option value="2020-21">2020–21</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <label class="control-label">Team</label>
+            <select id="teamSelect" class="select-sm">
+              <option value="ATL">ATL — Hawks</option><option value="BOS">BOS — Celtics</option>
+              <option value="BKN">BKN — Nets</option><option value="CHA">CHA — Hornets</option>
+              <option value="CHI">CHI — Bulls</option><option value="CLE">CLE — Cavaliers</option>
+              <option value="DAL">DAL — Mavericks</option><option value="DEN">DEN — Nuggets</option>
+              <option value="DET">DET — Pistons</option><option value="GSW">GSW — Warriors</option>
+              <option value="HOU">HOU — Rockets</option><option value="IND">IND — Pacers</option>
+              <option value="LAC">LAC — Clippers</option><option value="LAL">LAL — Lakers</option>
+              <option value="MEM">MEM — Grizzlies</option><option value="MIA">MIA — Heat</option>
+              <option value="MIL">MIL — Bucks</option><option value="MIN">MIN — Timberwolves</option>
+              <option value="NOP">NOP — Pelicans</option><option value="NYK">NYK — Knicks</option>
+              <option value="OKC">OKC — Thunder</option><option value="ORL">ORL — Magic</option>
+              <option value="PHI">PHI — 76ers</option><option value="PHX">PHX — Suns</option>
+              <option value="POR">POR — Trail Blazers</option><option value="SAC">SAC — Kings</option>
+              <option value="SAS">SAS — Spurs</option><option value="TOR">TOR — Raptors</option>
+              <option value="UTA">UTA — Jazz</option><option value="WAS">WAS — Wizards</option>
+            </select>
+          </div>
+          <button id="teamGenerateBtn" class="btn-primary">Generate Team</button>
+          <div class="toolbar-divider"></div>
+          <button id="teamExportExcelBtn" class="btn-ghost" disabled>Export Excel</button>
+          <button id="teamExportJsonBtn" class="btn-ghost" disabled>Export 2K JSON</button>
+          <button id="teamImportGameBtn" class="btn-ghost import-game-btn" disabled>Import to Game</button>
+          <button id="teamCompareBtn" class="btn-ghost" disabled>Compare</button>
+        </div>
+
+        <div id="teamProgressWrap" class="team-progress-wrap hidden">
+          <div class="team-progress-bar">
+            <div id="teamProgressFill" class="team-progress-fill" style="width:0%"></div>
+          </div>
+          <span id="teamProgressText" class="team-progress-text">0 / 0</span>
+        </div>
+        <p id="teamStatus" class="status-text page-status">Idle</p>
+        <div id="teamDashboard" class="team-dashboard hidden"></div>
+        <section id="teamResults" class="team-results"></section>
+      </section>
+
+      <!-- ══ Profile Page ══ -->
+      <section id="profilePage" class="page hidden">
+        <div class="analytics-toolbar">
+          <button id="backBtn" class="back-btn">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <path d="M12 4L6 10l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back
+          </button>
+          <div class="analytics-actions">
+            <button id="jsonBtn" class="btn-ghost btn-sm">Export 2K JSON</button>
+            <button id="excelBtn" class="btn-ghost btn-sm">Export Excel</button>
+            <button id="exportImgBtn" class="btn-ghost btn-sm">Save Card</button>
+          </div>
+        </div>
+
+        <section id="profileHero" class="profile-hero"></section>
+
+        <div class="analytics-grid">
+          <div class="analytics-left">
+            <div id="radarChartWrap" class="radar-chart-wrap">
+              <h4>Player Profile</h4>
+              <svg id="radarChartSvg" viewBox="0 0 280 280"></svg>
+            </div>
+            <div id="statComparisonWrap" class="stat-comparison-wrap"></div>
+            <section class="profile-sw-section" id="profileSW"></section>
+          </div>
+          <div class="analytics-right">
+            <div class="profile-tabs">
+              <button id="tabAttributes" class="profile-tab active">Attributes</button>
+              <button id="tabTendencies" class="profile-tab">Tendencies</button>
+              <button id="tabBadges" class="profile-tab">Badges</button>
+              <button id="tabVsSheet" class="profile-tab tab-vs-sheet hidden">vs Sheet</button>
+            </div>
+            <div class="panel-filter-wrap">
+              <svg class="search-icon-sm" viewBox="0 0 16 16" fill="none" width="14" height="14">
+                <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M11.5 11.5l-2-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              <input id="panelFilter" type="text" placeholder="Filter…" autocomplete="off" />
+            </div>
+            <article class="profile-data-card">
+              <h3 id="panelTitle">Attributes</h3>
+              <div id="panelGrid" class="panel-grid"></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ Compare Page ══ -->
+      <section id="comparePage" class="page hidden">
+        <div class="page-header">
+          <div class="page-header-left">
+            <button id="compareBackBtn" class="back-btn">
+              <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+                <path d="M12 4L6 10l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back
+            </button>
+            <p class="page-eyebrow">Comparison</p>
+            <h1 class="page-title">Side-by-Side</h1>
+          </div>
+          <div class="page-header-right">
+            <button id="compareExpandBtn" class="btn-ghost btn-sm">Full Comparison</button>
+          </div>
+        </div>
+        <div id="compareContent" class="compare-content"></div>
+        <div id="compareFullContent" class="compare-full-content hidden"></div>
+      </section>
+
+      <!-- ══ Playbook Page ══ -->
+      <section id="playbookPage" class="page hidden">
+        <div class="page-header">
+          <div class="page-header-left">
+            <button id="playbookBackBtn" class="back-btn">
+              <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+                <path d="M12 4L6 10l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Teams
+            </button>
+            <p class="page-eyebrow">Playbook Editor</p>
+            <h1 class="page-title">Edit Team Plays</h1>
+          </div>
+        </div>
+
+        <div class="team-toolbar">
+          <div class="toolbar-group">
+            <label class="control-label">Team</label>
+            <select id="playbookTeamSelect" class="select-sm">
+              <option value="ATL">ATL — Hawks</option><option value="BOS">BOS — Celtics</option>
+              <option value="BKN">BKN — Nets</option><option value="CHA">CHA — Hornets</option>
+              <option value="CHI">CHI — Bulls</option><option value="CLE">CLE — Cavaliers</option>
+              <option value="DAL">DAL — Mavericks</option><option value="DEN">DEN — Nuggets</option>
+              <option value="DET">DET — Pistons</option><option value="GSW">GSW — Warriors</option>
+              <option value="HOU">HOU — Rockets</option><option value="IND">IND — Pacers</option>
+              <option value="LAC">LAC — Clippers</option><option value="LAL">LAL — Lakers</option>
+              <option value="MEM">MEM — Grizzlies</option><option value="MIA">MIA — Heat</option>
+              <option value="MIL">MIL — Bucks</option><option value="MIN">MIN — Timberwolves</option>
+              <option value="NOP">NOP — Pelicans</option><option value="NYK">NYK — Knicks</option>
+              <option value="OKC">OKC — Thunder</option><option value="ORL">ORL — Magic</option>
+              <option value="PHI">PHI — 76ers</option><option value="PHX">PHX — Suns</option>
+              <option value="POR">POR — Trail Blazers</option><option value="SAC">SAC — Kings</option>
+              <option value="SAS">SAS — Spurs</option><option value="TOR">TOR — Raptors</option>
+              <option value="UTA">UTA — Jazz</option><option value="WAS">WAS — Wizards</option>
+            </select>
+          </div>
+          <button id="loadPlaybookBtn" class="btn-primary">Load Playbook</button>
+          <button id="savePlaybookBtn" class="btn-success" disabled>Save to Game</button>
+          <div class="toolbar-divider"></div>
+          <button id="addPlayBtn" class="btn-ghost" disabled>+ Add Play</button>
+          <button id="removePlayBtn" class="btn-ghost btn-danger" disabled>Remove Selected</button>
+        </div>
+
+        <p id="playbookStatus" class="status-text page-status">Select a team and click Load Playbook</p>
+        <div id="playbookList" class="playbook-list"></div>
+      </section>
+
+      <!-- ══ NBA Stats Page ══ -->
+      <section id="statsPage" class="page hidden">
+        <div class="stats-page-header">
+          <div class="stats-header-left">
+            <p class="page-eyebrow">Live Data</p>
+            <h1 class="page-title">NBA Stats</h1>
+          </div>
+          <div class="stats-header-filters">
+            <div class="stats-filter-group">
+              <label class="stats-filter-label">Season</label>
+              <select id="statsSeason" class="select-sm">
+                <option value="2025-26">2025–26</option>
+                <option value="2024-25" selected>2024–25</option>
+                <option value="2023-24">2023–24</option>
+                <option value="2022-23">2022–23</option>
+                <option value="2021-22">2021–22</option>
+                <option value="2020-21">2020–21</option>
+              </select>
+            </div>
+            <div class="stats-filter-group">
+              <label class="stats-filter-label">Season Type</label>
+              <select id="statsSeasonType" class="select-sm">
+                <option value="Regular Season" selected>Regular Season</option>
+                <option value="Playoffs">Playoffs</option>
+                <option value="Pre Season">Pre Season</option>
+              </select>
+            </div>
+            <div class="stats-filter-group">
+              <label class="stats-filter-label">Per Mode</label>
+              <select id="statsPerMode" class="select-sm">
+                <option value="PerGame" selected>Per Game</option>
+                <option value="Per36">Per 36</option>
+                <option value="Per100Possessions">Per 100 Poss</option>
+                <option value="Totals">Totals</option>
+              </select>
+            </div>
+            <button id="statsRefreshBtn" class="btn-ghost btn-sm stats-refresh-btn" title="Refresh data">
+              <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5c1.8 0 3.4.87 4.4 2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M11 2l2.5 2.7L11 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Refresh
+            </button>
+            <span id="statsCacheLabel" class="stats-cache-label"></span>
+          </div>
+        </div>
+
+        <!-- Sub-nav -->
+        <div class="stats-subnav">
+          <button class="stats-tab active" id="statsTabLeaders" data-tab="leaders">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+              <path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" fill="currentColor" opacity=".8"/>
+            </svg>
+            Leaders
+          </button>
+          <button class="stats-tab" id="statsTabPlayers" data-tab="players">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+              <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Players
+          </button>
+          <button class="stats-tab" id="statsTabTeams" data-tab="teams">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+              <circle cx="5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="11" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M1 13c0-2.2 1.8-4 4-4h6c2.2 0 4 1.8 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Teams
+          </button>
+          <button class="stats-tab" id="statsTabTracking" data-tab="tracking">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+              <path d="M3 13l3-5 3 3 4-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Tracking
+          </button>
+          <button class="stats-tab" id="statsTabHustle" data-tab="hustle">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+              <path d="M8 2v3M8 11v3M2 8h3M11 8h3M4.2 4.2l2.1 2.1M9.7 9.7l2.1 2.1M4.2 11.8l2.1-2.1M9.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Hustle
+          </button>
+        </div>
+
+        <!-- Leaders view -->
+        <div id="statsLeadersView" class="stats-view">
+          <div class="stats-category-pills" id="statsCategoryPills">
+            <button class="stat-pill active" data-cat="PTS">PTS</button>
+            <button class="stat-pill" data-cat="REB">REB</button>
+            <button class="stat-pill" data-cat="AST">AST</button>
+            <button class="stat-pill" data-cat="STL">STL</button>
+            <button class="stat-pill" data-cat="BLK">BLK</button>
+            <button class="stat-pill" data-cat="FG_PCT">FG%</button>
+            <button class="stat-pill" data-cat="FG3_PCT">3P%</button>
+            <button class="stat-pill" data-cat="FT_PCT">FT%</button>
+            <button class="stat-pill" data-cat="MIN">MIN</button>
+          </div>
+          <div id="statsLeaderCards" class="stats-leader-cards"></div>
+          <div id="statsLeaderTable" class="stats-table-wrap"></div>
+        </div>
+
+        <!-- Players view -->
+        <div id="statsPlayersView" class="stats-view hidden">
+          <div class="stats-measure-pills" id="statsMeasurePills">
+            <button class="stat-pill active" data-measure="Base">Traditional</button>
+            <button class="stat-pill" data-measure="Advanced">Advanced</button>
+            <button class="stat-pill" data-measure="Misc">Misc</button>
+            <button class="stat-pill" data-measure="Scoring">Scoring</button>
+            <button class="stat-pill" data-measure="Usage">Usage</button>
+            <button class="stat-pill" data-measure="Defense">Defense</button>
+          </div>
+          <div class="stats-table-toolbar">
+            <div class="stats-search-wrap">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13" class="stats-search-icon">
+                <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M10.5 10.5l2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              <input id="statsPlayerSearch" type="text" placeholder="Filter players…" class="stats-search-input" autocomplete="off" />
+            </div>
+            <span id="statsRowCount" class="stats-row-count"></span>
+          </div>
+          <div id="statsPlayerTable" class="stats-table-wrap"></div>
+        </div>
+
+        <!-- Teams view -->
+        <div id="statsTeamsView" class="stats-view hidden">
+          <div class="stats-measure-pills" id="statsTeamMeasurePills">
+            <button class="stat-pill active" data-measure="Base">Traditional</button>
+            <button class="stat-pill" data-measure="Advanced">Advanced</button>
+          </div>
+          <div id="statsTeamTable" class="stats-table-wrap"></div>
+        </div>
+
+        <!-- Tracking view -->
+        <div id="statsTrackingView" class="stats-view hidden">
+          <div class="stats-pills" id="trackingPills">
+            <button class="stat-pill active" data-pt="Drives">Drives</button>
+            <button class="stat-pill" data-pt="Passing">Passing</button>
+            <button class="stat-pill" data-pt="PullUpShot">Pull-Up</button>
+            <button class="stat-pill" data-pt="CatchShoot">Catch &amp; Shoot</button>
+            <button class="stat-pill" data-pt="PostTouch">Post-Up</button>
+            <button class="stat-pill" data-pt="ElbowTouch">Elbow Touch</button>
+            <button class="stat-pill" data-pt="PaintTouch">Paint Touch</button>
+          </div>
+          <div id="statsTrackingTable" class="stats-table-wrap"></div>
+        </div>
+
+        <!-- Hustle view -->
+        <div id="statsHustleView" class="stats-view hidden">
+          <div id="statsHustleTable" class="stats-table-wrap"></div>
+        </div>
+
+        <!-- Player detail overlay -->
+        <div id="statsPlayerDetail" class="stats-player-detail hidden">
+          <button class="spd-back-btn" id="spdBackBtn">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Back to Stats
+          </button>
+          <div class="spd-hero" id="spdHero">
+            <div class="spd-photo-wrap">
+              <img class="spd-photo" id="spdPhoto" src="" alt="" onerror="this.style.display='none';document.getElementById('spdPhotoFallback').style.display='grid'"/>
+              <div class="spd-photo-fallback" id="spdPhotoFallback" style="display:none"></div>
+            </div>
+            <div class="spd-hero-body">
+              <div class="spd-hero-top">
+                <div>
+                  <div class="spd-name" id="spdName"></div>
+                  <div class="spd-meta" id="spdMeta"></div>
+                </div>
+                <div class="spd-season-avgs" id="spdSeasonAvgs"></div>
+              </div>
+              <div class="spd-bio-row" id="spdBioRow"></div>
+            </div>
+          </div>
+          <!-- Shot Chart (collapsible) -->
+          <div class="spd-shotchart-section" id="spdShotSection">
+            <div class="spd-section-title spd-collapse-header" id="spdCollapseBtn" role="button" aria-expanded="false">
+              <span class="spd-collapse-icon" id="spdCollapseIcon">▶</span>
+              Shot Chart
+              <span class="spd-section-sub" id="spdShotSeason"></span>
+              <div class="spd-shotchart-controls hidden" id="spdShotControls">
+                <select id="spdSeasonSelect" class="spd-season-select">
+                  <option value="2025-26">2025-26</option>
+                  <option value="2024-25" selected>2024-25</option>
+                  <option value="2023-24">2023-24</option>
+                  <option value="2022-23">2022-23</option>
+                  <option value="2021-22">2021-22</option>
+                  <option value="2020-21">2020-21</option>
+                  <option value="2019-20">2019-20</option>
+                </select>
+                <div class="spd-view-btns">
+                  <button class="spd-view-btn active" data-view="dots">Dots</button>
+                  <button class="spd-view-btn" data-view="heat">Heat Map</button>
+                  <button class="spd-view-btn" data-view="hexbin">Hexbin</button>
+                </div>
+                <span class="spd-shotchart-legend" id="spdShotLegend">
+                  <span class="spd-shot-make">● Made</span>
+                  <span class="spd-shot-miss">● Missed</span>
+                </span>
+              </div>
+            </div>
+            <div class="spd-shotchart-body" id="spdShotBody">
+              <div class="spd-shot-layout">
+                <!-- Canvas -->
+                <div class="spd-shotchart-wrap">
+                  <canvas id="spdShotCanvas" width="500" height="470"></canvas>
+                  <div id="spdShotMsg" class="spd-shot-msg"></div>
+                </div>
+                <!-- Filter sidebar -->
+                <div class="spd-shot-sidebar" id="spdShotSidebar">
+                  <div class="spd-filter-group">
+                    <div class="spd-filter-label">Season Type</div>
+                    <div class="spd-stype-pills">
+                      <button class="spd-stype-btn active" data-stype="Regular Season">Regular</button>
+                      <button class="spd-stype-btn" data-stype="Playoffs">Playoffs</button>
+                    </div>
+                  </div>
+                  <div class="spd-filter-group">
+                    <div class="spd-filter-label">Show</div>
+                    <div class="spd-toggle-row">
+                      <button class="spd-toggle-btn active" id="spdShowMade">Made</button>
+                      <button class="spd-toggle-btn active" id="spdShowMissed">Missed</button>
+                    </div>
+                  </div>
+                  <div class="spd-filter-group" id="spdDotControls">
+                    <div class="spd-filter-label">Dot Size <span class="spd-filter-val" id="spdDotSizeVal">4</span></div>
+                    <input type="range" class="spd-range" id="spdDotSize" min="2" max="12" value="4">
+                    <div class="spd-filter-label" style="margin-top:5px">Opacity <span class="spd-filter-val" id="spdDotOpacityVal">75%</span></div>
+                    <input type="range" class="spd-range" id="spdDotOpacity" min="10" max="100" value="75">
+                  </div>
+                  <div class="spd-filter-group">
+                    <div class="spd-filter-label">Shot Zones</div>
+                    <div class="spd-zone-pills" id="spdZonePills">
+                      <button class="spd-zone-pill active" data-zone="Restricted Area">RA</button>
+                      <button class="spd-zone-pill active" data-zone="In The Paint (Non-RA)">Paint</button>
+                      <button class="spd-zone-pill active" data-zone="Mid-Range">Mid</button>
+                      <button class="spd-zone-pill active" data-zone="Left Corner 3">LC3</button>
+                      <button class="spd-zone-pill active" data-zone="Right Corner 3">RC3</button>
+                      <button class="spd-zone-pill active" data-zone="Above the Break 3">ATB3</button>
+                    </div>
+                  </div>
+                  <div class="spd-filter-group">
+                    <div class="spd-filter-label">Shot Angles</div>
+                    <div class="spd-zone-pills" id="spdAnglePills">
+                      <button class="spd-zone-pill active" data-angle="Left Side(L)">Left</button>
+                      <button class="spd-zone-pill active" data-angle="Left Side Center(LC)">L-Ctr</button>
+                      <button class="spd-zone-pill active" data-angle="Center(C)">Ctr</button>
+                      <button class="spd-zone-pill active" data-angle="Right Side Center(RC)">R-Ctr</button>
+                      <button class="spd-zone-pill active" data-angle="Right Side(R)">Right</button>
+                    </div>
+                  </div>
+                  <div class="spd-filter-group">
+                    <div class="spd-filter-label">Distance (ft)</div>
+                    <div class="spd-dist-row">
+                      <input type="number" class="spd-dist-input" id="spdDistMin" min="0" max="35" value="0">
+                      <span class="spd-dist-sep">–</span>
+                      <input type="number" class="spd-dist-input" id="spdDistMax" min="0" max="35" value="30">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Zone breakdown stats table -->
+              <div class="spd-zone-stats-wrap" id="spdZoneStats"></div>
+            </div>
+          </div>
+
+          <div class="spd-section-title">Career Stats <span class="spd-section-sub">Per Game</span></div>
+          <div id="spdCareerTable" class="stats-table-wrap"></div>
+        </div>
+      </section>
+
+      <!-- ══ Users Management Page ══ -->
+      <section id="usersPage" class="page hidden">
+        <div class="page-header">
+          <div class="page-header-left">
+            <p class="page-eyebrow">Administration</p>
+            <h1 class="page-title">User Management</h1>
+          </div>
+        </div>
+
+        <div class="users-add-card dash-card">
+          <div class="card-label">Add New User</div>
+          <div class="users-add-form">
+            <input id="newUserName" type="text" placeholder="Username" class="users-input" />
+            <input id="newUserPassword" type="password" placeholder="Temp password" class="users-input" />
+            <select id="newUserRole" class="select-sm">
+              <option value="viewer">Viewer</option>
+              <option value="admin">Admin</option>
+              <option value="head_admin">Head Admin</option>
+            </select>
+            <button id="addUserBtn" class="btn-primary btn-sm">Add User</button>
+          </div>
+          <div id="addUserStatus" class="users-add-status hidden"></div>
+        </div>
+
+        <div id="usersList" class="users-list">
+          <div class="users-loading">Loading users…</div>
+        </div>
+      </section>
+
+      <!-- ══ Notes Page ══ -->
+      <section id="notesPage" class="page hidden">
+        <div class="page-header">
+          <div class="page-header-left">
+            <p class="page-eyebrow">Shared Workspace</p>
+            <h1 class="page-title">Team Notes</h1>
+          </div>
+        </div>
+
+        <!-- Filter / Search bar -->
+        <div class="notes-filter-bar">
+          <div class="notes-search-wrap">
+            <svg class="notes-search-icon" viewBox="0 0 20 20" fill="none" width="14" height="14">
+              <circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 14l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input id="notesSearch" class="notes-search-input" type="text" placeholder="Search notes…" autocomplete="off" />
+          </div>
+          <select id="notesFilterType"   class="select-sm"><option value="all">All types</option><option value="note">Notes</option><option value="announcement">Announcements</option><option value="task">Tasks</option></select>
+          <select id="notesFilterTag"    class="select-sm"><option value="all">All tags</option></select>
+          <select id="notesFilterAuthor" class="select-sm"><option value="all">All authors</option></select>
+          <select id="notesSort"         class="select-sm"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="reactions">Most reactions</option></select>
+          <button id="notesShowArchive"  class="btn-ghost btn-sm notes-archive-toggle">Show Archive</button>
+        </div>
+
+        <!-- Compose -->
+        <div class="notes-compose-card" id="notesComposeCard">
+          <div class="notes-type-bar">
+            <button class="notes-type-btn active" data-type="note">📝 Note</button>
+            <button class="notes-type-btn" data-type="announcement" id="notesTypeAnnouncement">📢 Announcement</button>
+            <button class="notes-type-btn" data-type="task">✅ Task</button>
+          </div>
+          <div class="notes-tag-row">
+            <span class="notes-tag-label">Tags:</span>
+            <div id="notesComposeTags" class="notes-compose-tags"></div>
+          </div>
+          <div class="notes-toolbar">
+            <button class="notes-fmt-btn" data-fmt="bold"      title="Bold"><b>B</b></button>
+            <button class="notes-fmt-btn" data-fmt="italic"    title="Italic"><i>I</i></button>
+            <button class="notes-fmt-btn" data-fmt="code"      title="Inline code"><span style="font-family:monospace;font-size:11px">`code`</span></button>
+            <span class="notes-toolbar-sep"></span>
+            <button class="notes-fmt-btn" data-fmt="bullet"    title="Bullet list">• List</button>
+            <button class="notes-fmt-btn" data-fmt="number"    title="Numbered list">1. List</button>
+            <span class="notes-toolbar-sep"></span>
+            <button class="notes-fmt-btn" data-fmt="codeblock" title="Code block">{ }</button>
+          </div>
+          <div class="notes-input-wrap">
+            <textarea id="notesInput" class="notes-textarea" placeholder="Write a note… (@ to mention, Ctrl+Enter to post)" rows="4"></textarea>
+            <div id="notesMentionDropdown" class="notes-mention-dropdown hidden"></div>
+          </div>
+          <div id="notesChecklistBuilder" class="notes-checklist-builder hidden">
+            <div id="notesChecklistItems" class="notes-checklist-items"></div>
+            <button id="notesAddCheckItem" class="notes-add-check-btn">+ Add checklist item</button>
+          </div>
+          <div class="notes-compose-footer">
+            <span class="notes-writing-as">Writing as <strong id="notesAuthorLabel">—</strong></span>
+            <div class="notes-compose-actions">
+              <button id="notesClearBtn"  class="btn-ghost btn-sm">Clear</button>
+              <button id="notesPostBtn"   class="btn-primary btn-sm">Post Note</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feed -->
+        <div id="notesFeed" class="notes-feed">
+          <div class="notes-loading">Connecting…</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ── Chat Bubble + Panel ── -->
+  <button id="chatBubble" class="chat-bubble hidden" title="Messages">
+    <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div id="chatPanel" class="chat-panel hidden"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

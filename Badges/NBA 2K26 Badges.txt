@@ -1,0 +1,133 @@
+🏀 NBA 2K26 Badges (Accurate Definitions)
+🎯 FINISHING
+
+Aerial Wizard
+→ Improves ability to successfully finish alley-oops and putbacks.
+
+Float Game
+→ Increases success rate of floaters and runners in the paint.
+
+Hook Specialist
+→ Boosts effectiveness of post hook shots.
+
+Layup Mixmaster
+→ Improves ability to complete advanced/acrobatic layups (euros, reverses, etc.).
+
+Paint Prodigy
+→ Improves efficiency and scoring ability when attacking inside the paint.
+
+Physical Finisher
+→ Increases ability to finish through contact at the rim.
+
+Posterizer
+→ Raises chances of dunking on defenders with contact dunks.
+
+Rise Up
+→ Improves success of standing dunks under the basket (consistent with 2K26 gameplay behavior)
+
+🎯 SHOOTING
+
+Deadeye
+→ Reduces penalty from defenders closing out on jump shots.
+
+Limitless Range
+→ Extends shooting range for deep three-pointers.
+
+Mini Marksman
+→ Improves ability to shoot over taller defenders.
+
+Set Shot Specialist
+→ Boosts success of standstill/catch-and-shoot jump shots.
+
+Shifty Shooter
+→ Improves ability to hit off-the-dribble and difficult shots.
+
+🎯 PLAYMAKING
+
+Ankle Assassin
+→ Increases chances of breaking defenders with dribble moves (consistent with 2K26 dribble system)
+
+Break Starter
+→ Improves accuracy and distance of outlet passes after rebounds
+
+Dimer
+→ Boosts teammate shot success after receiving a pass
+
+Handles for Days
+→ Reduces stamina drain when chaining dribble moves
+
+Lightning Launch
+→ Provides a faster and more explosive first step out of triple threat or dribble.
+
+Strong Handles
+→ Improves ability to maintain control when dribbling through contact
+
+Unpluckable
+→ Reduces chances of getting stripped or losing the ball.
+
+Versatile Visionary
+→ Improves passing accuracy and effectiveness of advanced passes
+
+🛡️ DEFENSE / REBOUNDING
+
+Boxout Beast
+→ Improves ability to secure boxouts and positioning for rebounds
+
+Brick Wall
+→ Sets stronger screens and drains defender stamina on contact
+
+Challenger
+→ Improves perimeter shot contests
+
+Glove
+→ Increases steal success, especially on-ball strips
+
+High-Flying Denier
+→ Improves ability to block shots, especially at the rim
+
+Immovable Enforcer (fixed name)
+→ Improves strength and resistance when defending drives.
+
+Interceptor
+→ Increases chances of stealing passes.
+
+Off-Ball Pest
+→ Improves defense against off-ball movement and cuts
+
+On-Ball Menace
+→ Improves ability to stay in front of ball handlers
+
+Paint Patroller
+→ Improves interior defense and rim protection
+
+Pick Dodger
+→ Helps avoid or fight through screens
+
+Pogo Stick
+→ Allows quicker consecutive jumps for rebounds/blocks.
+
+Post Lockdown
+→ Improves defense against post moves
+
+🏀 POST / BIG MAN
+
+Post Fade Phenom
+→ Improves ability to hit post fades and hop shots.
+
+Post Powerhouse
+→ Improves ability to back down defenders and dominate physically in the post.
+
+Post-Up Poet
+→ Improves scoring and effectiveness of post moves and fakes.
+
+🧠 OFF-BALL / MISC
+
+Slippery Off-Ball
+→ Improves ability to get open and move effectively without the ball
+
+⚠️ NON-STANDARD (FROM YOUR SHEET)
+
+These are NOT official 2K26 gameplay badges:
+
+Work Ethic → likely progression/stamina modifier (custom)
+Marketability → MyCareer/business system (not gameplay)

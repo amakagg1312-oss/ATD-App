@@ -1,0 +1,18 @@
+"logomode_myleague_wm": {
+	"Width": 1024,
+	"Height": 256,
+	"Format": "BC7_UNORM",
+	"Min": [ 0.149959803, 0.155926481, 0.162029386, 0.0 ],
+	"Max": [ 1.0, 1.0, 1.0, 1.0 ],
+	"PixelDataSize": 262144,
+	"Segments": [
+		{
+			"FileOffset": 32,
+			"FileSize": 2399,
+			"MemorySize": 262144,
+			"InflatedSize": 89856
+		}
+	],
+	"CompressionMethod": 33,
+	"Binary": "logomode_myleague_wm.6d3452483ccbe7ee.tld"
+}

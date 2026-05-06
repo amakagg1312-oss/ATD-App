@@ -1,0 +1,11 @@
+"playnow_landing_teamselect": {
+	"Width": 2048,
+	"Height": 1024,
+	"Format": "BC1_UNORM",
+	"Min": [ 0.0, 0.0, 0.0, 1.0 ],
+	"Max": [ 1.0, 1.0, 1.0, 1.0 ],
+	"PixelDataSize": 1048576,
+	"Twiddled": 1,
+	"CompressionMethod": 33,
+	"Binary": "playnow_landing_teamselect.94a7a58f6bc7b3b0.tld"
+}

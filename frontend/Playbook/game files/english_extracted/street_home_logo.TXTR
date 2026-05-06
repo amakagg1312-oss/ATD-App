@@ -1,0 +1,18 @@
+"street_home_logo": {
+	"Width": 512,
+	"Height": 512,
+	"Format": "BC7_UNORM",
+	"Min": [ 0.0, 0.0, 0.0, 0.0 ],
+	"Max": [ 1.0, 1.0, 1.0, 1.0 ],
+	"PixelDataSize": 262144,
+	"Segments": [
+		{
+			"FileOffset": 32,
+			"FileSize": 15361,
+			"MemorySize": 262144,
+			"InflatedSize": 110964
+		}
+	],
+	"CompressionMethod": 33,
+	"Binary": "street_home_logo.30b947fb7415d49a.tld"
+}

@@ -1,0 +1,28 @@
+"kb_buttonicons": {
+	"Width": 256,
+	"Height": 256,
+	"Mips": 2,
+	"Format": "BC7_UNORM",
+	"Min": [ 0.0, 0.0, 0.0, 0.0 ],
+	"Max": [ 1.0, 1.0, 1.0, 1.0 ],
+	"PixelDataSize": 81920,
+	"Segments": [
+		{
+			"FileOffset": 32,
+			"FileSize": 2109,
+			"MemoryOffset": 65536,
+			"MemorySize": 16384,
+			"InflatedSize": 12336,
+			"MinMip": 1,
+			"MaxMip": 1
+		},
+		{
+			"FileOffset": 2141,
+			"FileSize": 3653,
+			"MemorySize": 65536,
+			"InflatedSize": 38484
+		}
+	],
+	"CompressionMethod": 33,
+	"Binary": "kb_buttonicons.2e801cdbcde45b14.tld"
+}

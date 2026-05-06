@@ -1,0 +1,23 @@
+{
+  "globalKeys": [
+    "global",
+    "clearImmediate",
+    "setImmediate",
+    "clearInterval",
+    "clearTimeout",
+    "setInterval",
+    "setTimeout",
+    "queueMicrotask",
+    "structuredClone",
+    "atob",
+    "btoa",
+    "performance",
+    "fetch",
+    "crypto"
+  ],
+  "hasElectron": true,
+  "processKeys": [
+    "binding",
+    "_linkedBinding"
+  ]
+}

@@ -1,0 +1,226 @@
+{
+  "meta": {
+    "pid": 3292,
+    "elapsed_sec": 378.263,
+    "stride": 1176,
+    "team_stride": 5672,
+    "staff_stride": 432,
+    "stadium_stride": 4792,
+    "first_offset": 40,
+    "last_offset": 0,
+    "player_name_length": 20,
+    "player_window": 15,
+    "player_min_matches": 3,
+    "player_targets": [
+      "Tyrese Maxey",
+      "Joel Embiid",
+      "Paul George"
+    ],
+    "team_name_offset": 738,
+    "team_name_length": 24,
+    "staff_first_offset": 40,
+    "staff_last_offset": 0,
+    "staff_name_length": 20,
+    "staff_window": 12,
+    "staff_min_matches": 1,
+    "staff_targets": [
+      "Nick Nurse",
+      "Doc Rivers"
+    ],
+    "stadium_name_offset": 0,
+    "stadium_name_length": 33,
+    "stadium_targets": [
+      "Xfinity Mobile Arena",
+      "Fiserv Forum",
+      "United Center"
+    ],
+    "offsets_file": "D:\\project\\Playbook\\2k26_offsets.json"
+  },
+  "player_hits": [
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A121BFD0"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A12474D0"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A1639B08"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A16C6748"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A11F4490"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A163B008"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A16C5CC8"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A11F6E90"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A163AAC8"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A16DC708"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A171C6C8"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A1740308"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A7AB0670"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A7B95840"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A7E6D568"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A8086CE8"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A80BDA50"
+    },
+    {
+      "target": "Tyrese Maxey",
+      "address": "0x2A80C6D50"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A7AB4B58"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A7B94F10"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A7EA87B8"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A807B528"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A80972C0"
+    },
+    {
+      "target": "Joel Embiid",
+      "address": "0x2A80BF148"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A7AB0FA0"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A7BAA300"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A7BE0BD0"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A7DDF818"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A7EC85A0"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A808BF98"
+    },
+    {
+      "target": "Paul George",
+      "address": "0x2A80BA7C8"
+    }
+  ],
+  "player_candidates": [],
+  "team_candidates": [
+    {
+      "address": "0x2A82B17D0",
+      "votes": 1
+    },
+    {
+      "address": "0x2A8341810",
+      "votes": 1
+    }
+  ],
+  "stadium_candidates": [
+    {
+      "address": "0x2A8159880",
+      "votes": 1
+    },
+    {
+      "address": "0x2A81598C2",
+      "votes": 1
+    }
+  ],
+  "staff_hits": [
+    {
+      "target": "Doc Rivers",
+      "address": "0x2A16EA388"
+    },
+    {
+      "target": "Doc Rivers",
+      "address": "0x2A7BB4CF8"
+    },
+    {
+      "target": "Doc Rivers",
+      "address": "0x2A7D1EDB0"
+    },
+    {
+      "target": "Doc Rivers",
+      "address": "0x2A7FBB3F0"
+    }
+  ],
+  "staff_candidates": [
+    {
+      "address": "0x2A16EA388",
+      "votes": 1
+    },
+    {
+      "address": "0x2A16EA1D8",
+      "votes": 1
+    },
+    {
+      "address": "0x2A16EA028",
+      "votes": 1
+    },
+    {
+      "address": "0x2A16E9E78",
+      "votes": 1
+    },
+    {
+      "address": "0x2A16E9CC8",
+      "votes": 1
+    }
+  ]
+}

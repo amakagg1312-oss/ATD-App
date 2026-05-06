@@ -1,0 +1,1405 @@
+"""Badge generation system for NBA 2K26.
+
+Stat-driven gates determine WHO gets a badge.
+Attribute + stat composites determine WHAT TIER.
+
+Strict caps: max 1 Legend, max 3 HOF, max 20 total.
+No OVR gating — a 72 OVR 3&D specialist gets their defensive badges.
+"""
+
+import os
+import re
+from typing import Any, Dict, List, Optional, Tuple
+
+
+# ── Badge tier definitions ────────────────────────────────────────────────
+
+BADGE_TIER_ORDER = ["Bronze", "Silver", "Gold", "HOF", "Legend"]
+
+BADGE_TIER_THRESHOLDS = {
+    "Bronze": 45.0,
+    "Silver": 57.0,
+    "Gold": 68.0,
+    "HOF": 80.0,
+    "Legend": 91.0,
+}
+
+BADGE_MAX_TOTAL = 20
+BADGE_MAX_LEGEND = 1
+BADGE_MAX_HOF = 3
+
+
+# ── Position caps: max tier per badge per position ────────────────────────
+# None = cannot receive badge at all
+# "Legend" = uncapped (only limited by global caps)
+
+POSITION_CAPS = {
+    # FINISHING
+    "Aerial Wizard": {
+        "PG": "Silver",
+        "SG": "Gold",
+        "SF": "HOF",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    "Float Game": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Silver",
+        "C": "Bronze",
+    },
+    "Hook Specialist": {
+        "PG": None,
+        "SG": None,
+        "SF": "Bronze",
+        "PF": "HOF",
+        "C": "Legend",
+    },
+    "Layup Mixmaster": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Gold",
+        "C": "Bronze",
+    },
+    "Paint Prodigy": {
+        "PG": "Gold",
+        "SG": "HOF",
+        "SF": "Legend",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    "Physical Finisher": {
+        "PG": "Silver",
+        "SG": "Gold",
+        "SF": "HOF",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    "Posterizer": {
+        "PG": "Bronze",
+        "SG": "Gold",
+        "SF": "HOF",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    "Rise Up": {
+        "PG": None,
+        "SG": None,
+        "SF": "Bronze",
+        "PF": "HOF",
+        "C": "Legend",
+    },
+    # SHOOTING
+    "Deadeye": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "Legend",
+        "PF": "HOF",
+        "C": "Gold",
+    },
+    "Limitless Range": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Silver",
+        "C": None,
+    },
+    "Mini Marksman": {
+        "PG": "Legend",
+        "SG": "HOF",
+        "SF": None,
+        "PF": None,
+        "C": None,
+    },
+    "Set Shot Specialist": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Gold",
+        "C": "Bronze",
+    },
+    "Shifty Shooter": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Silver",
+        "C": None,
+    },
+    # PLAYMAKING
+    "Ankle Assassin": {
+        "PG": "Legend",
+        "SG": "HOF",
+        "SF": "Silver",
+        "PF": None,
+        "C": None,
+    },
+    "Break Starter": {
+        "PG": "HOF",
+        "SG": "Gold",
+        "SF": "Gold",
+        "PF": "HOF",
+        "C": "HOF",
+    },
+    "Dimer": {
+        "PG": "Legend",
+        "SG": "HOF",
+        "SF": "HOF",
+        "PF": "Gold",
+        "C": "Gold",
+    },
+    "Handles for Days": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Silver",
+        "C": None,
+    },
+    "Lightning Launch": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Gold",
+        "C": "Bronze",
+    },
+    "Strong Handles": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Silver",
+        "C": None,
+    },
+    "Unpluckable": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Silver",
+        "C": None,
+    },
+    "Versatile Visionary": {
+        "PG": "Legend",
+        "SG": "HOF",
+        "SF": "HOF",
+        "PF": "HOF",
+        "C": "Gold",
+    },
+    # DEFENSE/REBOUNDING
+    "Boxout Beast": {
+        "PG": "Bronze",
+        "SG": "Bronze",
+        "SF": "Gold",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    "Brick Wall": {
+        "PG": None,
+        "SG": None,
+        "SF": "Bronze",
+        "PF": "HOF",
+        "C": "Legend",
+    },
+    "Challenger": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "Legend",
+        "PF": "HOF",
+        "C": "Gold",
+    },
+    "Glove": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Gold",
+        "C": "Silver",
+    },
+    "High-Flying Denier": {
+        "PG": None,
+        "SG": "Bronze",
+        "SF": "Gold",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    "Interceptor": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "Legend",
+        "PF": "HOF",
+        "C": "HOF",
+    },
+    "Off-Ball Pest": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Gold",
+        "C": "Silver",
+    },
+    "On-Ball Menace": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "Legend",
+        "PF": "HOF",
+        "C": "Gold",
+    },
+    "Paint Patroller": {
+        "PG": None,
+        "SG": None,
+        "SF": "Gold",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    "Pick Dodger": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Gold",
+        "C": "Silver",
+    },
+    "Post Lockdown": {
+        "PG": None,
+        "SG": None,
+        "SF": "Gold",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    # POST
+    "Post Fade Phenom": {
+        "PG": None,
+        "SG": None,
+        "SF": "Gold",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    "Post Powerhouse": {
+        "PG": None,
+        "SG": None,
+        "SF": "Bronze",
+        "PF": "HOF",
+        "C": "Legend",
+    },
+    "Post-Up Poet": {
+        "PG": None,
+        "SG": None,
+        "SF": "Gold",
+        "PF": "Legend",
+        "C": "Legend",
+    },
+    # OFF-BALL
+    "Slippery Off-Ball": {
+        "PG": "Legend",
+        "SG": "Legend",
+        "SF": "HOF",
+        "PF": "Gold",
+        "C": "Silver",
+    },
+}
+
+
+# ── Badge catalog loader ──────────────────────────────────────────────────
+
+
+def load_badge_catalog(badges_txt_path: str) -> Dict[str, List[Dict[str, str]]]:
+    sections: Dict[str, List[Dict[str, str]]] = {
+        "Finishing": [],
+        "Shooting": [],
+        "Playmaking": [],
+        "Defense": [],
+        "Post": [],
+        "Off-Ball": [],
+    }
+    if not badges_txt_path or not os.path.exists(badges_txt_path):
+        return sections
+
+    current_section = "Off-Ball"
+    pending_badge_name = ""
+    seen_names: set = set()
+
+    def clean_badge_name(raw_name: str) -> str:
+        name = str(raw_name or "").strip()
+        name = re.sub(r"\s*\([^)]*\)\s*$", "", name).strip()
+        return name
+
+    try:
+        with open(badges_txt_path, "r", encoding="utf-8", errors="ignore") as f:
+            for raw_line in f:
+                line = str(raw_line or "").strip()
+                if not line:
+                    continue
+                upper = line.upper()
+                lower = line.lower()
+                is_header = any(
+                    line.startswith(e)
+                    for e in (
+                        "\U0001f3af",
+                        "\U0001f6e1",
+                        "\U0001f3c0",
+                        "\U0001f9e0",
+                        "\u26a0",
+                    )
+                )
+                if is_header:
+                    if "FINISHING" in upper:
+                        current_section = "Finishing"
+                        pending_badge_name = ""
+                    elif "SHOOTING" in upper:
+                        current_section = "Shooting"
+                        pending_badge_name = ""
+                    elif "PLAYMAKING" in upper:
+                        current_section = "Playmaking"
+                        pending_badge_name = ""
+                    elif "DEFENSE" in upper or "REBOUNDING" in upper:
+                        current_section = "Defense"
+                        pending_badge_name = ""
+                    elif "POST" in upper:
+                        current_section = "Post"
+                        pending_badge_name = ""
+                    elif "OFF-BALL" in upper:
+                        current_section = "Off-Ball"
+                        pending_badge_name = ""
+                    elif "NON-STANDARD" in upper:
+                        pending_badge_name = ""
+                        current_section = "Off-Ball"
+                    continue
+                if lower.startswith("these are not official"):
+                    pending_badge_name = ""
+                    continue
+                if "->" in line or "\u2192" in line:
+                    if pending_badge_name:
+                        desc = line.replace("->", "").replace("\u2192", "").strip()
+                        cleaned_name = clean_badge_name(pending_badge_name)
+                        if cleaned_name and cleaned_name.lower() not in seen_names:
+                            sections.setdefault(current_section, []).append(
+                                {"name": cleaned_name, "description": desc}
+                            )
+                            seen_names.add(cleaned_name.lower())
+                        pending_badge_name = ""
+                    continue
+                if (
+                    line.startswith("\U0001f3c0")
+                    or line.startswith("\U0001f3af")
+                    or line.startswith("\U0001f6e1")
+                    or line.startswith("\u26a0")
+                ):
+                    continue
+                if "work ethic" in line.lower() or "marketability" in line.lower():
+                    continue
+                if line.endswith(":") and ("badge" in lower or "official" in lower):
+                    continue
+                pending_badge_name = line
+    except Exception:
+        return sections
+
+    return sections
+
+
+# ── Utility functions ─────────────────────────────────────────────────────
+
+
+def _clamp(v: float, lo: float = 0.0, hi: float = 100.0) -> float:
+    return max(lo, min(hi, v))
+
+
+def _remap(
+    v: float, in_lo: float, in_hi: float, out_lo: float = 0.0, out_hi: float = 100.0
+) -> float:
+    if in_hi == in_lo:
+        return out_lo
+    return out_lo + (v - in_lo) / (in_hi - in_lo) * (out_hi - out_lo)
+
+
+def _stat_score(val: float, lo: float, hi: float) -> float:
+    """Map a stat from [lo, hi] to [0, 100]."""
+    return _clamp(_remap(val, lo, hi))
+
+
+def _na(attrs: Dict[str, int], name: str) -> float:
+    """Normalize attribute (25-99) -> (0-100)."""
+    return _clamp(_remap(float(attrs.get(name, 25)), 25.0, 99.0), 0.0, 100.0)
+
+
+def _sg(stats: Dict[str, float], key: str, default: float = 0.0) -> float:
+    """Safe get stat value."""
+    try:
+        return float(stats.get(key, default))
+    except (ValueError, TypeError):
+        return default
+
+
+def _wt(*pairs: Tuple[float, float]) -> float:
+    """Weighted sum."""
+    return sum(v * w for v, w in pairs)
+
+
+def _tier_for_score(score: float) -> Optional[str]:
+    """Convert 0-100 score to tier name, or None if below Bronze."""
+    for tier in reversed(BADGE_TIER_ORDER):
+        if score >= BADGE_TIER_THRESHOLDS[tier]:
+            return tier
+    return None
+
+
+def _tier_rank(tier: str) -> int:
+    """Numeric rank for tier comparison."""
+    try:
+        return BADGE_TIER_ORDER.index(tier)
+    except ValueError:
+        return -1
+
+
+def _cap_tier(tier: str, max_tier: Optional[str]) -> Optional[str]:
+    """Cap a tier to a maximum. Returns None if badge disallowed."""
+    if max_tier is None:
+        return None
+    if _tier_rank(tier) > _tier_rank(max_tier):
+        return max_tier
+    return tier
+
+
+# ── Primary badge computation ─────────────────────────────────────────────
+
+
+def compute_badges(
+    attrs: Dict[str, int],
+    stats: Dict[str, float],
+    position: str = "SG",
+) -> List[Dict[str, Any]]:
+    """Compute badge assignments using ML attributes + NBA stats.
+
+    Gates are stat-driven: a player must actually perform the action in real
+    life to qualify.  Tier is determined by a composite of attributes and stats.
+
+    Args:
+        attrs: ML-predicted attributes (e.g., {"Three-Point Shot": 91, ...})
+        stats: Raw stats from NBA Site CSVs (engineered features row as dict)
+        position: Player position (PG/SG/SF/PF/C)
+
+    Returns:
+        List of badge dicts: [{"name": str, "tier": str, "score": float}, ...]
+    """
+    na = lambda name: _na(attrs, name)
+    sg = lambda key, default=0.0: _sg(stats, key, default)
+
+    # ── Extract key stats ─────────────────────────────────────────────
+    pts = sg("f_pg_pts", sg("PTS"))
+    reb = sg("f_pg_reb", sg("REB"))
+    ast = sg("f_pg_ast", sg("AST"))
+    stl = sg("f_pg_stl", sg("STL"))
+    blk = sg("f_pg_blk", sg("BLK"))
+    tov = sg("f_pg_tov", sg("TOV"))
+    fga = sg("f_pg_fga", sg("FGA"))
+    fg3a = sg("f_pg_fg3a", sg("FG3A"))
+    fg3m = sg("f_pg_fg3m", sg("FG3M"))
+    fta = sg("f_pg_fta", sg("FTA"))
+    oreb = sg("f_pg_oreb", sg("OREB"))
+    dreb = sg("f_pg_dreb", sg("DREB"))
+    fgm = sg("f_pg_fgm", sg("FGM"))
+
+    fg_pct = sg("f_fg_pct", sg("FG_PCT"))
+    fg3_pct = sg("f_fg3_pct", sg("FG3_PCT"))
+    ft_pct = sg("f_ft_pct", sg("FT_PCT"))
+    ts_pct = sg("f_ts_pct", sg("TS_PCT"))
+
+    usg = sg("f_usg", sg("USG_PCT"))
+    ast_pct = sg("f_ast_pct", sg("AST_PCT"))
+    oreb_pct = sg("f_oreb_pct", sg("OREB_PCT"))
+    dreb_pct = sg("f_dreb_pct", sg("DREB_PCT"))
+    tov_pct = sg("f_tov_pct", sg("E_TOV_PCT"))
+
+    drives = sg("f_drives_pg", sg("DRIVES"))
+    touches = sg("f_touches_pg", sg("TOUCHES"))
+    paint_touches = sg("f_paint_touch_pg", sg("PAINT_TOUCHES"))
+    passes = sg("f_passes_pg", sg("PASSES_MADE"))
+    pot_ast = sg("f_pot_ast_pg", sg("POTENTIAL_AST"))
+    cs_fg3a = sg("f_cs_fg3a_pg")
+    cs_fg_pct = sg("f_cs_fg_pct")
+    pu_fg3a = sg("f_pu_fg3a_pg")
+    pu_fg_pct = sg("f_pu_fg_pct")
+    deflections = sg("f_deflections_pg", sg("DEFLECTIONS"))
+    contested = sg("f_contested_pg", sg("CONTESTED_SHOTS"))
+    contested3 = sg("f_contested3_pg")
+    boxouts = sg("f_boxouts_pg")
+    speed_val = sg("f_avg_speed")
+    height = sg("f_height")
+
+    # Playtype data
+    iso_poss_pct = sg("f_isolation_poss_pct", sg("POSS_PCT_pt_isolation"))
+    iso_ppp = sg("f_isolation_ppp", sg("PPP_pt_isolation"))
+    transition_poss = sg("f_transition_poss_pct", sg("POSS_PCT_pt_transition"))
+    spot_up_poss = sg("f_spot_up_poss_pct", sg("POSS_PCT_pt_spot_up"))
+    cut_poss = sg("f_cut_poss_pct", sg("POSS_PCT_pt_cut"))
+
+    # Derived
+    ast_to_tov = ast / max(tov, 0.1) if tov > 0 else ast
+
+    # Position
+    pos = position.upper().replace("-", "")
+    is_guard = any(p in pos for p in ("PG", "SG"))
+    is_wing = "SF" in pos
+    is_big = any(p in pos for p in ("PF", "C"))
+    is_center = "C" in pos and "PF" not in pos
+    primary_pos = (
+        "PG"
+        if "PG" in pos
+        else "SG"
+        if "SG" in pos
+        else "SF"
+        if "SF" in pos
+        else "PF"
+        if "PF" in pos
+        else "C"
+    )
+
+    # ── Score each badge ──────────────────────────────────────────────
+    scores: Dict[str, float] = {}
+
+    # ═══════════════════════════════════════════════════════════════════
+    # FINISHING (8 badges)
+    # ═══════════════════════════════════════════════════════════════════
+
+    # Aerial Wizard — alley-oops, putbacks, aerial finishes
+    # Gate: must have dunk activity OR putback tendency + vertical athleticism
+    if (na("Driving Dunk") >= 45 or na("Standing Dunk") >= 45) and na("Vertical") >= 40:
+        scores["Aerial Wizard"] = _wt(
+            (na("Driving Dunk"), 0.25),
+            (na("Standing Dunk"), 0.15),
+            (na("Vertical"), 0.25),
+            (na("Offensive Rebound"), 0.15),
+            (_stat_score(oreb, 0.5, 3.0), 0.10),
+            (_stat_score(drives, 2.0, 15.0), 0.10),
+        )
+
+    # Float Game — floaters and runners
+    # Gate: must drive frequently + have layup ability (not a big who rarely handles)
+    if na("Driving Layup") >= 45 and drives >= 3.0:
+        scores["Float Game"] = _wt(
+            (na("Driving Layup"), 0.40),
+            (na("Close Shot"), 0.20),
+            (_stat_score(drives, 3.0, 15.0), 0.25),
+            (_stat_score(usg, 0.15, 0.33), 0.15),
+        )
+
+    # Hook Specialist — post hooks
+    # Gate: must have post hook attribute + paint touches
+    if na("Post Hook") >= 45 and paint_touches >= 2.0:
+        scores["Hook Specialist"] = _wt(
+            (na("Post Hook"), 0.55),
+            (na("Close Shot"), 0.15),
+            (_stat_score(paint_touches, 2.0, 12.0), 0.20),
+            (_stat_score(height, 78, 84), 0.10),
+        )
+
+    # Layup Mixmaster — acrobatic layups
+    # Gate: must drive frequently with good layup skill
+    if na("Driving Layup") >= 50 and drives >= 4.0:
+        scores["Layup Mixmaster"] = _wt(
+            (na("Driving Layup"), 0.35),
+            (na("Speed with Ball"), 0.20),
+            (_stat_score(drives, 4.0, 15.0), 0.20),
+            (na("Ball Handle"), 0.15),
+            (_stat_score(usg, 0.15, 0.30), 0.10),
+        )
+
+    # Paint Prodigy — paint scoring dominance
+    # Gate: must have real paint production (touches + drives or points)
+    if paint_touches >= 4.0 or (drives >= 6.0 and pts >= 12.0):
+        scores["Paint Prodigy"] = _wt(
+            (na("Close Shot"), 0.20),
+            (na("Driving Layup"), 0.18),
+            (na("Draw Foul"), 0.12),
+            (_stat_score(paint_touches, 3.0, 14.0), 0.20),
+            (_stat_score(drives, 4.0, 15.0), 0.15),
+            (_stat_score(pts, 10.0, 30.0), 0.15),
+        )
+
+    # Physical Finisher — finishing through contact
+    # Gate: must draw contact at rim (FTA + drives)
+    if fta >= 3.0 and (drives >= 3.0 or na("Strength") >= 60):
+        scores["Physical Finisher"] = _wt(
+            (na("Strength"), 0.22),
+            (na("Driving Layup"), 0.18),
+            (na("Draw Foul"), 0.20),
+            (_stat_score(fta, 3.0, 10.0), 0.20),
+            (_stat_score(drives, 3.0, 12.0), 0.10),
+            (_stat_score(pts, 10.0, 28.0), 0.10),
+        )
+
+    # Posterizer — contact dunks
+    # Gate: must have high dunk ability + actual dunk volume (dunks_share or FTA from drives)
+    if (
+        na("Driving Dunk") >= 60
+        and na("Vertical") >= 50
+        and (drives >= 4.0 or fta >= 3.0)
+    ):
+        scores["Posterizer"] = _wt(
+            (na("Driving Dunk"), 0.40),
+            (na("Vertical"), 0.25),
+            (na("Strength"), 0.15),
+            (_stat_score(fta, 2.0, 9.0), 0.12),
+            (_stat_score(drives, 4.0, 15.0), 0.08),
+        )
+
+    # Rise Up — standing dunks
+    # Gate: must be a big or have high standing dunk + dunk activity
+    if na("Standing Dunk") >= 50 and (is_big or na("Strength") >= 70):
+        scores["Rise Up"] = _wt(
+            (na("Standing Dunk"), 0.40),
+            (na("Strength"), 0.25),
+            (na("Vertical"), 0.15),
+            (_stat_score(oreb, 0.5, 3.5), 0.10),
+            (_stat_score(fgm, 3.0, 12.0), 0.10),
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # SHOOTING (5 badges)
+    # ═══════════════════════════════════════════════════════════════════
+
+    # Deadeye — shooting through contests
+    # Gate: must shoot contested shots at volume
+    if fg3a >= 1.5 or fga >= 6.0:
+        scores["Deadeye"] = _wt(
+            (na("Three-Point Shot"), 0.50),
+            (na("Mid-Range Shot"), 0.20),
+            (na("Shot IQ"), 0.10),
+            (_stat_score(fg3a, 1.0, 10.0), 0.10),
+            (_stat_score(contested, 1.0, 10.0), 0.05),
+            (_stat_score(contested3, 0.5, 8.0), 0.05),
+        )
+
+    # Limitless Range — deep threes
+    # Gate: must take threes at decent efficiency
+    if fg3a >= 2.0 and fg3_pct >= 0.30:
+        raw = _wt(
+            (na("Three-Point Shot"), 0.60),
+            (_stat_score(fg3a, 1.5, 12.0), 0.20),
+            (_stat_score(fg3_pct, 0.30, 0.45), 0.12),
+            (_stat_score(fg3m, 0.5, 5.0), 0.08),
+        )
+        # Volume cap
+        if fg3a < 3.0:
+            raw = min(raw, 55.0)
+        elif fg3a < 5.0:
+            raw = min(raw, 70.0)
+        elif fg3a < 7.0:
+            raw = min(raw, 82.0)
+        scores["Limitless Range"] = raw
+
+    # Mini Marksman — guards shooting over taller defenders
+    # Gate: must be a guard under 6'6" with significant 3PT volume
+    if is_guard and fg3a >= 2.5 and height <= 77:
+        scores["Mini Marksman"] = _wt(
+            (na("Three-Point Shot"), 0.40),
+            (na("Mid-Range Shot"), 0.25),
+            (na("Shot IQ"), 0.15),
+            (_stat_score(fg3a, 2.0, 10.0), 0.10),
+            (_stat_score(77 - height, 0, 6), 0.05),
+            (_stat_score(fg3_pct, 0.30, 0.44), 0.05),
+        )
+
+    # Set Shot Specialist — catch-and-shoot
+    # Gate: must have catch-and-shoot attempts or high spot-up possession %
+    if cs_fg3a >= 1.0 or (fg3a >= 2.0 and spot_up_poss >= 0.06):
+        scores["Set Shot Specialist"] = _wt(
+            (na("Three-Point Shot"), 0.45),
+            (na("Mid-Range Shot"), 0.10),
+            (_stat_score(cs_fg3a, 0.5, 6.0), 0.15),
+            (_stat_score(cs_fg_pct, 0.30, 0.45), 0.10),
+            (_stat_score(spot_up_poss, 0.04, 0.25), 0.10),
+            (_stat_score(fg3a, 1.0, 10.0), 0.10),
+        )
+
+    # Shifty Shooter — off-dribble shots
+    # Gate: must have pull-up attempts + creation load (usage + handle)
+    if pu_fg3a >= 1.0 or (na("Ball Handle") >= 60 and fg3a >= 2.5 and usg >= 0.20):
+        scores["Shifty Shooter"] = _wt(
+            (na("Three-Point Shot"), 0.25),
+            (na("Mid-Range Shot"), 0.15),
+            (na("Ball Handle"), 0.15),
+            (_stat_score(pu_fg3a, 0.5, 6.0), 0.15),
+            (_stat_score(pu_fg_pct, 0.28, 0.42), 0.10),
+            (_stat_score(usg, 0.15, 0.33), 0.10),
+            (_stat_score(fg3a, 1.5, 10.0), 0.10),
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # PLAYMAKING (8 badges)
+    # ═══════════════════════════════════════════════════════════════════
+
+    # Ankle Assassin — elite ball handling
+    # Gate: must have elite handle + high usage + drives (actual creation)
+    if na("Ball Handle") >= 65 and usg >= 0.20 and drives >= 5.0:
+        scores["Ankle Assassin"] = _wt(
+            (na("Ball Handle"), 0.45),
+            (na("Speed with Ball"), 0.25),
+            (_stat_score(drives, 5.0, 16.0), 0.12),
+            (_stat_score(usg, 0.20, 0.33), 0.10),
+            (_stat_score(pts, 12.0, 30.0), 0.08),
+        )
+
+    # Break Starter — outlet passes
+    # Gate: must rebound + pass (not just one or the other)
+    if dreb >= 3.5 and ast >= 2.0:
+        scores["Break Starter"] = _wt(
+            (na("Pass Accuracy"), 0.25),
+            (na("Pass Vision"), 0.20),
+            (na("Defensive Rebound"), 0.30),
+            (_stat_score(ast, 2.0, 10.0), 0.10),
+            (_stat_score(transition_poss, 0.05, 0.20), 0.08),
+            (_stat_score(dreb, 3.0, 10.0), 0.07),
+        )
+
+    # Dimer — boosting teammate shots
+    # Gate: must have real playmaking volume (ast + ast_pct)
+    if ast >= 3.0 and ast_pct >= 0.12:
+        scores["Dimer"] = _wt(
+            (na("Pass Accuracy"), 0.25),
+            (na("Pass IQ"), 0.25),
+            (na("Pass Vision"), 0.20),
+            (_stat_score(ast, 3.0, 11.0), 0.12),
+            (_stat_score(ast_pct, 0.12, 0.40), 0.10),
+            (_stat_score(pot_ast, 3.0, 12.0), 0.08),
+        )
+
+    # Handles for Days — stamina while dribbling
+    # Gate: must be ball-dominant with real handle skill
+    if na("Ball Handle") >= 55 and usg >= 0.18 and drives >= 4.0:
+        scores["Handles for Days"] = _wt(
+            (na("Ball Handle"), 0.35),
+            (na("Speed with Ball"), 0.25),
+            (na("Stamina"), 0.20),
+            (_stat_score(usg, 0.18, 0.33), 0.12),
+            (_stat_score(drives, 4.0, 15.0), 0.08),
+        )
+
+    # Lightning Launch — explosive first step
+    # Gate: must drive frequently with speed
+    if na("Speed with Ball") >= 50 and drives >= 4.0:
+        scores["Lightning Launch"] = _wt(
+            (na("Speed with Ball"), 0.35),
+            (na("Speed"), 0.20),
+            (na("Ball Handle"), 0.18),
+            (_stat_score(drives, 4.0, 16.0), 0.12),
+            (_stat_score(transition_poss, 0.05, 0.20), 0.08),
+            (_stat_score(pts, 10.0, 28.0), 0.07),
+        )
+
+    # Strong Handles — dribbling through contact
+    # Gate: must have handle + strength + creation load
+    if na("Ball Handle") >= 55 and na("Strength") >= 45 and usg >= 0.18:
+        scores["Strong Handles"] = _wt(
+            (na("Ball Handle"), 0.40),
+            (na("Strength"), 0.25),
+            (na("Hands"), 0.15),
+            (_stat_score(usg, 0.18, 0.33), 0.10),
+            (_stat_score(drives, 3.0, 12.0), 0.06),
+            (_stat_score(tov, 1.0, 5.0), 0.04),
+        )
+
+    # Unpluckable — ball security
+    # Gate: must have handle + good TOV discipline under pressure
+    if na("Ball Handle") >= 55 and usg >= 0.18:
+        tov_score = _clamp(_remap(tov_pct, 18.0, 5.0))
+        scores["Unpluckable"] = _wt(
+            (na("Ball Handle"), 0.35),
+            (na("Hands"), 0.20),
+            (tov_score, 0.25),
+            (_stat_score(usg, 0.18, 0.33), 0.12),
+            (_stat_score(ast_to_tov, 1.5, 4.0), 0.08),
+        )
+
+    # Versatile Visionary — advanced passing
+    # Gate: must have high assist volume + potential assists
+    if ast >= 3.0 and pot_ast >= 4.0:
+        scores["Versatile Visionary"] = _wt(
+            (na("Pass Accuracy"), 0.25),
+            (na("Pass Vision"), 0.30),
+            (na("Pass IQ"), 0.20),
+            (_stat_score(pot_ast, 4.0, 15.0), 0.12),
+            (_stat_score(ast_to_tov, 1.5, 4.0), 0.08),
+            (_stat_score(ast, 3.0, 11.0), 0.05),
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # DEFENSE / REBOUNDING (11 badges)
+    # ═══════════════════════════════════════════════════════════════════
+
+    # Boxout Beast — rebounding positioning
+    # Gate: must have real rebounding production + boxout activity
+    if reb >= 5.0 and (boxouts >= 1.5 or is_big):
+        scores["Boxout Beast"] = _wt(
+            (na("Strength"), 0.20),
+            (na("Offensive Rebound"), 0.20),
+            (na("Defensive Rebound"), 0.30),
+            (_stat_score(boxouts, 1.0, 6.0), 0.10),
+            (_stat_score(reb, 5.0, 14.0), 0.10),
+            (_stat_score(oreb_pct + dreb_pct, 0.10, 0.35), 0.10),
+        )
+
+    # Brick Wall — screen setting (bigs only mostly)
+    # Gate: must be big/wing with strength
+    if na("Strength") >= 60 and (is_big or is_wing):
+        scores["Brick Wall"] = _wt(
+            (na("Strength"), 0.50),
+            (na("Stamina"), 0.20),
+            (_stat_score(height, 78, 84), 0.15),
+            (_stat_score(sg("f_weight", 200), 200, 275), 0.10),
+            (_stat_score(pts, 5.0, 25.0), 0.05),
+        )
+
+    # Challenger — perimeter shot contests
+    # Gate: must have perimeter defense + contest volume
+    if na("Perimeter Defense") >= 40 and contested >= 1.5:
+        scores["Challenger"] = _wt(
+            (na("Perimeter Defense"), 0.50),
+            (na("Help Defense IQ"), 0.20),
+            (na("Agility"), 0.12),
+            (_stat_score(contested, 1.5, 12.0), 0.08),
+            (_stat_score(contested3, 1.0, 6.0), 0.05),
+            (_stat_score(stl, 0.5, 2.5), 0.05),
+        )
+
+    # Glove — on-ball steals
+    # Gate: must have steal production + steal attribute
+    if stl >= 0.6 and na("Steal") >= 40:
+        scores["Glove"] = _wt(
+            (na("Steal"), 0.45),
+            (na("Perimeter Defense"), 0.20),
+            (na("Agility"), 0.12),
+            (_stat_score(stl, 0.6, 2.5), 0.15),
+            (_stat_score(deflections, 1.0, 5.0), 0.08),
+        )
+
+    # High-Flying Denier — shot blocking
+    # Gate: must have block production + block attribute
+    if blk >= 0.5 and na("Block") >= 45:
+        scores["High-Flying Denier"] = _wt(
+            (na("Block"), 0.40),
+            (na("Vertical"), 0.18),
+            (na("Interior Defense"), 0.15),
+            (_stat_score(blk, 0.5, 3.0), 0.18),
+            (_stat_score(height, 78, 84), 0.09),
+        )
+
+    # Interceptor — passing lane steals
+    # Gate: must have deflections + steal production
+    if stl >= 0.6 and deflections >= 1.0:
+        scores["Interceptor"] = _wt(
+            (na("Pass Perception"), 0.35),
+            (na("Steal"), 0.22),
+            (na("Help Defense IQ"), 0.15),
+            (_stat_score(deflections, 1.0, 5.0), 0.12),
+            (_stat_score(stl, 0.6, 2.5), 0.08),
+            (_stat_score(contested, 2.0, 10.0), 0.08),
+        )
+
+    # Off-Ball Pest — disrupting off-ball movement
+    # Gate: must have perimeter defense + agility + steal production
+    if na("Perimeter Defense") >= 45 and na("Agility") >= 45 and stl >= 0.5:
+        scores["Off-Ball Pest"] = _wt(
+            (na("Perimeter Defense"), 0.30),
+            (na("Agility"), 0.25),
+            (na("Help Defense IQ"), 0.20),
+            (na("Stamina"), 0.12),
+            (_stat_score(stl, 0.5, 2.0), 0.08),
+            (_stat_score(deflections, 1.0, 4.0), 0.05),
+        )
+
+    # On-Ball Menace — staying in front of ball handlers
+    # Gate: must have high perimeter defense + contest volume
+    if na("Perimeter Defense") >= 55 and contested >= 4.0:
+        scores["On-Ball Menace"] = _wt(
+            (na("Perimeter Defense"), 0.35),
+            (na("Agility"), 0.20),
+            (na("Strength"), 0.12),
+            (na("Stamina"), 0.10),
+            (_stat_score(contested, 4.0, 12.0), 0.12),
+            (_stat_score(stl, 0.5, 2.0), 0.06),
+            (_stat_score(deflections, 1.0, 4.0), 0.05),
+        )
+
+    # Paint Patroller — interior defense / rim protection
+    # Gate: must have interior defense + block activity
+    if na("Interior Defense") >= 55 and (blk >= 0.6 or is_big):
+        scores["Paint Patroller"] = _wt(
+            (na("Interior Defense"), 0.35),
+            (na("Block"), 0.25),
+            (na("Help Defense IQ"), 0.15),
+            (na("Strength"), 0.10),
+            (_stat_score(blk, 0.4, 3.0), 0.10),
+            (_stat_score(height, 78, 84), 0.05),
+        )
+
+    # Pick Dodger — fighting through screens
+    # Gate: must have perimeter defense + agility + steal activity
+    if na("Perimeter Defense") >= 50 and na("Agility") >= 50 and stl >= 0.6:
+        scores["Pick Dodger"] = _wt(
+            (na("Perimeter Defense"), 0.30),
+            (na("Agility"), 0.28),
+            (na("Speed"), 0.16),
+            (na("Stamina"), 0.12),
+            (_stat_score(stl, 0.6, 2.0), 0.08),
+            (_stat_score(contested, 2.0, 10.0), 0.06),
+        )
+
+    # Post Lockdown — defending post moves
+    # Gate: must have interior defense + size/strength
+    if na("Interior Defense") >= 55 and (is_big or na("Strength") >= 60):
+        scores["Post Lockdown"] = _wt(
+            (na("Interior Defense"), 0.35),
+            (na("Strength"), 0.25),
+            (na("Help Defense IQ"), 0.15),
+            (_stat_score(height, 78, 84), 0.12),
+            (_stat_score(blk, 0.3, 2.0), 0.08),
+            (_stat_score(reb, 4.0, 12.0), 0.05),
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # POST (3 badges)
+    # ═══════════════════════════════════════════════════════════════════
+
+    # Post Fade Phenom — post fadeaways
+    # Gate: must have post fade attribute + paint touches
+    if na("Post Fade") >= 50 and paint_touches >= 2.5:
+        scores["Post Fade Phenom"] = _wt(
+            (na("Post Fade"), 0.45),
+            (na("Mid-Range Shot"), 0.20),
+            (_stat_score(paint_touches, 2.5, 10.0), 0.12),
+            (na("Shot IQ"), 0.13),
+            (_stat_score(pts, 10.0, 25.0), 0.10),
+        )
+
+    # Post Powerhouse — backing down defenders
+    # Gate: must have post control + strength + paint activity
+    if na("Post Control") >= 50 and na("Strength") >= 60 and paint_touches >= 2.5:
+        scores["Post Powerhouse"] = _wt(
+            (na("Post Control"), 0.35),
+            (na("Strength"), 0.32),
+            (_stat_score(paint_touches, 2.5, 10.0), 0.18),
+            (_stat_score(height, 78, 84), 0.10),
+            (_stat_score(pts, 10.0, 25.0), 0.08),
+        )
+
+    # Post-Up Poet — overall post scoring
+    # Gate: must have post skills + paint touches
+    if (na("Post Control") >= 45 or na("Post Hook") >= 45) and paint_touches >= 2.5:
+        scores["Post-Up Poet"] = _wt(
+            (na("Post Control"), 0.22),
+            (na("Post Hook"), 0.22),
+            (na("Post Fade"), 0.18),
+            (_stat_score(paint_touches, 2.5, 10.0), 0.20),
+            (na("Close Shot"), 0.10),
+            (_stat_score(pts, 10.0, 25.0), 0.08),
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # OFF-BALL (1 badge)
+    # ═══════════════════════════════════════════════════════════════════
+
+    # Slippery Off-Ball — getting open without the ball
+    # Gate: must have speed/agility + off-ball activity (spot-up or cuts)
+    if na("Speed") >= 50 and (spot_up_poss >= 0.08 or cut_poss >= 0.04):
+        scores["Slippery Off-Ball"] = _wt(
+            (na("Speed"), 0.22),
+            (na("Agility"), 0.22),
+            (na("Stamina"), 0.14),
+            (_stat_score(spot_up_poss, 0.08, 0.20), 0.16),
+            (_stat_score(cut_poss, 0.04, 0.10), 0.16),
+            (_stat_score(fg3a, 1.0, 8.0), 0.10),
+        )
+
+    # ═══════════════════════════════════════════════════════════════════
+    # POST-PROCESSING
+    # ═══════════════════════════════════════════════════════════════════
+
+    # ── Calculate badge budget from skill areas ───────────────────────
+    # Each skill area a player genuinely excels in earns ~2 badge slots.
+    # Only elite two-way superstars max out at 20.
+    skill_areas = 0
+
+    # Shooting excellence
+    if na("Three-Point Shot") >= 65 and fg3a >= 2.0:
+        skill_areas += 1
+    if na("Mid-Range Shot") >= 65 and fga >= 6.0:
+        skill_areas += 1
+
+    # Finishing excellence
+    if (na("Driving Layup") >= 60 or na("Close Shot") >= 60) and (
+        drives >= 3.0 or pts >= 10.0
+    ):
+        skill_areas += 1
+    if (na("Driving Dunk") >= 60 or na("Standing Dunk") >= 60) and (
+        drives >= 2.0 or fta >= 2.0
+    ):
+        skill_areas += 1
+
+    # Post game
+    if (
+        na("Post Hook") >= 55 or na("Post Fade") >= 55 or na("Post Control") >= 55
+    ) and paint_touches >= 2.0:
+        skill_areas += 1
+
+    # Playmaking
+    if (na("Pass Vision") >= 60 or na("Pass IQ") >= 60) and ast >= 2.5:
+        skill_areas += 1
+    if na("Ball Handle") >= 60 and usg >= 0.18:
+        skill_areas += 1
+
+    # Perimeter defense
+    if na("Perimeter Defense") >= 60 and (stl >= 0.6 or contested >= 2.0):
+        skill_areas += 1
+
+    # Interior defense
+    if na("Interior Defense") >= 60 and (blk >= 0.5 or is_big):
+        skill_areas += 1
+
+    # Rebounding
+    if (na("Offensive Rebound") >= 55 or na("Defensive Rebound") >= 60) and reb >= 4.0:
+        skill_areas += 1
+
+    # Athleticism (only counts if paired with on-court production)
+    if na("Speed") >= 65 and na("Agility") >= 65 and (drives >= 3.0 or stl >= 0.5):
+        skill_areas += 1
+    if na("Vertical") >= 60 and na("Strength") >= 60 and (blk >= 0.3 or fta >= 2.0):
+        skill_areas += 1
+
+    # Map skill areas to badge budget
+    # 0-1 areas: 2-3 badges (minimal specialists)
+    # 2 areas: 4-5 badges (one-dimensional role players)
+    # 3 areas: 6-8 badges (solid rotation players)
+    # 4 areas: 9-12 badges (starters / quality contributors)
+    # 5 areas: 13-15 badges (All-Star caliber)
+    # 6 areas: 16-17 badges (All-NBA level)
+    # 7+ areas: 18-20 badges (elite two-way superstars)
+    if skill_areas >= 8:
+        max_badges = 20
+    elif skill_areas >= 7:
+        max_badges = 18
+    elif skill_areas >= 6:
+        max_badges = 16
+    elif skill_areas >= 5:
+        max_badges = 14
+    elif skill_areas >= 4:
+        max_badges = 11
+    elif skill_areas >= 3:
+        max_badges = 8
+    elif skill_areas >= 2:
+        max_badges = 5
+    else:
+        max_badges = 3
+
+    # Convert scores to tiers and apply position caps
+    badges = []
+    for badge_name, score in scores.items():
+        tier = _tier_for_score(score)
+        if tier is None:
+            continue
+
+        # Apply position cap
+        caps = POSITION_CAPS.get(badge_name, {})
+        max_tier = caps.get(primary_pos, "Legend")
+        tier = _cap_tier(tier, max_tier)
+        if tier is None:
+            continue
+
+        badges.append(
+            {
+                "name": badge_name,
+                "tier": tier,
+                "score": round(score, 1),
+            }
+        )
+
+    # Sort by tier (Legend first) then score descending
+    badges.sort(key=lambda b: (-_tier_rank(b["tier"]), -b["score"]))
+
+    # Enforce tier rarity caps
+    legend_count = 0
+    hof_count = 0
+    final_badges = []
+
+    for badge in badges:
+        tier = badge["tier"]
+
+        if tier == "Legend":
+            if legend_count >= BADGE_MAX_LEGEND:
+                badge = {**badge, "tier": "HOF"}
+                tier = "HOF"
+            else:
+                legend_count += 1
+
+        if tier == "HOF":
+            if hof_count >= BADGE_MAX_HOF:
+                badge = {**badge, "tier": "Gold"}
+            else:
+                hof_count += 1
+
+        final_badges.append(badge)
+
+    # Enforce badge budget (not hard cap of 20)
+    final_badges = final_badges[:max_badges]
+
+    return final_badges
+
+
+# ── Badge count helper ────────────────────────────────────────────────────
+
+
+def compute_badge_count_from_stats(
+    attrs: Dict[str, int], stats: Dict[str, float]
+) -> int:
+    """Determine how many badges a player should have based on their actual skills.
+
+    Stat-driven: counts how many distinct skill areas a player excels in.
+    """
+    skill_count = 0
+
+    na = lambda name: _na(attrs, name)
+
+    # Shooting excellence
+    if na("Three-Point Shot") >= 55:
+        skill_count += 1
+    if na("Mid-Range Shot") >= 55:
+        skill_count += 1
+
+    # Finishing excellence
+    if na("Driving Layup") >= 55 or na("Close Shot") >= 55:
+        skill_count += 1
+    if na("Driving Dunk") >= 55 or na("Standing Dunk") >= 55:
+        skill_count += 1
+
+    # Post game
+    if na("Post Hook") >= 50 or na("Post Fade") >= 50 or na("Post Control") >= 50:
+        skill_count += 1
+
+    # Playmaking
+    if na("Pass Vision") >= 55 or na("Pass IQ") >= 55:
+        skill_count += 1
+    if na("Ball Handle") >= 55:
+        skill_count += 1
+
+    # Defense
+    if na("Perimeter Defense") >= 55:
+        skill_count += 1
+    if na("Interior Defense") >= 55:
+        skill_count += 1
+    if na("Steal") >= 50 or na("Block") >= 50:
+        skill_count += 1
+
+    # Rebounding
+    if na("Offensive Rebound") >= 50 or na("Defensive Rebound") >= 55:
+        skill_count += 1
+
+    # Physical / athleticism
+    if na("Speed") >= 60 and na("Agility") >= 60:
+        skill_count += 1
+
+    # Map skill count to badge count
+    if skill_count >= 10:
+        return 20
+    elif skill_count >= 8:
+        return min(20, 14 + skill_count - 8)
+    elif skill_count >= 5:
+        return 10 + skill_count - 5
+    elif skill_count >= 3:
+        return 6 + skill_count - 3
+    else:
+        return max(3, 3 + skill_count)
+
+
+# ── Full interface for CLI generator ──────────────────────────────────────
+
+
+def compute_badge_groups(
+    row: Dict[str, Any],
+    attrs: Dict[str, int],
+    tendency_results: Optional[List[Any]] = None,
+    family_scores: Optional[Dict[str, int]] = None,
+    ovr: Optional[int] = None,
+    badges_txt_path: str = "",
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Compute badge assignments grouped by section for the CLI generator.
+
+    This wraps compute_badges() and formats output for XML generation.
+    """
+    position = str(row.get("position", "SG")).upper()
+
+    # Build stats dict from row
+    stats: Dict[str, float] = {}
+
+    def _sf(key: str, default: float = 0.0) -> float:
+        try:
+            return float(row.get(key, default))
+        except (ValueError, TypeError):
+            return default
+
+    # Per-game stats
+    stats["PTS"] = _sf("per_game_pts_per_game")
+    stats["REB"] = _sf("per_game_reb_per_game")
+    stats["AST"] = _sf("per_game_ast_per_game")
+    stats["STL"] = _sf("per_game_stl_per_game")
+    stats["BLK"] = _sf("per_game_blk_per_game")
+    stats["TOV"] = _sf("per_game_tov_per_game")
+    stats["FGA"] = _sf("per_game_fga_per_game")
+    stats["FG3A"] = _sf("per_game_x3pa_per_game")
+    stats["FG3M"] = _sf("per_game_x3p_per_game")
+    stats["FTA"] = _sf("per_game_fta_per_game")
+    stats["OREB"] = _sf("per_game_oreb_per_game")
+    stats["DREB"] = _sf("per_game_dreb_per_game")
+    stats["FGM"] = _sf("per_game_fgm_per_game")
+
+    # Percentages
+    stats["FG_PCT"] = _sf("per_game_fg_percent")
+    stats["FG3_PCT"] = _sf("per_game_x3p_percent")
+    stats["FT_PCT"] = _sf("per_game_ft_percent")
+    stats["TS_PCT"] = _sf("advanced_ts_percent")
+
+    # Advanced
+    stats["USG_PCT"] = (
+        _sf("advanced_usg_percent") / 100.0
+        if _sf("advanced_usg_percent") > 1
+        else _sf("advanced_usg_percent")
+    )
+    stats["AST_PCT"] = (
+        _sf("advanced_ast_percent") / 100.0
+        if _sf("advanced_ast_percent") > 1
+        else _sf("advanced_ast_percent")
+    )
+    stats["OREB_PCT"] = (
+        _sf("advanced_orb_percent") / 100.0
+        if _sf("advanced_orb_percent") > 1
+        else _sf("advanced_orb_percent")
+    )
+    stats["DREB_PCT"] = (
+        _sf("advanced_drb_percent") / 100.0
+        if _sf("advanced_drb_percent") > 1
+        else _sf("advanced_drb_percent")
+    )
+    stats["E_TOV_PCT"] = _sf("advanced_tov_percent")
+
+    # Tracking
+    stats["DRIVES"] = _sf("tracking_drives_pg")
+    stats["TOUCHES"] = _sf("tracking_touches_pg")
+    stats["PAINT_TOUCHES"] = _sf("tracking_paint_touches_pg")
+    stats["PASSES_MADE"] = _sf("tracking_passes_pg")
+    stats["POTENTIAL_AST"] = _sf("tracking_potential_ast_pg")
+    stats["DEFLECTIONS"] = _sf("hustle_deflections_pg")
+    stats["CONTESTED_SHOTS"] = _sf("hustle_contested_shots_pg")
+    stats["CONTESTED3"] = _sf("hustle_contested_3pt_pg")
+    stats["CONTESTED2"] = _sf("hustle_contested_2pt_pg")
+
+    # Catch-and-shoot
+    stats["f_cs_fg3a_pg"] = _sf("tracking_catch_shoot_fg3a_pg")
+    stats["f_cs_fg_pct"] = _sf("tracking_catch_shoot_fg3_pct")
+
+    # Pull-up
+    stats["f_pu_fg3a_pg"] = _sf("tracking_pullup_fg3a_pg")
+    stats["f_pu_fg_pct"] = _sf("tracking_pullup_fg3_pct")
+
+    # Playtype
+    stats["POSS_PCT_pt_isolation"] = _sf("playtype_iso_poss_pct")
+    stats["PPP_pt_isolation"] = _sf("playtype_iso_ppp")
+    stats["POSS_PCT_pt_transition"] = _sf("playtype_transition_poss_pct")
+    stats["POSS_PCT_pt_spot_up"] = _sf("playtype_spot_up_poss_pct")
+    stats["POSS_PCT_pt_cut"] = _sf("playtype_cut_poss_pct")
+
+    # Boxouts
+    stats["f_boxouts_pg"] = _sf("hustle_boxouts_pg")
+
+    # Physical
+    stats["f_avg_speed"] = _sf("tracking_avg_speed")
+    stats["f_height"] = _sf("height_in")
+    stats["f_weight"] = _sf("weight_lbs")
+
+    # Compute badges
+    badge_list = compute_badges(attrs, stats, position)
+
+    # Load catalog for descriptions
+    catalog = load_badge_catalog(badges_txt_path)
+    catalog_lookup: Dict[str, Tuple[str, str]] = {}
+    for section_name, section_badges in catalog.items():
+        for badge_entry in section_badges:
+            bname = badge_entry.get("name", "").strip()
+            if bname:
+                catalog_lookup[bname] = (
+                    section_name,
+                    badge_entry.get("description", ""),
+                )
+
+    # Group by section
+    section_map = {
+        "Finishing": {
+            "Aerial Wizard",
+            "Float Game",
+            "Hook Specialist",
+            "Layup Mixmaster",
+            "Paint Prodigy",
+            "Physical Finisher",
+            "Posterizer",
+            "Rise Up",
+        },
+        "Shooting": {
+            "Deadeye",
+            "Limitless Range",
+            "Mini Marksman",
+            "Set Shot Specialist",
+            "Shifty Shooter",
+        },
+        "Playmaking": {
+            "Ankle Assassin",
+            "Break Starter",
+            "Dimer",
+            "Handles for Days",
+            "Lightning Launch",
+            "Strong Handles",
+            "Unpluckable",
+            "Versatile Visionary",
+        },
+        "Defense": {
+            "Boxout Beast",
+            "Brick Wall",
+            "Challenger",
+            "Glove",
+            "High-Flying Denier",
+            "Interceptor",
+            "Off-Ball Pest",
+            "On-Ball Menace",
+            "Paint Patroller",
+            "Pick Dodger",
+            "Post Lockdown",
+        },
+        "Post": {"Post Fade Phenom", "Post Powerhouse", "Post-Up Poet"},
+        "Off-Ball": {"Slippery Off-Ball"},
+    }
+
+    out: Dict[str, List[Dict[str, Any]]] = {
+        "Finishing": [],
+        "Shooting": [],
+        "Playmaking": [],
+        "Defense": [],
+        "Post": [],
+        "Off-Ball": [],
+    }
+
+    for badge in badge_list:
+        name = badge["name"]
+        section, desc = catalog_lookup.get(name, ("Off-Ball", ""))
+        # Override section based on our map if catalog is wrong
+        for sec, badges_in_sec in section_map.items():
+            if name in badges_in_sec:
+                section = sec
+                break
+
+        out.setdefault(section, []).append(
+            {
+                "key": name.lower().replace(" ", "_").replace("-", "_"),
+                "name": name,
+                "value": badge["tier"],
+                "score": badge["score"],
+                "description": desc,
+            }
+        )
+
+    # Sort each section by score descending
+    for k in out:
+        out[k] = sorted(out[k], key=lambda b: float(b.get("score", 0.0)), reverse=True)
+
+    return out

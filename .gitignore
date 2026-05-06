@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.venv312/
+*.egg-info/
+nba2k26_generator/stats_cache/
+nba2k26_generator/models_export.json
+nba2k26_generator/ml_feature_stats.json
+nba2k26_generator/ml/models/
+
+# Node / Electron
+frontend/node_modules/
+frontend/dist/
+frontend/resources/
+
+# Previous local builds
+dist/
+
+# Playbook debugging artifacts (large binary/json snapshots)
+Playbook/*.bin
+Playbook/*.json
+Playbook/fast_snap*.json
+Playbook/screenshot/
+
+# Game binary files (extracted from NBA2K, not source code)
+Playbook/game files/
+Playbook/RosterNBA*
+Playbook/2K26 Tables/Old Patches/
+
+# Large zip archives
+*.zip
+
+# Build assets (generated in CI — commit real icons here once you have them)
+# frontend/build-assets/   ← uncomment this line once you add real icons
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code session files
+.claude/

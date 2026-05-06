@@ -1,0 +1,21 @@
+import psutil, ctypes
+from ctypes import wintypes, byref, c_size_t, WinDLL, create_string_buffer
+
+kernel = WinDLL('kernel32')
+RPM = kernel.ReadProcessMemory
+RPM.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, c_size_t, ctypes.POINTER(c_size_t)]
+
+pid = [p.pid for p in psutil.process_iter() if 'NBA2K26' in p.name()][0]
+h = kernel.OpenProcess(0x0010|0x0400, False, pid)
+
+search = b'Nurse'
+found = []
+for base in range(0x27000000, 0x28000000, 0x100000):
+    buf = create_string_buffer(0x100000)
+    if RPM(h, ctypes.c_void_p(base), buf, 0x100000, byref(c_size_t(0))):
+        if search in buf.raw:
+            idx = buf.raw.find(search)
+            found.append(base + idx)
+            print(f"Nurse at 0x{base+idx:X}")
+
+print(f"Total: {len(found)}")

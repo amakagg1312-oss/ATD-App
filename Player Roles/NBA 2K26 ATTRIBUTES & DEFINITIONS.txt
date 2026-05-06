@@ -1,0 +1,112 @@
+NBA 2K26 ATTRIBUTES & DEFINITIONS
+
+Agility (AGILITY)
+Determines a player's defensive lateral movement, off-ball launches, and off-ball cuts.
+
+Ball Handle (BALL)
+Determines a player's ability to handle and control the basketball while dribbling, particularly in tight spaces or when attempting advanced moves like crossovers, spins, or behind-the-back dribbles.
+
+Block (BLOCK)
+Determines a player's ability to contest or block shots from opponents, especially near the basket.
+
+Close Shot (CLOSE)
+Determines a player's effectiveness in making shots near the basket but outside the immediate layup and dunking range.
+
+Defensive Consistency (DCNST)
+Determines a player's ability to maintain effective defensive performance throughout the game.
+
+Defensive Rebound (DREB)
+Determines a player's effectiveness in securing rebounds on the defensive end.
+
+Draw Foul (FOUL)
+Determines the ability to attract fouls from defenders while shooting close to the basket or driving toward it.
+
+Driving Dunk (DUNK)
+Determines a player's ability to execute dunks while driving towards the basket.
+
+Free Throw (FT)
+Determines a player's ability to successfully convert free throw attempts. Timing is generally easier for players with a high rating.
+
+Hands (HANDS)
+Determines a player's ability to secure and control the basketball, including effectiveness in catching passes and finishing plays.
+
+Help Defense IQ (HELPDIQ)
+Determines a player's ability to provide effective help on defense, such as knowing when to double team or assist teammates without leaving their primary assignment open.
+
+Hustle (HSTL)
+Determines a player's effort and tenacity in making plays, particularly on defense and when going after loose balls.
+
+Intangibles (INTNGBL)
+Measures a player's overall impact that isn't easily quantified by other stats, such as toughness, performance under pressure, and effectiveness in clutch situations.
+
+Interior Defense (ID)
+Determines a player's ability to defend against opponents in the paint effectively.
+
+Layup (LAYUP)
+Determines a player's ability to successfully make layup shots taken close to the basket.
+
+Mid-Range Shot (MID)
+Determines a player's effectiveness in shooting from mid-range distances.
+
+Offensive Consistency (OCNST)
+Determines a player's ability to maintain a high level of offensive performance throughout the game.
+
+Offensive Rebound (OREB)
+Determines a player's ability to grab rebounds after missed shots on the offensive end.
+
+Overall Durability (DUR)
+Determines a player's ability to withstand physical demands. A higher rating reduces the likelihood of fatigue or injuries.
+
+Pass Accuracy (PASS)
+Determines the likelihood of successfully completing passes to teammates, especially in high-pressure situations or near defenders.
+
+Pass IQ (PASSIQ)
+Determines a player's ability to make smart passing decisions, identifying the best options and minimizing the risk of turnovers.
+
+Pass Perception (PSPER)
+Determines a player's ability to anticipate and react to passing lanes, leading to disruptions of the opponent's offensive plays.
+
+Pass Vision (VISION)
+Determines a player's ability to quickly recognize and anticipate passing opportunities on the court.
+
+Perimeter Defense (PD)
+Determines effectiveness in guarding opponents on the perimeter. Influences how well a player stays in front of their man and contests outside shots.
+
+Post Control (POSTC)
+Determines a player's ability to perform moves while backing down an opponent and successfully finishing around the basket from the post.
+
+Post Fade (PFADE)
+Determines a player's effectiveness in executing fadeaway shots while in the post.
+
+Post Hook (PHOOK)
+Determines a player's ability to successfully execute hook shots while in the post position.
+
+Potential (POT)
+Determines a player's maximum rating potential. Grades range from F to A+ (95-99).
+
+Shot IQ (SHOTIQ)
+Determines understanding of shot selection. Influences how well a player reads the game to make effective shooting choices (shooting vs. passing vs. driving).
+
+Speed (SPEED)
+Affects how quickly a player can move around the court without the ball. Crucial for fast breaks and defensive positioning.
+
+Speed with Ball (SPD/BALL)
+Determines how fast a player can launch a dribble from a standstill and how quickly they move while dribbling.
+
+Stamina (STAM)
+Determines the ability to maintain performance over the duration of a game. Low stamina negatively impacts speed, strength, and shooting.
+
+Standing Dunk (STDUNK)
+Determines the ability to execute dunks while standing still, vital for big men near the basket.
+
+Steal (STEAL)
+Determines a player's ability to intercept passes and take the ball away from opponents.
+
+Strength (STR)
+Determines physical power, affecting the ability to establish position, finish through contact, and hold ground defensively.
+
+Three-Point Shot (3PT)
+Determines a player's ability to make three-point shots. Higher ratings increase the "green window" for shot timing.
+
+Vertical (VERT)
+Determines leaping ability. Crucial for dunks, blocking shots, and rebounding.

@@ -1,0 +1,18 @@
+"street_away_logo": {
+	"Width": 512,
+	"Height": 512,
+	"Format": "BC7_UNORM",
+	"Min": [ 0.0, 0.0, 0.0, 0.0 ],
+	"Max": [ 1.0, 1.0, 1.0, 1.0 ],
+	"PixelDataSize": 262144,
+	"Segments": [
+		{
+			"FileOffset": 32,
+			"FileSize": 15395,
+			"MemorySize": 262144,
+			"InflatedSize": 108660
+		}
+	],
+	"CompressionMethod": 33,
+	"Binary": "street_away_logo.2f93bfdc032b0843.tld"
+}

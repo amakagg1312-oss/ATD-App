@@ -1,0 +1,99 @@
+{
+  "name": "atd-2k26",
+  "version": "1.0.0",
+  "private": true,
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "electron .",
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.atd2k26.app",
+    "productName": "ATD 2K26",
+    "copyright": "Copyright © 2026 ATD",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "amakagg1312-oss",
+        "repo": "ATD-App"
+      }
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build-assets"
+    },
+    "files": [
+      "electron/**/*",
+      "ui/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/python",
+        "to": "python",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "resources/data",
+        "to": "data",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build-assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "ATD 2K26"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build-assets/icon.icns",
+      "category": "public.app-category.sports-games",
+      "identity": null
+    },
+    "dmg": {
+      "sign": false
+    }
+  },
+  "devDependencies": {
+    "@electron/packager": "^19.1.0",
+    "electron": "^32.3.3",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  }
+}

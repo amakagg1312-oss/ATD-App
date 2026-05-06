@@ -1,0 +1,11 @@
+"playnow_landing_online": {
+	"Width": 2048,
+	"Height": 1024,
+	"Format": "BC1_UNORM",
+	"Min": [ 0.0, 0.0, 0.0, 1.0 ],
+	"Max": [ 1.0, 1.0, 1.0, 1.0 ],
+	"PixelDataSize": 1048576,
+	"Twiddled": 1,
+	"CompressionMethod": 33,
+	"Binary": "playnow_landing_online.63c0f9160363eaf2.tld"
+}

@@ -1,0 +1,18 @@
+"logomode_mycareer_wm": {
+	"Width": 1024,
+	"Height": 256,
+	"Format": "BC7_UNORM",
+	"Min": [ 0.149959803, 0.152926177, 0.158960849, 0.0 ],
+	"Max": [ 1.0, 1.0, 1.0, 1.0 ],
+	"PixelDataSize": 262144,
+	"Segments": [
+		{
+			"FileOffset": 32,
+			"FileSize": 2784,
+			"MemorySize": 262144,
+			"InflatedSize": 90840
+		}
+	],
+	"CompressionMethod": 33,
+	"Binary": "logomode_mycareer_wm.8011992e7d4f8e6f.tld"
+}

@@ -1,0 +1,243 @@
+🧠 HIERARCHY (6)
+
+T1 = Primary Initiator
+T2 = Secondary Initiator
+T3 = Connector
+
+S1 = Primary Scorer
+S2 = Secondary Scorer
+S3 = Third Option
+
+🎮 CORE ROLES (15)
+
+ROL = Role Player
+CON = Conductor
+ISO = Isolation Heavy
+BEN = Bench Usage
+MIC = Microwave Scorer
+DEV = Development
+SPT = Spot-Up Only
+CLO = Closer
+STBLY = Stability Piece
+FILL = Plug Role
+VET = Veteran Presence
+ENG = Energy Role
+GLUE = Glue Guy
+ROT = Rotation Lock
+EMG = Emergency Role
+
+🎯 SCORING STYLES (35)
+
+3L = 3-Level Scorer
+SHO = Pure Shooter
+SHH = Shot Hunter
+MOV = Movement Shooter
+MID = Mid Specialist
+SLH = Slasher
+RR = Rim Runner
+FIN = Finisher
+PBF = Putback Finisher
+STB = Stretch Big
+POP = Pick & Pop
+FAC = Face-Up Big
+LOB = Lob Threat
+PNR = Roll Finisher
+ISO3 = Iso 3 Creator
+PST = Post Scorer
+CUT = Cutter
+REL = Relocation Shooter
+FLO = Floater Specialist
+ARC = Deep Range Shooter
+DUNK = Dunk Specialist
+TIP = Tip Finisher
+FADE = Fadeaway Specialist
+HOOK = Hook Shot Specialist
+UPN = Up-and-Under
+BANK = Bank Shot User
+RUN = Runner Specialist
+COR = Corner Specialist
+WING = Wing Shooter
+PULL = Pull-Up Shooter
+C&S = Catch & Shoot
+TRAIL = Trailer Shooter
+PUT = Putback Creator
+LOBF = Lob Finisher
+STEP = Stepback Specialist
+
+🏃 DRIVE / ATTACK (30)
+
+BLW = Blow-By
+BUL = Bully
+CTL = Controlled
+TRN = Transition
+HFL = High Flyer
+PHY = Physical Driver
+GLD = Glide Driver
+SPN = Spin Driver
+HES = Hesitation Driver
+STP = Stop-Start
+EURO = Euro Step
+STR = Straight Line
+SNAK = PnR Snake Dribbler
+SPLT = Split Defender
+WRAP = Wrap Finisher
+EXT = Extension Finisher
+ACRO = Acrobatic Finisher
+REV = Reverse Finisher
+ONE = One-Foot Finisher
+TWO = Two-Foot Finisher
+BODY = Body Control Finisher
+SHIFT = Shift Creator
+BURST = Burst Driver
+GRIND = Grind Driver
+LEAN = Lean Finisher
+FWD = Forward Momentum
+BACK = Backpedal Creator
+SIDE = Side Step Driver
+ANGLE = Angle Driver
+CUTDRV = Cut Finisher
+
+🛡 DEFENSE (40)
+
+LOCK = Lockdown
+POA = Point of Attack
+BHW = Ball Hawk
+RIMD = Rim Defender
+SWI = Switchable
+GLS = Glass Cleaner
+ANCH = Anchor
+HELP = Help Defender
+INT = Interceptor
+CHS = Chase Defender
+POSTD = Post Defender
+WEAK = Weakside Rim Protector
+SCRN = Screen Navigator
+DISC = Disciplined Defender
+DENY = Denial Defender
+PRESS = Pressure Defender
+STUNT = Stunt Defender
+RECOV = Recovery Defender
+CONTEST = Shot Contester
+VERT = Verticality Defender
+DROP = Drop Coverage Big
+HEDGE = Hedge Big
+BLITZ = Blitz Defender
+ZONE = Zone IQ
+TAG = Roller Tagger
+DIG = Dig Defender
+ROT = Rotational Defender
+CLOSE = Closeout Defender
+HAND = Active Hands
+STRIP = Strip Specialist
+WALL = Wall Defender
+BOXD = Box Defender
+BOARD = Rebound Positioner
+BUMP = Body Bump Defender
+MIRROR = Mirror Defender
+TRACK = Tracking Defender
+CUTD = Cut Defender
+FOUL = Low Foul Rate
+DISC2 = Discipline+
+STAY = Stay Home Defender
+
+🧠 IQ / CONTROL (30)
+
+PSS = Pass First
+CALM = Low Mistake
+RHY = Rhythm Player
+FLOW = Flow Player
+READ = Read & React
+SET = System Player
+ADJ = Adaptive
+SAFE = Safe Player
+RISK = Risk Player
+ORCH = Orchestrator
+DELAY = Tempo Slower
+FAST = Quick Decision
+SCAN = Floor Scanner
+TIM = Timing Player
+FEEL = High Feel
+INST = Instinct Player
+REACT = Quick Reactor
+PLAN = Planner
+CTRL = Game Controller
+BAL = Balanced Mind
+COMPOSE = Composed
+CLUTCHIQ = Clutch IQ
+PACE = Pace Controller
+DISCIP = Discipline IQ
+AWARE = Awareness
+VISION = Vision Playmaker
+ANGLEIQ = Angle Reader
+CLOCK = Clock Aware
+SETUP = Setup Creator
+CONTROL2 = Possession Control
+
+🧩 UTILITY (25)
+
+JAT = Jack of All Trades
+TWB = Two-Way Balanced
+OGM = Off-Ball Mover
+SGR = Secondary Guard
+SGF = Secondary Forward
+L3P = Light 3PT
+H3P = High 3PT
+SCR = Screen Setter
+REB = Rebounder
+BOX = Box Out
+HUST = Hustle
+DIRT = Dirty Work
+GLUE = Glue Role
+LINK = Connector
+SPC = Spacer
+FILL2 = Fill Role
+CLEAN = Clean-Up Player
+CHASE = Loose Ball Chaser
+CUT2 = Smart Cutter
+MOVE = Constant Mover
+STACK = Lineup Fitter
+BAL2 = Balance Role
+SUP = Support Role
+HELP2 = Team Helper
+ROT2 = Rotation Piece
+
+🎯 SPECIALIST (25)
+
+CLM = Clutch Scorer
+PNH = PnR Handler
+DHO = DHO Operator
+SCO = Secondary Creator
+DEC = Decoy
+GRAV = Gravity
+ROLL = Vertical Roller
+SHORT = Short Roll
+KICK = Drive & Kick
+HAND2 = Hand Activity
+TIPD = Tip Defender
+LOB2 = Lob Target
+SCREENIQ = Screen IQ
+PIN = Pin Down Shooter
+FLARE = Flare Shooter
+BACKCUT = Backdoor Cutter
+HAMMER = Hammer Action
+GHOST = Ghost Screener
+RELOC = Relocator
+DRAG = Drag Screen
+STACKPNR = Stacked PnR
+SPAIN = Spain Action
+DELAYSET = Delay Action
+POSTHUB = Post Hub
+ELBOW = Elbow Hub
+
+🦄 UNICORN ROLES
+
+TDH = Triple Double Hub
+PCE = Pace Controller Elite
+GRV+ = Gravity Plus
+DSC = Defensive System Changer
+MME = Mismatch Engine
+SCE = Shot Creation Engine
+OFF+ = Offensive Ecosystem Driver
+3LV+ = True 3-Level Elite
+CLX = Clutch Extremist
+VRE = Versatility Engine

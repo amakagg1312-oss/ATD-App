@@ -1,0 +1,12 @@
+﻿
+=== LeBron James (SF) [2024-25] ===
+  Raw: STL%=1.36  BLK%=0.82  DWS=0.090  3P%=0.376  USG=29.1%
+  PD=65  Steal=67  HelpIQ=69
+  3PT=76  MR=89
+  Badges (12): Float Game(Gold), Layup Mixmaster(Silver), Shifty Shooter(Silver), Versatile Visionary(HOF), Break Starter(HOF), Dimer(Gold), Handles for Days(Gold), Ankle Assassin(Gold), Strong Handles(Silver), Pick Dodger(Silver), Off-Ball Pest(Silver), Slippery Off-Ball(Silver)
+
+=== Luka Don─ìi─ç (PG) [2024-25] ===
+  Raw: STL%=2.44  BLK%=0.54  DWS=0.126  3P%=0.368  USG=32.8%
+  PD=63  Steal=65  HelpIQ=64
+  3PT=87  MR=74
+  Badges (16): Float Game(Gold), Layup Mixmaster(Gold), Shifty Shooter(Gold), Limitless Range(Gold), Mini Marksman(Silver), Deadeye(Silver), Versatile Visionary(Legend), Handles for Days(HOF), Break Starter(HOF), Ankle Assassin(HOF), Strong Handles(Gold), Dimer(Gold), Lightning Launch(Gold), Unpluckable(Silver), Pick Dodger(Silver), Slippery Off-Ball(Gold)
