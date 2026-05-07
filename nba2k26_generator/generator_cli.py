@@ -13,13 +13,36 @@ from zipfile import ZipFile
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-try:
-    from nba2k26_generator.nba_site_normalization import load_nba_site_rows
-except Exception:
+import importlib.util as _importlib_util
+
+
+def _load_fn_from_file(module_name: str, rel_filename: str, fn_name: str):
+    """Load a single function from a .py file relative to this script, bypassing sys.path."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(here, rel_filename)
+    if not os.path.isfile(path):
+        print(f"[generator_cli] {rel_filename} not found at {path}", file=sys.stderr)
+        return None
     try:
-        from nba_site_normalization import load_nba_site_rows  # type: ignore
+        spec = _importlib_util.spec_from_file_location(module_name, path)
+        mod = _importlib_util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return getattr(mod, fn_name, None)
+    except Exception as _e:
+        print(f"[generator_cli] failed to load {rel_filename}: {_e}", file=sys.stderr)
+        return None
+
+
+load_nba_site_rows = _load_fn_from_file("nba_site_normalization", "nba_site_normalization.py", "load_nba_site_rows")
+if load_nba_site_rows is None:
+    # Fallback: try conventional import paths
+    try:
+        from nba2k26_generator.nba_site_normalization import load_nba_site_rows  # type: ignore
     except Exception:
-        load_nba_site_rows = None  # type: ignore
+        try:
+            from nba_site_normalization import load_nba_site_rows  # type: ignore
+        except Exception:
+            pass  # load_nba_site_rows remains None; error raised at call site
 
 # ML attribute computation (sklearn models + committee 11+ correction + role boosts)
 _compute_attributes_ml = None
@@ -28,7 +51,7 @@ try:
     _compute_attributes_ml = _ml_fn
 except Exception:
     try:
-        from generator_cli_ml import compute_attributes_ml as _ml_fn
+        from generator_cli_ml import compute_attributes_ml as _ml_fn  # type: ignore
         _compute_attributes_ml = _ml_fn
     except Exception:
         _compute_attributes_ml = None
@@ -1112,7 +1135,13 @@ def load_rows(database_dir: str) -> List[Dict[str, Any]]:
         if not matches:
             continue
         if load_nba_site_rows is None:
-            raise RuntimeError("NBA Site normalization module is unavailable.")
+            here = os.path.dirname(os.path.abspath(__file__))
+            norm_path = os.path.join(here, "nba_site_normalization.py")
+            exists = os.path.isfile(norm_path)
+            raise RuntimeError(
+                f"NBA Site normalization module is unavailable. "
+                f"File {'found' if exists else 'NOT FOUND'} at: {norm_path}"
+            )
         rows = load_nba_site_rows(normalized_dir)
         for i, row in enumerate(rows):
             row.setdefault("__source_file", "NBA Site data (normalized)")
