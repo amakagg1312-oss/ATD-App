@@ -288,7 +288,7 @@ def compute_attributes_ml(
                 _pure_predict = None
         if _pure_predict is not None:
             try:
-                pure_attrs = _pure_predict(row, all_rows or [], str(row.get("position", row.get("Position", "SF"))))
+                pure_attrs = _pure_predict(row, all_rows or [])
                 if pure_attrs:
                     return {"attributes": pure_attrs, "roles": [], "unicorn_role": None, "ovr": 75}
             except Exception:
