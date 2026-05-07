@@ -14,8 +14,22 @@ CACHE_TTL = 21600  # 6 hours
 def _cache_dir():
     here = Path(__file__).parent
     d = here / "stats_cache"
-    d.mkdir(exist_ok=True)
-    return d
+    try:
+        d.mkdir(exist_ok=True)
+        # Quick write-access check
+        test = d / ".write_test"
+        test.touch()
+        test.unlink()
+        return d
+    except OSError:
+        pass
+    # Fallback: user-writable location (handles Program Files installs on Windows)
+    if sys.platform == "win32":
+        base = Path(os.environ.get("APPDATA", Path.home())) / "ATD 2K26" / "stats_cache"
+    else:
+        base = Path.home() / "Library" / "Application Support" / "ATD 2K26" / "stats_cache"
+    base.mkdir(parents=True, exist_ok=True)
+    return base
 
 def _key(*parts):
     return "_".join(str(p).replace("/", "-").replace(" ", "_").lower() for p in parts if str(p))

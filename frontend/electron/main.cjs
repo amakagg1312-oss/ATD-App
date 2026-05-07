@@ -963,7 +963,7 @@ function generateTeamBatch({ players, season }) {
       return new Promise((res) => {
         const child = spawn(
           pythonPath,
-          ["-m", "nba2k26_generator.generator_cli", "--player", playerName, "--season", season, "--database-dir", dbDir, "--player-roles-dir", rolesDir, "--json"],
+          [fastScript, "--player", playerName, "--season", season, "--database-dir", dbDir, "--player-roles-dir", rolesDir, "--json"],
           {
             cwd: projectRoot,
             env: { ...process.env, PYTHONIOENCODING: "utf-8", PYTHONPATH: projectRoot },
@@ -974,17 +974,15 @@ function generateTeamBatch({ players, season }) {
         );
 
         let stdout = "";
+        let stderr = "";
         child.stdout.on("data", (chunk) => { stdout += String(chunk); });
-        child.stderr.on("data", () => {});
+        child.stderr.on("data", (chunk) => { stderr += String(chunk); });
         child.on("error", () => res({ ok: false, player: playerName, error: "Process error" }));
-child.on("close", (code) => {
-      console.log('Python script exit code:', code);
-      console.log('Python stdout length:', stdout.length);
-      console.log('Python stdout (first 500 chars):', stdout.slice(0, 500));
-      console.log('Python stdout lines count:', stdout.trim().split("\n").length);
-      
-      if (code !== 0) {
-            res({ ok: false, player: playerName, error: `Generation failed (${code})` });
+        child.on("close", (code) => {
+          if (code !== 0) {
+            const errMsg = stderr.trim().split("\n").pop() || `Generation failed (${code})`;
+            console.error(`[team-batch] ${playerName} failed (${code}):`, stderr.slice(-500));
+            res({ ok: false, player: playerName, error: errMsg });
             return;
           }
           try {
