@@ -65,7 +65,7 @@ jobs:
 
           Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile get-pip.py
           & "$dest\python.exe" get-pip.py --no-warn-script-location
-          & "$dest\python.exe" -m pip install nba_api openpyxl pandas --no-warn-script-location
+          & "$dest\python.exe" -m pip install nba_api openpyxl pandas scikit-learn --no-warn-script-location
           Write-Output "Python bundle complete"
 
       # ── macOS: python-build-standalone (truly portable) ─────────────────
@@ -105,7 +105,7 @@ jobs:
 
           rm -f /tmp/py_standalone.tar.gz
           ls frontend/resources/python/bin/
-          frontend/resources/python/bin/pip3 install nba_api openpyxl pandas
+          frontend/resources/python/bin/pip3 install nba_api openpyxl pandas scikit-learn
           echo "Python bundle complete"
 
       # ── Bundle project data files ────────────────────────────────────────
