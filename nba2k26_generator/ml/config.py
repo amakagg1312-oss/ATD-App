@@ -3,7 +3,14 @@
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent.parent
+def _resolve_base_dir() -> Path:
+    import os
+    cwd = Path(os.getcwd())
+    if (cwd / "NBA Site data").is_dir():
+        return cwd
+    return Path(__file__).parent.parent.parent
+
+BASE_DIR = _resolve_base_dir()
 NBA_DATA_DIR = BASE_DIR / "NBA Site data"
 PLAYER_ROLES_DIR = BASE_DIR / "Player Roles"
 MODELS_DIR = Path(__file__).parent / "models"

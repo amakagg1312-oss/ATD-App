@@ -73,9 +73,6 @@ dist/
 
 # Screenshots / media not used by the app
 2k ratings screenshot/
-Badges/*.jpg
-Badges/*.png
-Badges/*.jpeg
 
 # Large zip archives
 *.zip

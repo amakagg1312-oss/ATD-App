@@ -45,6 +45,13 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "../Badges",
+        "to": "Badges",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "win": {
