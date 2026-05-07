@@ -278,6 +278,22 @@ def compute_attributes_ml(
     Returns dict with keys: attributes, roles, unicorn_role, ovr
     """
     if not ML_AVAILABLE:
+        # sklearn not available — try the pure-Python predictor (models_export.json)
+        try:
+            from nba2k26_generator.ml_predictor_pure import predict_attributes as _pure_predict
+        except Exception:
+            try:
+                from ml_predictor_pure import predict_attributes as _pure_predict  # type: ignore
+            except Exception:
+                _pure_predict = None
+        if _pure_predict is not None:
+            try:
+                pure_attrs = _pure_predict(row, all_rows or [], str(row.get("position", row.get("Position", "SF"))))
+                if pure_attrs:
+                    return {"attributes": pure_attrs, "roles": [], "unicorn_role": None, "ovr": 75}
+            except Exception:
+                pass
+        # Pure predictor also failed — signal caller to use the rule-based fallback
         return {"attributes": {}, "roles": [], "unicorn_role": None, "ovr": 50}
 
     try:

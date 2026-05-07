@@ -9255,6 +9255,9 @@ def _compute_attributes_with_ml(
     if _compute_attributes_ml is not None:
         ml_result = _compute_attributes_ml(row, tendencies, player_roles_dir, all_rows, badges_txt_path)
     else:
+        ml_result = None
+
+    if not ml_result or not ml_result.get("attributes"):
         ml_result = compute_attributes(row, tendencies, player_roles_dir, all_rows, badges_txt_path)
 
     attrs = ml_result.get("attributes", {})

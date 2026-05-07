@@ -5,8 +5,6 @@ __pycache__/
 .venv312/
 *.egg-info/
 nba2k26_generator/stats_cache/
-nba2k26_generator/models_export.json
-nba2k26_generator/ml_feature_stats.json
 nba2k26_generator/ml/models/
 
 # Debug / test / log files (root level)
