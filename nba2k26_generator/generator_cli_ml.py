@@ -1,5 +1,6 @@
 # ML-based attribute generation using NBA Site data directly
 import re
+import sys
 import unicodedata
 import numpy as np
 import pandas as pd
@@ -270,192 +271,157 @@ def compute_attributes_ml(
     all_rows: Optional[List[Dict[str, Any]]] = None,
     badges_txt_path: str = "",
 ) -> Dict[str, Any]:
-    """Compute player attributes using pure ML models + role system.
+    """Compute player attributes using ML models + role system.
 
-    Reads directly from NBA Site CSV data (same source as training)
-    to guarantee zero feature mismatch between training and inference.
+    Tries the full sklearn pipeline first (Path A). If sklearn is unavailable
+    or the pipeline fails, falls back to the pure-Python predictor (Path B).
+    In both cases the same post-processing is applied: committee floors,
+    role assignment/boosts, and Shot IQ forcing from the Excel sheet.
 
     Returns dict with keys: attributes, roles, unicorn_role, ovr
     """
-    if not ML_AVAILABLE:
-        # sklearn not available — try the pure-Python predictor (models_export.json)
+    player_name = str(row.get("player_name", row.get("Player", ""))).strip()
+    season = str(row.get("season_label", row.get("season", "2024-25"))).strip()
+    position = str(row.get("position", row.get("pos", "SG")))
+
+    raw_attrs: Dict[str, int] = {}
+    stats: Dict[str, float] = {}  # populated only by full sklearn path
+
+    # ── Path A: full sklearn pipeline ──────────────────────────────────────
+    if ML_AVAILABLE:
+        try:
+            generator = AttributeGenerator()
+            if generator.load_models():
+                engineered = _get_engineered_season(season)
+                if not engineered.empty:
+                    player_norm = normalize_name(player_name)
+                    player_rows_df = engineered[engineered["name_normalized"] == player_norm]
+                    if not player_rows_df.empty:
+                        player_row = player_rows_df.iloc[0]
+                        pos_group = detect_position_group(position)
+                        feature_cols = generator.feature_columns or get_feature_columns(engineered)
+
+                        X = np.zeros(len(feature_cols))
+                        for i, col in enumerate(feature_cols):
+                            if col in player_row.index:
+                                val = player_row[col]
+                                if pd.notna(val):
+                                    try:
+                                        X[i] = float(val)
+                                    except (ValueError, TypeError):
+                                        pass
+
+                        raw_attrs = generator.predictor.predict_attributes(X, position_group=pos_group)
+                        print(f"[ML] sklearn path OK for {player_name}", file=sys.stderr)
+
+                        # Build stats dict from engineered row for role assignment
+                        def _sf(key: str, default: float = 0.0) -> float:
+                            try:
+                                v = float(player_row.get(key, default))
+                                return v if not pd.isna(v) else default
+                            except (ValueError, TypeError):
+                                return default
+
+                        gp = _sf("GP", 70.0)
+                        gp_t = max(_sf("GP_tracking_passing", 0.0), gp) or gp
+
+                        stats["f_pg_pts"] = _sf("PTS")
+                        stats["f_pg_reb"] = _sf("REB")
+                        stats["f_pg_ast"] = _sf("AST")
+                        stats["f_pg_stl"] = _sf("STL")
+                        stats["f_pg_blk"] = _sf("BLK")
+                        stats["f_pg_fga"] = _sf("FGA")
+                        stats["f_pg_fg3a"] = _sf("FG3A")
+                        stats["f_pg_fg3m"] = _sf("FG3M")
+                        stats["f_pg_fta"] = _sf("FTA")
+                        stats["f_pg_fgm"] = _sf("FGM")
+                        usg = _sf("USG_PCT")
+                        stats["f_usg"] = usg * 100 if usg < 1 else usg
+                        ast_p = _sf("AST_PCT")
+                        stats["f_ast_pct"] = ast_p * 100 if ast_p < 1 else ast_p
+                        tov_p = _sf("E_TOV_PCT")
+                        stats["f_tov_pct"] = tov_p * 100 if tov_p < 1 else tov_p
+                        stats["f_ts_pct"] = _sf("TS_PCT")
+                        stats["f_fg_pct"] = _sf("FG_PCT")
+                        stats["f_fg3_pct"] = _sf("FG3_PCT")
+                        stats["f_ft_pct"] = _sf("FT_PCT")
+                        stats["f_drives_pg"] = _sf("DRIVES") / gp_t
+                        stats["f_paint_touch_pg"] = _sf("PAINT_TOUCHES") / gp_t
+                        stats["f_touches_pg"] = _sf("TOUCHES") / gp_t
+                        stats["f_deflections_pg"] = _sf("DEFLECTIONS") / gp_t
+                        stats["f_contested_pg"] = _sf("CONTESTED_SHOTS") / gp_t
+                        stats["f_boxouts_pg"] = _sf("DEF_BOXOUTS") / gp_t
+                        stats["f_pot_ast_pg"] = _sf("POTENTIAL_AST") / gp_t
+                        stats["f_isolation_poss_pct"] = _sf("POSS_PCT_playtype_isolation")
+                        stats["f_spot_up_poss_pct"] = _sf("POSS_PCT_playtype_spot_up")
+                        stats["f_cs_fg3a_pg"] = _sf("CATCH_SHOOT_FG3A") / gp_t
+                        stats["f_pu_fg3a_pg"] = _sf("PULL_UP_FG3A") / gp_t
+            else:
+                print(f"[ML] models failed to load", file=sys.stderr)
+        except Exception as e:
+            print(f"[ML] sklearn path error: {e}", file=sys.stderr)
+            raw_attrs = {}
+            stats = {}
+
+    # ── Path B: pure-Python predictor (no sklearn needed) ──────────────────
+    if not raw_attrs:
+        _pure_predict = None
         try:
             from nba2k26_generator.ml_predictor_pure import predict_attributes as _pure_predict
         except Exception:
             try:
                 from ml_predictor_pure import predict_attributes as _pure_predict  # type: ignore
             except Exception:
-                _pure_predict = None
+                pass
         if _pure_predict is not None:
             try:
-                pure_attrs = _pure_predict(row, all_rows or [])
-                if pure_attrs:
-                    return {"attributes": pure_attrs, "roles": [], "unicorn_role": None, "ovr": 75}
-            except Exception:
-                pass
-        # Pure predictor also failed — signal caller to use the rule-based fallback
+                raw_attrs = _pure_predict(row, all_rows or []) or {}
+                if raw_attrs:
+                    print(f"[ML] pure predictor OK for {player_name}", file=sys.stderr)
+            except Exception as e:
+                print(f"[ML] pure predictor error: {e}", file=sys.stderr)
+                raw_attrs = {}
+
+    # If both paths failed, signal caller to use the rule-based fallback
+    if not raw_attrs:
+        print(f"[ML] all paths failed for {player_name}", file=sys.stderr)
         return {"attributes": {}, "roles": [], "unicorn_role": None, "ovr": 50}
 
-    try:
-        # Initialize ML generator
-        generator = AttributeGenerator()
-        if not generator.load_models():
-            return {"attributes": {}, "roles": [], "unicorn_role": None, "ovr": 50}
+    # ── Post-processing: always runs regardless of which path was used ──────
 
-        # Determine player name and season
-        player_name = str(row.get("player_name", row.get("Player", ""))).strip()
-        season = str(row.get("season_label", row.get("season", "2024-25"))).strip()
+    # Apply committee floors — if ML is 10+ points below the sheet, use sheet value
+    raw_attrs = _apply_committee_floors(raw_attrs, player_name, season)
 
-        # Load engineered features from NBA Site CSVs
-        engineered = _get_engineered_season(season)
-        if engineered.empty:
-            return {"attributes": {}, "roles": [], "unicorn_role": None, "ovr": 50}
-
-        # Look up this player by normalized name
-        player_norm = normalize_name(player_name)
-        player_mask = engineered["name_normalized"] == player_norm
-        player_rows = engineered[player_mask]
-
-        if player_rows.empty:
-            return {"attributes": {}, "roles": [], "unicorn_role": None, "ovr": 50}
-
-        player_row = player_rows.iloc[0]
-
-        # Get position
-        position = str(row.get("position", row.get("pos", "SG")))
-        pos_group = detect_position_group(position)
-
-        # Extract feature columns (same as training)
-        feature_cols = generator.feature_columns
-        if not feature_cols:
-            feature_cols = get_feature_columns(engineered)
-
-        # Build feature vector from the engineered row
-        X = np.zeros(len(feature_cols))
-        for i, col in enumerate(feature_cols):
-            if col in player_row.index:
-                val = player_row[col]
-                if pd.notna(val):
-                    try:
-                        X[i] = float(val)
-                    except (ValueError, TypeError):
-                        pass
-
-        # Predict using ML models
+    # Assign roles and apply role boosts
+    roles: List[str] = []
+    unicorn_role = None
+    if ROLES_AVAILABLE:
         try:
-            attributes = generator.predictor.predict_attributes(
-                X, position_group=pos_group
-            )
+            roles, unicorn_role, corrected_attrs = assign_roles(raw_attrs, stats, position)
+            raw_attrs = apply_role_boosts(corrected_attrs, roles, unicorn_role)
         except Exception as e:
-            print(f"Prediction error: {e}")
-            return {"attributes": {}, "roles": [], "unicorn_role": None, "ovr": 50}
+            print(f"[ML] role assignment error: {e}", file=sys.stderr)
 
-        # Apply committee floors - 70/30 blend for 2025-26 season only
-        attributes = _apply_committee_floors(attributes, player_name, season)
+    # Force Shot IQ to the exact sheet value AFTER role boosts
+    raw_attrs = _force_shot_iq_from_sheet(raw_attrs, player_name, season)
 
-        # Build stats dict from engineered features for role assignment
-        # Map raw column names to f_* format expected by assign_roles
-        stats = {}
+    # Normalize attribute keys (both canonical and snake_case forms)
+    normalized_attrs: Dict[str, Any] = {}
+    for key, val in raw_attrs.items():
+        norm_key = re.sub(r"[^a-z0-9]+", "_", str(key).strip().lower()).strip("_")
+        normalized_attrs[key] = val
+        normalized_attrs[norm_key] = val
 
-        def _sf(key: str, default: float = 0.0) -> float:
-            """Safe float get from player_row."""
-            try:
-                val = player_row.get(key, default)
-                v = float(val)
-                return v if not pd.isna(v) else default
-            except (ValueError, TypeError):
-                return default
+    # Compute overall rating
+    family_scores = compute_attribute_family_averages(normalized_attrs) if compute_attribute_family_averages else {}
+    ovr = compute_overall_rating(position, normalized_attrs, family_scores) if compute_overall_rating else 75
 
-        gp = _sf("GP", 70.0)
-        gp_tracking = _sf("GP_tracking_passing", 70.0)
-        if gp_tracking <= 0:
-            gp_tracking = gp
-
-        stats["f_pg_pts"] = _sf("PTS", 0.0)
-        stats["f_pg_reb"] = _sf("REB", 0.0)
-        stats["f_pg_ast"] = _sf("AST", 0.0)
-        stats["f_pg_stl"] = _sf("STL", 0.0)
-        stats["f_pg_blk"] = _sf("BLK", 0.0)
-        stats["f_pg_fga"] = _sf("FGA", 0.0)
-        stats["f_pg_fg3a"] = _sf("FG3A", 0.0)
-        stats["f_pg_fg3m"] = _sf("FG3M", 0.0)
-        stats["f_pg_fta"] = _sf("FTA", 0.0)
-        stats["f_pg_fgm"] = _sf("FGM", 0.0)
-
-        # Advanced stats (handle 0-1 vs percentage format)
-        usg_raw = _sf("USG_PCT", 0.0)
-        stats["f_usg"] = usg_raw * 100 if usg_raw < 1 else usg_raw
-
-        ast_pct_raw = _sf("AST_PCT", 0.0)
-        stats["f_ast_pct"] = ast_pct_raw * 100 if ast_pct_raw < 1 else ast_pct_raw
-
-        tov_pct_raw = _sf("E_TOV_PCT", 0.0)
-        stats["f_tov_pct"] = tov_pct_raw * 100 if tov_pct_raw < 1 else tov_pct_raw
-
-        stats["f_ts_pct"] = _sf("TS_PCT", 0.0)
-        stats["f_fg_pct"] = _sf("FG_PCT", 0.0)
-        stats["f_fg3_pct"] = _sf("FG3_PCT", 0.0)
-        stats["f_ft_pct"] = _sf("FT_PCT", 0.0)
-
-        # Tracking stats (per-game)
-        stats["f_drives_pg"] = _sf("DRIVES", 0.0) / gp_tracking
-        stats["f_paint_touch_pg"] = _sf("PAINT_TOUCHES", 0.0) / gp_tracking
-        stats["f_touches_pg"] = _sf("TOUCHES", 0.0) / gp_tracking
-        stats["f_deflections_pg"] = _sf("DEFLECTIONS", 0.0) / gp_tracking
-        stats["f_contested_pg"] = _sf("CONTESTED_SHOTS", 0.0) / gp_tracking
-        stats["f_boxouts_pg"] = _sf("DEF_BOXOUTS", 0.0) / gp_tracking
-        stats["f_pot_ast_pg"] = _sf("POTENTIAL_AST", 0.0) / gp_tracking
-
-        # Playtype stats
-        stats["f_isolation_poss_pct"] = _sf("POSS_PCT_playtype_isolation", 0.0)
-        stats["f_spot_up_poss_pct"] = _sf("POSS_PCT_playtype_spot_up", 0.0)
-
-        # Catch-and-shoot / pull-up
-        stats["f_cs_fg3a_pg"] = _sf("CATCH_SHOOT_FG3A", 0.0) / gp_tracking
-        stats["f_pu_fg3a_pg"] = _sf("PULL_UP_FG3A", 0.0) / gp_tracking
-
-        # Assign roles using ML attributes + NBA stats
-        if ROLES_AVAILABLE:
-            roles, unicorn_role, corrected_attrs = assign_roles(attributes, stats, position)
-            # Apply role boosts to attributes (uses corrected_attrs from outlier correction)
-            attributes = apply_role_boosts(corrected_attrs, roles, unicorn_role)
-        else:
-            roles = determine_roles_from_attributes(attributes)
-            unicorn_role = None
-
-        # Force Shot IQ from committee sheet AFTER role boosts
-        attributes = _force_shot_iq_from_sheet(attributes, player_name, season)
-
-        # Compute overall
-        overall = generator.predictor.predict_overall(attributes)
-        attributes["Overall"] = overall
-        attributes.pop("Overall", None)
-
-        # Normalize attribute keys
-        normalized_attrs = {}
-        for key, val in attributes.items():
-            norm_key = re.sub(r"[^a-z0-9]+", "_", key.strip().lower()).strip("_")
-            normalized_attrs[key] = val
-            normalized_attrs[norm_key] = val
-
-        # Calculate overall rating
-        family_scores = compute_attribute_family_averages(normalized_attrs) if compute_attribute_family_averages else {}
-        ovr = (
-            compute_overall_rating(position, normalized_attrs, family_scores)
-            if compute_overall_rating
-            else 75
-        )
-
-        return {
-            "attributes": normalized_attrs,
-            "roles": roles,
-            "unicorn_role": unicorn_role,
-            "ovr": ovr,
-        }
-
-    except Exception as e:
-        print(f"ML generation error: {e}")
-        return {"attributes": {}, "roles": [], "unicorn_role": None, "ovr": 50}
+    return {
+        "attributes": normalized_attrs,
+        "roles": roles,
+        "unicorn_role": unicorn_role,
+        "ovr": ovr,
+    }
 
 
 def generate_player_attributes(

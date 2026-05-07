@@ -898,6 +898,7 @@ function buildPlayerProfile({ player, season }) {
       ["-c", code, player, season, projectRoot, dbDir, rolesDir],
       {
         cwd: projectRoot,
+        env: { ...process.env, PYTHONIOENCODING: "utf-8", PYTHONPATH: projectRoot },
         windowsHide: true,
         stdio: ["ignore", "pipe", "pipe"],
       },
