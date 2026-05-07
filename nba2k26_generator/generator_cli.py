@@ -15,43 +15,51 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import importlib.util as _importlib_util
 
+# Always ensure this file's directory (nba2k26_generator/) is first on sys.path.
+# When imported as a sub-module rather than run as a script, Python does NOT add
+# the directory automatically, so sibling direct imports (from badges import ...)
+# would fail without this.
+_pkg_dir = os.path.dirname(os.path.abspath(__file__))
+if _pkg_dir not in sys.path:
+    sys.path.insert(0, _pkg_dir)
+del _pkg_dir
 
-def _load_fn_from_file(module_name: str, rel_filename: str, fn_name: str):
-    """Load a single function from a .py file relative to this script, bypassing sys.path."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(here, rel_filename)
+
+def _load_module_fn(filename: str, fn_name: str):
+    """Load one function from a .py file next to this script, bypassing sys.path entirely."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
     if not os.path.isfile(path):
-        print(f"[generator_cli] {rel_filename} not found at {path}", file=sys.stderr)
+        print(f"[generator_cli] {filename} not found at {path}", file=sys.stderr)
         return None
     try:
-        spec = _importlib_util.spec_from_file_location(module_name, path)
+        spec = _importlib_util.spec_from_file_location(filename[:-3], path)
         mod = _importlib_util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         return getattr(mod, fn_name, None)
     except Exception as _e:
-        print(f"[generator_cli] failed to load {rel_filename}: {_e}", file=sys.stderr)
+        print(f"[generator_cli] importlib load {filename} failed: {_e}", file=sys.stderr)
         return None
 
 
-load_nba_site_rows = _load_fn_from_file("nba_site_normalization", "nba_site_normalization.py", "load_nba_site_rows")
+# Load nba_site_normalization via absolute path — immune to sys.path issues
+load_nba_site_rows = _load_module_fn("nba_site_normalization.py", "load_nba_site_rows")
 if load_nba_site_rows is None:
-    # Fallback: try conventional import paths
     try:
-        from nba2k26_generator.nba_site_normalization import load_nba_site_rows  # type: ignore
+        from nba_site_normalization import load_nba_site_rows  # type: ignore
     except Exception:
         try:
-            from nba_site_normalization import load_nba_site_rows  # type: ignore
+            from nba2k26_generator.nba_site_normalization import load_nba_site_rows  # type: ignore
         except Exception:
-            pass  # load_nba_site_rows remains None; error raised at call site
+            pass
 
-# ML attribute computation (sklearn models + committee 11+ correction + role boosts)
+# ML attribute computation — direct import first (no __init__.py triggered)
 _compute_attributes_ml = None
 try:
-    from nba2k26_generator.generator_cli_ml import compute_attributes_ml as _ml_fn
+    from generator_cli_ml import compute_attributes_ml as _ml_fn  # type: ignore
     _compute_attributes_ml = _ml_fn
 except Exception:
     try:
-        from generator_cli_ml import compute_attributes_ml as _ml_fn  # type: ignore
+        from nba2k26_generator.generator_cli_ml import compute_attributes_ml as _ml_fn
         _compute_attributes_ml = _ml_fn
     except Exception:
         _compute_attributes_ml = None
@@ -204,7 +212,7 @@ def _apply_committee_correction(
     return result
 
 try:
-    from nba2k26_generator.badges import (
+    from badges import (  # type: ignore  # direct import — no __init__.py triggered
         compute_badge_groups,
         compute_badges,
         compute_badge_count_from_stats,
@@ -217,7 +225,7 @@ try:
     )
 except Exception:
     try:
-        from badges import (  # type: ignore
+        from nba2k26_generator.badges import (
             compute_badge_groups,
             compute_badges,
             compute_badge_count_from_stats,
