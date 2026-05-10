@@ -2332,6 +2332,44 @@ else:
 
 function _setupAutoUpdater() {
   if (!app.isPackaged) return;
+
+  const isMac = process.platform === "darwin";
+
+  // macOS builds are unsigned — electron-updater can download but cannot install
+  // without a valid code signature (macOS security requirement). Instead of the
+  // silent-fail loop, we detect available updates and send the user to the
+  // GitHub releases page to download the new DMG manually.
+  if (isMac) {
+    try {
+      ({ autoUpdater } = require("electron-updater"));
+      autoUpdater.autoDownload = false;
+      autoUpdater.on("update-available", (info) => {
+        dialog.showMessageBox({
+          type: "info",
+          title: "Update Available",
+          message: `ATD 2K26 v${info.version} is available.`,
+          detail: "Click Download to open the releases page. Once the DMG downloads, open it and drag ATD 2K26 onto your Applications folder — macOS will ask you to replace the old version, just hit Replace.",
+          buttons: ["Download", "Later"],
+          defaultId: 0,
+        }).then((result) => {
+          if (result.response === 0) {
+            require("electron").shell.openExternal(
+              "https://github.com/amakagg1312-oss/ATD-App/releases/latest"
+            );
+          }
+        });
+      });
+      autoUpdater.on("error", (err) => {
+        process.stderr.write(`Auto-updater error: ${err?.message || err}\n`);
+      });
+      autoUpdater.checkForUpdates().catch(() => {});
+    } catch (err) {
+      process.stderr.write(`Auto-updater init failed: ${err?.message || err}\n`);
+    }
+    return;
+  }
+
+  // Windows — full auto-download + install on quit works fine
   try {
     ({ autoUpdater } = require("electron-updater"));
     autoUpdater.autoDownload = true;
