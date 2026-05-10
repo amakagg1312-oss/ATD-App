@@ -19,7 +19,7 @@
         "provider": "github",
         "owner": "amakagg1312-oss",
         "repo": "ATD-App",
-        "releaseType": "release"
+        "releaseType": "draft"
       }
     ],
     "directories": {
