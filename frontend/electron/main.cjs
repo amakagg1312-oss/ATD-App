@@ -79,37 +79,120 @@ function getProjectRoot() {
   return path.resolve(__dirname, "..", "..");
 }
 
-function resolvePythonPath() {
-  const envPath = String(process.env.NBA2K_PYTHON_PATH || "").trim();
-  if (envPath) return envPath;
+// Cached resolved Python path — resolution runs once, avoids repeated arch-check overhead
+let _resolvedPython = null;
+let _pythonVerified = false;
 
-  if (app.isPackaged) {
-    const pyRoot = path.join(process.resourcesPath, "python");
-    if (process.platform === "win32") {
-      return path.join(pyRoot, "python.exe");
-    }
-    // python-build-standalone layout on Mac
-    for (const rel of ["bin/python3.12", "bin/python3", "python"]) {
-      const p = path.join(pyRoot, rel);
-      if (fs.existsSync(p)) return p;
-    }
-    return path.join(pyRoot, "bin", "python3.12");
-  }
-
-  if (process.platform === "win32") {
-    // Use Python 3.12 venv (3.14 has extremely slow imports)
-    const venv312 = path.join(getProjectRoot(), ".venv312", "Scripts", "python.exe");
-    if (fs.existsSync(venv312)) return venv312;
-    return path.join(getProjectRoot(), ".venv", "Scripts", "python.exe");
-  } else {
-    const venv = path.join(getProjectRoot(), ".venv312", "bin", "python");
-    if (fs.existsSync(venv)) return venv;
-    for (const bin of ["python3.12", "python3", "python"]) {
-      try { require("child_process").execSync(`which ${bin}`, { stdio: "pipe" }); return bin; } catch {}
-    }
-    return "python3";
+function _tryPython(p) {
+  try {
+    require("child_process").execFileSync(p, ["--version"], { stdio: "pipe", timeout: 4000 });
+    return true;
+  } catch {
+    return false;
   }
 }
+
+function resolvePythonPath() {
+  if (_resolvedPython) return _resolvedPython;
+
+  const envPath = String(process.env.NBA2K_PYTHON_PATH || "").trim();
+  if (envPath) { _resolvedPython = envPath; return envPath; }
+
+  if (process.platform === "win32") {
+    const venv312 = path.join(getProjectRoot(), ".venv312", "Scripts", "python.exe");
+    if (fs.existsSync(venv312)) { _pythonVerified = true; _resolvedPython = venv312; return venv312; }
+    const venv = path.join(getProjectRoot(), ".venv", "Scripts", "python.exe");
+    _pythonVerified = true; _resolvedPython = venv; return venv;
+  }
+
+  // macOS / Linux — build a prioritised candidate list
+  const candidates = [];
+
+  if (app.isPackaged) {
+    // Bundled Python (python-build-standalone layout)
+    const pyRoot = path.join(process.resourcesPath, "python");
+    for (const rel of ["bin/python3.12", "bin/python3", "python"]) {
+      candidates.push(path.join(pyRoot, rel));
+    }
+  } else {
+    // Dev venv
+    candidates.push(path.join(getProjectRoot(), ".venv312", "bin", "python3"));
+    candidates.push(path.join(getProjectRoot(), ".venv312", "bin", "python"));
+    candidates.push(path.join(getProjectRoot(), ".venv", "bin", "python3"));
+  }
+
+  // Well-known absolute paths — covers Homebrew on Apple Silicon and Intel,
+  // system Python, and common pyenv/conda layouts
+  candidates.push(
+    "/opt/homebrew/bin/python3.12",
+    "/opt/homebrew/bin/python3",
+    "/usr/local/bin/python3.12",
+    "/usr/local/bin/python3",
+    "/usr/bin/python3",
+    "/usr/local/bin/python",
+    "/usr/bin/python",
+  );
+
+  for (const p of candidates) {
+    if (fs.existsSync(p) && _tryPython(p)) {
+      _pythonVerified = true; _resolvedPython = p;
+      return p;
+    }
+  }
+
+  // Last resort: ask the shell (augment PATH so Homebrew bins are visible)
+  const extraPath = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin";
+  for (const bin of ["python3.12", "python3", "python"]) {
+    try {
+      const found = require("child_process")
+        .execSync(`which ${bin}`, {
+          stdio: "pipe",
+          env: { ...process.env, PATH: `${extraPath}:${process.env.PATH || ""}` },
+        })
+        .toString().trim();
+      if (found && _tryPython(found)) {
+        _pythonVerified = true; _resolvedPython = found;
+        return found;
+      }
+    } catch { /* try next */ }
+  }
+
+  _resolvedPython = "python3";
+  return "python3";
+}
+
+async function _ensurePythonMac() {
+  if (process.platform !== "darwin") return;
+  resolvePythonPath(); // populate cache
+  if (_pythonVerified) return;
+
+  const { response } = await dialog.showMessageBox({
+    type: "warning",
+    title: "Python Not Found",
+    message: "Python is required for NBA stats and contract data.",
+    detail: "Python was not found on your system.\n\nClick \"Install Python\" to install it via macOS Developer Tools (free). A system dialog will appear — click Install, then restart this app when it finishes.\n\nAlternatively, install Python from python.org and restart the app.",
+    buttons: ["Install Python", "Open python.org", "Cancel"],
+    defaultId: 0,
+    cancelId: 2,
+  });
+
+  if (response === 0) {
+    // Trigger the macOS system installer for Command Line Tools (includes python3)
+    require("child_process").spawn("xcode-select", ["--install"], {
+      detached: true, stdio: "ignore",
+    }).unref();
+    dialog.showMessageBox({
+      type: "info",
+      title: "Installation Started",
+      message: "A system dialog should appear shortly.",
+      detail: "Click \"Install\" in the popup. After it finishes, restart this app and everything will work.",
+      buttons: ["OK"],
+    });
+  } else if (response === 1) {
+    require("child_process").execSync('open "https://www.python.org/downloads/macos/"');
+  }
+}
+
 
 function resolveGeneratorCliPath() {
   return path.join(getProjectRoot(), "nba2k26_generator", "generator_cli.py");
@@ -1278,6 +1361,11 @@ function createWindow() {
 
   win.loadFile(path.join(__dirname, "..", "ui", "index.html"));
 
+  // After the UI is fully loaded, check Python is available on Mac
+  win.webContents.once("did-finish-load", () => {
+    setTimeout(() => _ensurePythonMac(), 1500);
+  });
+
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
 
   win.webContents.on("did-fail-load", (_e, code, desc) => {
@@ -2212,6 +2300,67 @@ ipcMain.handle("stats:shot-chart", async (_event, p) => {
     player_id: Number(p?.playerId),
     season: String(p?.season || "2024-25"),
     season_type: String(p?.seasonType || "Regular Season"),
+  });
+});
+
+ipcMain.handle("contracts:fetch", async (_event, p) => {
+  const force = Boolean(p?.force);
+  return new Promise((resolve) => {
+    const code = [
+      "import sys, json, os",
+      "sys.path.insert(0, os.path.join(sys.argv[1], 'nba2k26_generator'))",
+      "from contract_explorer import fetch_contracts",
+      "try:",
+      "    force = sys.argv[2] == 'true'",
+      "    r = fetch_contracts(force=force)",
+      "    print(json.dumps(r))",
+      "except Exception as e:",
+      "    import traceback; print(json.dumps({'ok': False, 'error': str(e), 'trace': traceback.format_exc()[-400:]}))",
+    ].join("\n");
+    const child = spawn(resolvePythonPath(), ["-c", code, getProjectRoot(), force ? "true" : "false"], {
+      windowsHide: true,
+      env: { ...process.env, PYTHONIOENCODING: "utf-8" },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "", stderr = "";
+    child.stdout.on("data", (d) => { stdout += d; });
+    child.stderr.on("data", (d) => { stderr += d; });
+    child.on("close", () => {
+      try { resolve(JSON.parse(stdout.trim() || "{}")); }
+      catch { resolve({ ok: false, error: stderr.slice(0, 400) || "Parse error" }); }
+    });
+    child.on("error", (err) => resolve({ ok: false, error: String(err.message) }));
+  });
+});
+
+ipcMain.handle("contracts:player", async (_event, p) => {
+  const slug = String(p?.playerSlug || "");
+  const id = String(p?.playerId || "");
+  if (!slug) return { ok: false, error: "Missing player slug" };
+  return new Promise((resolve) => {
+    const code = [
+      "import sys, json, os",
+      "sys.path.insert(0, os.path.join(sys.argv[1], 'nba2k26_generator'))",
+      "from contract_explorer import fetch_player_history",
+      "try:",
+      "    r = fetch_player_history(sys.argv[2], sys.argv[3])",
+      "    print(json.dumps(r))",
+      "except Exception as e:",
+      "    import traceback; print(json.dumps({'ok': False, 'error': str(e), 'trace': traceback.format_exc()[-400:]}))",
+    ].join("\n");
+    const child = spawn(resolvePythonPath(), ["-c", code, getProjectRoot(), slug, id], {
+      windowsHide: true,
+      env: { ...process.env, PYTHONIOENCODING: "utf-8" },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "", stderr = "";
+    child.stdout.on("data", (d) => { stdout += d; });
+    child.stderr.on("data", (d) => { stderr += d; });
+    child.on("close", () => {
+      try { resolve(JSON.parse(stdout.trim() || "{}")); }
+      catch { resolve({ ok: false, error: stderr.slice(0, 400) || "Parse error" }); }
+    });
+    child.on("error", (err) => resolve({ ok: false, error: String(err.message) }));
   });
 });
 

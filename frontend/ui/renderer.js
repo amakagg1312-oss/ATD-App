@@ -3,6 +3,7 @@ const playerGenPageEl = document.getElementById("playerGenPage");
 const teamPageEl = document.getElementById("teamPage");
 const profilePageEl = document.getElementById("profilePage");
 const comparePageEl = document.getElementById("comparePage");
+const contractPageEl = document.getElementById("contractPage");
 
 const playerSearchEl = document.getElementById("playerSearch");
 const seasonEl = document.getElementById("season");
@@ -251,7 +252,9 @@ function applyTeamTheme(team) {
 function setActiveNav(activeId) {
   [navDashboardBtn, document.getElementById("navPlayerGenBtn"), openTeamPageBtn, openPlaybookBtn, openStatsBtn,
    document.getElementById("openShotChartBtn"),
-   document.getElementById("openProgressionBtn")].forEach(btn => {
+   document.getElementById("openProgressionBtn"),
+   document.getElementById("navContractsBtn"),
+   document.getElementById("openNotesBtn")].forEach(btn => {
     if (!btn) return;
     btn.classList.toggle("nav-active", btn.id === activeId);
   });
@@ -269,6 +272,7 @@ function _hideAllPages() {
   if (progressionPageEl) progressionPageEl.classList.add("hidden");
   document.getElementById("notesPage")?.classList.add("hidden");
   document.getElementById("usersPage")?.classList.add("hidden");
+  contractPageEl?.classList.add("hidden");
 }
 
 function showDashboard() {
@@ -6321,6 +6325,589 @@ function updateChatBadge() {
 }
 
 document.getElementById("chatBubble")?.addEventListener("click", toggleChatPanel);
+
+// ══════════════════════════════════════════════════════════════
+// CONTRACT EXPLORER
+// ══════════════════════════════════════════════════════════════
+
+const CT_TEAM_ABBR = {
+  "Atlanta Hawks": "ATL", "Boston Celtics": "BOS", "Brooklyn Nets": "BKN",
+  "Charlotte Hornets": "CHA", "Chicago Bulls": "CHI", "Cleveland Cavaliers": "CLE",
+  "Dallas Mavericks": "DAL", "Denver Nuggets": "DEN", "Detroit Pistons": "DET",
+  "Golden State Warriors": "GSW", "Houston Rockets": "HOU", "Indiana Pacers": "IND",
+  "Los Angeles Clippers": "LAC", "Los Angeles Lakers": "LAL", "Memphis Grizzlies": "MEM",
+  "Miami Heat": "MIA", "Milwaukee Bucks": "MIL", "Minnesota Timberwolves": "MIN",
+  "New Orleans Pelicans": "NOP", "New York Knicks": "NYK", "Oklahoma City Thunder": "OKC",
+  "Orlando Magic": "ORL", "Philadelphia 76ers": "PHI", "Phoenix Suns": "PHX",
+  "Portland Trail Blazers": "POR", "Sacramento Kings": "SAC", "San Antonio Spurs": "SAS",
+  "Toronto Raptors": "TOR", "Utah Jazz": "UTA", "Washington Wizards": "WAS",
+};
+
+const CT_CAP_BY_YEAR = {
+  "2024-25": 141000000, "2025-26": 149500000, "2026-27": 156000000,
+  "2027-28": 163000000, "2028-29": 170000000,
+};
+const CT_TAX_BY_YEAR = {
+  "2024-25": 171315000, "2025-26": 181070000, "2026-27": 189060000,
+  "2027-28": 197000000, "2028-29": 205000000,
+};
+
+const _ct = {
+  data: null,
+  view: "players",
+  search: "",
+  teamFilter: "all",
+  year: "2025-26",
+  sortBy: "salary",
+  sortDir: 1,
+  loading: false,
+  inited: false,
+};
+
+function _ctFmt(n) {
+  if (!n || n === 0) return "—";
+  if (n >= 1000000) return "$" + (n / 1000000).toFixed(1) + "M";
+  if (n >= 1000) return "$" + (n / 1000).toFixed(0) + "K";
+  return "$" + n;
+}
+
+function _ctFAYear(player) {
+  const years = Object.keys(player.salaries || {}).sort();
+  if (!years.length) return null;
+  return parseInt(years[years.length - 1].split("-")[0]) + 1;
+}
+
+function _ctYearsLeft(player, fromYear) {
+  const all = Object.keys(player.salaries || {}).sort();
+  const idx = all.indexOf(fromYear);
+  return idx >= 0 ? all.length - idx : 0;
+}
+
+function _ctOptLabel(opt) {
+  if (!opt) return null;
+  const map = { "Team Option": "TO", "TO": "TO", "Player Option": "PO", "PO": "PO",
+    "Early Termination": "ETO", "ETO": "ETO", "Two-Way": "2W" };
+  return map[opt] || opt.slice(0, 3).toUpperCase();
+}
+
+function contractPageInit() {
+  if (!_ct.inited) {
+    _ctBindEvents();
+    _ct.inited = true;
+  }
+  if (!_ct.data && !_ct.loading) {
+    _ctLoad(false);
+  } else if (_ct.data) {
+    _ctRender();
+  }
+}
+
+function _ctBindEvents() {
+  _ctBindModalClose();
+  document.querySelectorAll(".ct-view-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      _ct.view = btn.dataset.view;
+      document.querySelectorAll(".ct-view-btn").forEach(b => b.classList.toggle("active", b === btn));
+      _ctRender();
+    });
+  });
+  document.getElementById("ctSearch")?.addEventListener("input", (e) => {
+    _ct.search = e.target.value.toLowerCase().trim();
+    _ctRender();
+  });
+  document.getElementById("ctTeamFilter")?.addEventListener("change", (e) => {
+    _ct.teamFilter = e.target.value;
+    _ctRender();
+  });
+  document.getElementById("ctYearSelect")?.addEventListener("change", (e) => {
+    _ct.year = e.target.value;
+    _ctRender();
+  });
+  document.getElementById("ctRefreshBtn")?.addEventListener("click", () => _ctLoad(true));
+}
+
+async function _ctLoad(force) {
+  _ct.loading = true;
+  const el = document.getElementById("ctContent");
+  if (el) el.innerHTML = `<div class="ct-loading"><svg class="ct-spinner" viewBox="0 0 24 24" fill="none" width="24" height="24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" opacity=".2"/><path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>${force ? "Refreshing from HoopsHype…" : "Loading contract data…"}</div>`;
+  try {
+    const result = await window.nba2kDesktop.fetchContracts({ force: Boolean(force) });
+    if (!result?.ok) throw new Error(result?.error || "Unknown error");
+    _ct.data = result;
+    _ctPopulateTeamFilter(result.players);
+    _ctRender();
+    if (result.cached) {
+      const age = Math.round((Date.now() / 1000 - result.fetched_at) / 3600);
+      showToast(`Contract data loaded (cached ${age}h ago)`, "info", 3000);
+    } else {
+      showToast(`Loaded ${result.players?.length || 0} player contracts from ${result.team_count || 30} teams`, "success", 3000);
+    }
+  } catch (err) {
+    const el2 = document.getElementById("ctContent");
+    if (el2) el2.innerHTML = `<div class="ct-error"><svg viewBox="0 0 20 20" fill="none" width="18" height="18"><path d="M10 3L2 17h16L10 3z" stroke="#f87171" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 9v4M10 14.5v.5" stroke="#f87171" stroke-width="1.4" stroke-linecap="round"/></svg><span>Failed to load: ${err.message}</span><button class="btn-ghost btn-sm" onclick="_ctLoad(true)">Retry</button></div>`;
+  }
+  _ct.loading = false;
+}
+
+function _ctPopulateTeamFilter(players) {
+  const el = document.getElementById("ctTeamFilter");
+  if (!el) return;
+  const teams = [...new Set((players || []).map(p => p.team))].sort();
+  el.innerHTML = '<option value="all">All Teams</option>' +
+    teams.map(t => `<option value="${t}">${CT_TEAM_ABBR[t] || t}</option>`).join("");
+  el.value = _ct.teamFilter;
+}
+
+function _ctRender() {
+  if (!_ct.data) return;
+  if (_ct.view === "players") _ctRenderPlayers();
+  else if (_ct.view === "cap") _ctRenderCap();
+  else if (_ct.view === "fa") _ctRenderFA();
+}
+
+function _ctFiltered() {
+  let players = _ct.data?.players || [];
+  if (_ct.teamFilter !== "all") players = players.filter(p => p.team === _ct.teamFilter);
+  if (_ct.search) players = players.filter(p =>
+    p.name.toLowerCase().includes(_ct.search) ||
+    p.team.toLowerCase().includes(_ct.search) ||
+    (CT_TEAM_ABBR[p.team] || "").toLowerCase().includes(_ct.search)
+  );
+  return players;
+}
+
+function _ctSorted(players) {
+  const yr = _ct.year;
+  const d = _ct.sortDir;
+  return [...players].sort((a, b) => {
+    if (_ct.sortBy === "name") return d * a.name.localeCompare(b.name);
+    if (_ct.sortBy === "team") {
+      const tc = a.team.localeCompare(b.team);
+      if (tc !== 0) return tc;
+      return d * ((b.salaries?.[yr] || 0) - (a.salaries?.[yr] || 0));
+    }
+    if (_ct.sortBy === "years") return d * (_ctYearsLeft(b, yr) - _ctYearsLeft(a, yr));
+    return d * ((b.salaries?.[yr] || 0) - (a.salaries?.[yr] || 0));
+  });
+}
+
+function _ctTeamHeaderHtml(teamName, players) {
+  const yr = _ct.year;
+  const cap = CT_CAP_BY_YEAR[yr] || 149500000;
+  const tax = CT_TAX_BY_YEAR[yr] || 181070000;
+  const color = PROG_TEAM_COLORS[teamName] || "#4da8ff";
+
+  const totalPayroll = players.reduce((sum, p) => sum + (p.salaries?.[yr] || 0), 0);
+
+  let statusCls, statusText;
+  if (totalPayroll > tax) { statusCls = "ct-status-tax"; statusText = "Over Tax"; }
+  else if (totalPayroll > cap) { statusCls = "ct-status-cap"; statusText = "Over Cap"; }
+  else { statusCls = "ct-status-ok"; statusText = "Under Cap"; }
+
+  const maxBar = tax * 1.35;
+  const capPct = Math.round(cap / maxBar * 100);
+  const taxPct = Math.round(tax / maxBar * 100);
+  const fillPct = Math.min(Math.round(totalPayroll / maxBar * 100), 100);
+  const fillCls = totalPayroll > tax ? "ct-bar-over-tax" : totalPayroll > cap ? "ct-bar-over-cap" : "ct-bar-ok";
+
+  const diff = totalPayroll - cap;
+  const diffAmt = Math.abs(diff);
+  const diffHtml = diff > 0
+    ? `<span class="ct-thdr-over">$${(diffAmt / 1e6).toFixed(1)}M over cap</span>`
+    : `<span class="ct-thdr-space">$${(diffAmt / 1e6).toFixed(1)}M cap space</span>`;
+  const fmtM = n => `$${(n / 1e6).toFixed(1)}M`;
+
+  return `<div class="ct-team-hdr">
+    <div class="ct-thdr-main">
+      <div class="ct-thdr-accent" style="background:${color}"></div>
+      <div class="ct-thdr-body">
+        <div class="ct-thdr-top-row">
+          <div class="ct-thdr-nameblock">
+            <span class="ct-thdr-name">${teamName}</span>
+            <span class="ct-thdr-meta">${players.length} players &middot; ${yr}</span>
+          </div>
+          <span class="ct-status-badge ${statusCls}">${statusText}</span>
+          <div class="ct-thdr-nums">
+            <span class="ct-thdr-payroll">${_ctFmt(totalPayroll)}</span>
+            <span class="ct-thdr-diff">${diffHtml}</span>
+          </div>
+        </div>
+        <div class="ct-gauge-wrap">
+          <div class="ct-gauge-track">
+            <div class="ct-gauge-fill ${fillCls}" style="width:${fillPct}%"></div>
+            <div class="ct-gauge-line ct-gauge-cap-line" style="left:${capPct}%"></div>
+            <div class="ct-gauge-line ct-gauge-tax-line" style="left:${taxPct}%"></div>
+          </div>
+          <div class="ct-gauge-refs">
+            <span class="ct-gauge-ref-cap" style="left:${capPct}%"><span class="ct-gauge-dot cap-dot"></span>${fmtM(cap)} Cap</span>
+            <span class="ct-gauge-ref-tax" style="left:${taxPct}%"><span class="ct-gauge-dot tax-dot"></span>${fmtM(tax)} Tax</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function _ctRenderPlayers() {
+  const allFiltered = _ctSorted(_ctFiltered());
+  const el = document.getElementById("ctContent");
+  if (!el) return;
+
+  const isTeamView = _ct.teamFilter !== "all";
+  const isAllTeams = !isTeamView && !_ct.search;
+  const showTeamCol = !isTeamView;
+  const LEAGUE_LIMIT = 50;
+  const players = isAllTeams ? allFiltered.slice(0, LEAGUE_LIMIT) : allFiltered;
+  const truncated = isAllTeams && allFiltered.length > LEAGUE_LIMIT;
+
+  const allYears = new Set();
+  players.forEach(p => Object.keys(p.salaries || {}).forEach(y => allYears.add(y)));
+  const sortedYears = [...allYears].sort();
+  const yi = sortedYears.indexOf(_ct.year);
+  const displayYears = yi >= 0 ? sortedYears.slice(yi, yi + 3) : sortedYears.slice(0, 3);
+
+  const arrow = (col) => {
+    if (_ct.sortBy !== col) return '<span class="ct-sort-arrow">↕</span>';
+    return `<span class="ct-sort-arrow active">${_ct.sortDir === -1 ? "↓" : "↑"}</span>`;
+  };
+
+  const countLabel = truncated
+    ? `Top ${LEAGUE_LIMIT} earners of ${allFiltered.length} total`
+    : `${players.length} player${players.length !== 1 ? "s" : ""}`;
+
+  let html = `<div class="ct-table-wrap">`;
+
+  if (isTeamView) {
+    html += _ctTeamHeaderHtml(_ct.teamFilter, players);
+  } else if (isAllTeams) {
+    html += `<div class="ct-league-hint">
+      <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3" opacity=".6"/><path d="M8 5v4M8 10.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Select a team above to see their full roster — showing top ${LEAGUE_LIMIT} earners league-wide
+    </div>`;
+  }
+
+  html += `<div class="ct-legend">
+    <span class="ct-legend-item"><span class="ct-opt-badge ct-opt-po">PO</span>Player Option</span>
+    <span class="ct-legend-item"><span class="ct-opt-badge ct-opt-to">TO</span>Team Option</span>
+    <span class="ct-legend-item"><span class="ct-opt-badge ct-opt-qo">QO</span>Qualifying Offer</span>
+    <span class="ct-legend-item"><span class="ct-opt-badge ct-opt-2w">2W</span>Two-Way</span>
+  </div>`;
+
+  html += `
+    <div class="ct-count-bar">${countLabel}</div>
+    <table class="ct-table">
+      <thead>
+        <tr class="ct-tr ct-tr-head">
+          <th class="ct-th ct-th-rank">#</th>
+          <th class="ct-th ct-th-name" data-sort="name">Player${arrow("name")}</th>
+          ${showTeamCol ? `<th class="ct-th ct-th-team" data-sort="team">Team${arrow("team")}</th>` : ""}
+          ${displayYears.map(y => `<th class="ct-th ct-th-sal${y === _ct.year ? " ct-th-primary" : ""}" data-sort="salary">${y}${y === _ct.year ? arrow("salary") : ""}</th>`).join("")}
+          <th class="ct-th ct-th-yrs" data-sort="years">Yrs${arrow("years")}</th>
+          <th class="ct-th ct-th-type">Type</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  players.forEach((p, i) => {
+    const abbr = CT_TEAM_ABBR[p.team] || "—";
+    const color = PROG_TEAM_COLORS[p.team] || "#4da8ff";
+    const yrsLeft = _ctYearsLeft(p, _ct.year);
+    const lastYear = Object.keys(p.salaries || {}).sort().pop();
+    const lastOptLabel = _ctOptLabel(p.options?.[lastYear]);
+    const salCells = displayYears.map(y => {
+      const s = p.salaries?.[y];
+      const optL = _ctOptLabel(p.options?.[y]);
+      const isPrimary = y === _ct.year;
+      return `<td class="ct-td ct-td-sal${isPrimary ? " ct-sal-primary" : ""}">
+        <span class="ct-sal-inner">
+          <span class="ct-sal-amt${isPrimary ? " ct-sal-amt-primary" : ""}">${s ? _ctFmt(s) : '<span class="ct-no-sal">—</span>'}</span>
+          ${optL ? `<span class="ct-opt-badge ct-opt-${optL.toLowerCase()}">${optL}</span>` : ""}
+        </span>
+      </td>`;
+    }).join("");
+
+    const pSlug = p.player_slug || p.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    html += `<tr class="ct-tr ct-tr-player">
+      <td class="ct-td ct-td-rank">${i + 1}</td>
+      <td class="ct-td ct-td-name"><span class="ct-player-link" data-slug="${pSlug}" data-id="${p.player_id || ""}" data-name="${p.name}" data-team="${p.team}">${p.name}</span></td>
+      ${showTeamCol ? `<td class="ct-td ct-td-team"><span class="ct-team-dot" style="background:${color}"></span><span class="ct-team-abbr">${abbr}</span></td>` : ""}
+      ${salCells}
+      <td class="ct-td ct-td-yrs">${yrsLeft > 0 ? yrsLeft : "—"}</td>
+      <td class="ct-td ct-td-type">${lastOptLabel ? `<span class="ct-opt-badge ct-opt-${lastOptLabel.toLowerCase()}">${lastOptLabel}</span>` : '<span class="ct-type-ufa">UFA</span>'}</td>
+    </tr>`;
+  });
+
+  if (!isAllTeams && players.length > 0) {
+    const labelCols = showTeamCol ? 3 : 2;
+    const totCells = displayYears.map(y => {
+      const tot = players.reduce((s, p) => s + (p.salaries?.[y] || 0), 0);
+      const isPrimary = y === _ct.year;
+      return `<td class="ct-td ct-td-sal ct-td-total${isPrimary ? " ct-sal-primary" : ""}">${tot > 0 ? _ctFmt(tot) : "—"}</td>`;
+    }).join("");
+    html += `<tr class="ct-tr ct-tr-total">
+      <td class="ct-td ct-td-total-lbl" colspan="${labelCols}">TOTAL PAYROLL</td>
+      ${totCells}
+      <td class="ct-td ct-td-total" colspan="2"></td>
+    </tr>`;
+  }
+
+  if (!players.length) html += `<tr><td colspan="${4 + displayYears.length + (showTeamCol ? 1 : 0)}" class="ct-empty">No players match your filters</td></tr>`;
+  html += `</tbody></table></div>`;
+  el.innerHTML = html;
+
+  el.querySelectorAll("th[data-sort]").forEach(th => {
+    th.style.cursor = "pointer";
+    th.addEventListener("click", () => {
+      const col = th.dataset.sort;
+      if (_ct.sortBy === col) _ct.sortDir *= -1;
+      else { _ct.sortBy = col; _ct.sortDir = -1; }
+      _ctRenderPlayers();
+    });
+  });
+
+  el.querySelectorAll(".ct-player-link").forEach(link => {
+    link.addEventListener("click", () => {
+      _ctOpenPlayerModal(link.dataset.slug, link.dataset.id, link.dataset.name, link.dataset.team);
+    });
+  });
+}
+
+function _ctCloseDrawer() {
+  const drawer = document.getElementById("ctPlayerDrawer");
+  if (drawer) drawer.classList.remove("ct-drawer-open");
+}
+
+async function _ctOpenPlayerModal(playerSlug, playerId, playerName, team) {
+  const drawer = document.getElementById("ctPlayerDrawer");
+  const body = document.getElementById("ctDrawerBody");
+  if (!drawer || !body) return;
+
+  const color = PROG_TEAM_COLORS[team] || "#4da8ff";
+  const accent = drawer.querySelector(".ct-drawer-accent");
+  const nameEl = drawer.querySelector(".ct-drawer-player-name");
+  const teamEl = drawer.querySelector(".ct-drawer-player-team");
+
+  if (accent) accent.style.background = color;
+  if (nameEl) nameEl.textContent = playerName;
+  if (teamEl) teamEl.textContent = team;
+
+  drawer.classList.add("ct-drawer-open");
+  body.innerHTML = `<div class="ct-drawer-loading">
+    <svg class="ct-spinner" viewBox="0 0 24 24" fill="none" width="18" height="18">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" opacity=".2"/>
+      <path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>Loading…</div>`;
+
+  try {
+    const result = await window.nba2kDesktop.fetchPlayerHistory({ playerSlug, playerId });
+    if (!result?.ok) throw new Error(result?.error || "Unknown error");
+    _ctRenderDrawer(result, color);
+  } catch (err) {
+    if (body) body.innerHTML = `<div class="ct-drawer-err">${err.message}</div>`;
+  }
+}
+
+function _ctRenderDrawer(data, color) {
+  const body = document.getElementById("ctDrawerBody");
+  if (!body) return;
+
+  const currentYear = _ct.year;
+  const nowStartYear = parseInt(currentYear.split("-")[0]);
+  const seasons = (data.seasons || []).slice().sort((a, b) => a.year.localeCompare(b.year));
+
+  if (!seasons.length) {
+    body.innerHTML = `<div class="ct-drawer-empty">No salary data found.</div>`;
+    return;
+  }
+
+  const totalCareer = seasons.reduce((s, r) => s + (r.salary || 0), 0);
+  const careerMax = Math.max(...seasons.map(r => r.salary || 0));
+  const peakSeason = seasons.find(r => r.salary === careerMax);
+
+  // Summary cards
+  const currentSeason = seasons.find(r => r.year === currentYear);
+  const summary = `<div class="ct-drawer-stats">
+    <div class="ct-drawer-stat">
+      <div class="ct-drawer-stat-val">${currentSeason ? _ctFmt(currentSeason.salary) : "—"}</div>
+      <div class="ct-drawer-stat-lbl">This Season</div>
+    </div>
+    <div class="ct-drawer-stat">
+      <div class="ct-drawer-stat-val">${_ctFmt(careerMax)}</div>
+      <div class="ct-drawer-stat-lbl">Career High ${peakSeason ? `<span class="ct-drawer-peak-yr">${peakSeason.year}</span>` : ""}</div>
+    </div>
+    <div class="ct-drawer-stat">
+      <div class="ct-drawer-stat-val">${_ctFmt(totalCareer)}</div>
+      <div class="ct-drawer-stat-lbl">Career Earnings</div>
+    </div>
+  </div>`;
+
+  const rows = seasons.map(r => {
+    const yr = parseInt(r.year.split("-")[0]);
+    const isCurrent = r.year === currentYear;
+    const isPast = yr < nowStartYear;
+    const isFuture = yr > nowStartYear;
+    const optL = r.option ? _ctOptLabel(r.option) : null;
+    const barPct = careerMax > 0 ? Math.round((r.salary || 0) / careerMax * 100) : 0;
+    const barColor = isCurrent ? color : isPast ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.26)";
+    return `<div class="ct-drow${isCurrent ? " ct-drow-current" : isPast ? " ct-drow-past" : " ct-drow-future"}">
+      <div class="ct-drow-year">${r.year}${isCurrent ? `<span class="ct-cur-tag" style="background:${color}22;color:${color}">NOW</span>` : ""}</div>
+      <div class="ct-drow-bar-wrap">
+        <div class="ct-drow-bar-track">
+          <div class="ct-drow-bar-fill" style="width:${barPct}%;background:${barColor}"></div>
+        </div>
+      </div>
+      <div class="ct-drow-right">
+        <span class="ct-drow-sal${isCurrent ? " ct-drow-sal-cur" : ""}" style="${isCurrent ? `color:${color}` : ""}">${r.salary ? _ctFmt(r.salary) : '<span class="ct-no-sal">—</span>'}</span>
+        ${optL ? `<span class="ct-opt-badge ct-opt-${optL.toLowerCase()}">${optL}</span>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+
+  body.innerHTML = summary + `<div class="ct-drawer-divider"></div><div class="ct-drawer-rows">${rows}</div>`;
+
+  // Scroll current season into view inside the drawer
+  requestAnimationFrame(() => {
+    const cur = body.querySelector(".ct-drow-current");
+    if (cur) cur.scrollIntoView({ block: "center", behavior: "smooth" });
+  });
+}
+
+function _ctBindModalClose() {
+  document.getElementById("ctDrawerClose")?.addEventListener("click", _ctCloseDrawer);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") _ctCloseDrawer();
+  });
+}
+
+function _ctRenderCap() {
+  const el = document.getElementById("ctContent");
+  if (!el) return;
+  const yr = _ct.year;
+  const cap = CT_CAP_BY_YEAR[yr] || 141000000;
+  const tax = CT_TAX_BY_YEAR[yr] || 171000000;
+
+  const teamTotals = {};
+  (_ct.data?.players || []).forEach(p => {
+    const s = p.salaries?.[yr] || 0;
+    if (s > 0) teamTotals[p.team] = (teamTotals[p.team] || 0) + s;
+  });
+
+  const sorted = Object.entries(teamTotals).sort((a, b) => b[1] - a[1]);
+  const maxSal = sorted.length ? sorted[0][1] * 1.08 : 250000000;
+  const capPct = (cap / maxSal * 100).toFixed(1);
+  const taxPct = (tax / maxSal * 100).toFixed(1);
+
+  let overTax = 0, overCap = 0, underCap = 0;
+  sorted.forEach(([, s]) => { if (s > tax) overTax++; else if (s > cap) overCap++; else underCap++; });
+
+  let html = `
+    <div class="ct-cap-summary">
+      <div class="ct-cap-stat"><span class="ct-cap-stat-val ct-over-tax">${overTax}</span><span class="ct-cap-stat-lbl">Over Tax</span></div>
+      <div class="ct-cap-stat"><span class="ct-cap-stat-val ct-over-cap">${overCap}</span><span class="ct-cap-stat-lbl">Over Cap</span></div>
+      <div class="ct-cap-stat"><span class="ct-cap-stat-val ct-under-cap">${underCap}</span><span class="ct-cap-stat-lbl">Under Cap</span></div>
+      <div class="ct-cap-meta">
+        <span class="ct-cap-meta-line"><span class="ct-ref-dot ct-ref-cap"></span>Cap: ${_ctFmt(cap)}</span>
+        <span class="ct-cap-meta-line"><span class="ct-ref-dot ct-ref-tax"></span>Tax: ${_ctFmt(tax)}</span>
+      </div>
+    </div>
+    <div class="ct-cap-chart-wrap">
+      <div class="ct-cap-chart" style="--cap-pct:${capPct}%;--tax-pct:${taxPct}%">
+        <div class="ct-ref-line ct-ref-cap-line"></div>
+        <div class="ct-ref-line ct-ref-tax-line"></div>
+  `;
+
+  sorted.forEach(([team, total]) => {
+    const pct = (total / maxSal * 100).toFixed(1);
+    const abbr = CT_TEAM_ABBR[team] || team.slice(0, 3).toUpperCase();
+    const color = PROG_TEAM_COLORS[team] || "#4da8ff";
+    const barCls = total > tax ? "ct-bar-over-tax" : total > cap ? "ct-bar-over-cap" : "ct-bar-ok";
+    html += `<div class="ct-cap-row">
+      <span class="ct-cap-team"><span class="ct-team-dot" style="background:${color}"></span>${abbr}</span>
+      <div class="ct-bar-track"><div class="ct-bar-fill ${barCls}" style="width:${pct}%"></div></div>
+      <span class="ct-cap-val">${_ctFmt(total)}</span>
+    </div>`;
+  });
+
+  if (!sorted.length) html += `<div class="ct-empty">No salary data for ${yr}</div>`;
+  html += `</div></div>`;
+  el.innerHTML = html;
+}
+
+function _ctRenderFA() {
+  const el = document.getElementById("ctContent");
+  if (!el) return;
+  const players = _ctFiltered();
+
+  const groups = {};
+  players.forEach(p => {
+    const yr = _ctFAYear(p);
+    if (!yr) return;
+    if (!groups[yr]) groups[yr] = [];
+    groups[yr].push(p);
+  });
+  Object.values(groups).forEach(arr => arr.sort((a, b) => {
+    const aS = Object.values(a.salaries || {}).reduce((x, y) => x + y, 0);
+    const bS = Object.values(b.salaries || {}).reduce((x, y) => x + y, 0);
+    return bS - aS;
+  }));
+
+  const thisYear = new Date().getFullYear(); // 2026
+  // Only show FA classes from this offseason onwards — past years are already resolved
+  const sortedYears = Object.keys(groups).map(Number).sort().filter(yr => yr >= thisYear);
+  if (!sortedYears.length) { el.innerHTML = `<div class="ct-empty">No upcoming free agents found</div>`; return; }
+
+  let html = `<div class="ct-fa-wrap">`;
+
+  sortedYears.forEach(yr => {
+    const group = groups[yr];
+    const isCurrent = yr === thisYear;
+    const label = isCurrent ? `${yr} Free Agents — This Offseason` : `${yr} Free Agent Class`;
+    html += `<div class="ct-fa-group">
+      <div class="ct-fa-group-hdr">
+        <span class="ct-fa-year-badge">${yr}</span>
+        <span class="ct-fa-group-title">${label}</span>
+        <span class="ct-fa-count">${group.length} players</span>
+      </div>
+      <div class="ct-fa-grid">`;
+
+    group.forEach(p => {
+      const allYrs = Object.keys(p.salaries || {}).sort();
+      const lastYr = allYrs[allYrs.length - 1];
+      const lastSal = lastYr ? p.salaries[lastYr] : null;
+      const optL = _ctOptLabel(p.options?.[lastYr]);
+      const color = PROG_TEAM_COLORS[p.team] || "#4da8ff";
+      const abbr = CT_TEAM_ABBR[p.team] || "—";
+      const typeCls = optL === "TO" ? "ct-fa-to" : optL === "PO" ? "ct-fa-po" : optL === "ETO" ? "ct-fa-eto" : "ct-fa-ufa";
+      const typeLabel = optL === "TO" ? "Team Option" : optL === "PO" ? "Player Option" : optL === "ETO" ? "Early Term." : "UFA";
+      html += `<div class="ct-fa-card ${typeCls}">
+        <div class="ct-fa-card-top">
+          <span class="ct-fa-name">${p.name}</span>
+          <span class="ct-fa-type-badge">${typeLabel}</span>
+        </div>
+        <div class="ct-fa-card-bot">
+          <span class="ct-fa-team-badge" style="border-color:${color}40"><span class="ct-team-dot" style="background:${color}"></span>${abbr}</span>
+          <span class="ct-fa-last-sal">${lastSal ? _ctFmt(lastSal) : "—"}</span>
+        </div>
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+function showContractPage() {
+  _hideAllPages();
+  contractPageEl.classList.remove("hidden");
+  document.body.classList.add("profile-open");
+  setActiveNav("navContractsBtn");
+  contractPageInit();
+}
+
+document.getElementById("navContractsBtn")?.addEventListener("click", () => showContractPage());
 
 // ── Boot ──────────────────────────────────────────────────────
 
