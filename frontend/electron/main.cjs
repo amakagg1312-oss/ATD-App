@@ -1266,7 +1266,7 @@ function createWindow() {
     height: 900,
     minWidth: 1060,
     minHeight: 720,
-    title: "NBA 2K26 Generator",
+    title: "ATD 2K APP",
     backgroundColor: "#0a0f1f",
     webPreferences: {
       contextIsolation: true,
@@ -2347,8 +2347,8 @@ function _setupAutoUpdater() {
         dialog.showMessageBox({
           type: "info",
           title: "Update Available",
-          message: `ATD 2K26 v${info.version} is available.`,
-          detail: "Click Download to open the releases page. Once the DMG downloads, open it and drag ATD 2K26 onto your Applications folder — macOS will ask you to replace the old version, just hit Replace.",
+          message: `ATD 2K APP v${info.version} is available.`,
+          detail: "Click Download to open the releases page. Once the DMG downloads, open it and drag ATD 2K APP onto your Applications folder — macOS will ask you to replace the old version, just hit Replace.",
           buttons: ["Download", "Later"],
           defaultId: 0,
         }).then((result) => {

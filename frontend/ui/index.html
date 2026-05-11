@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NBA 2K26 Generator</title>
+  <title>ATD 2K APP</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -17,7 +17,7 @@
       <div class="login-logo">
         <div class="brand-mark"><span>2K</span></div>
         <div class="login-logo-text">
-          <span class="login-title">NBA 2K26</span>
+          <span class="login-title">ATD 2K APP</span>
           <span class="login-sub">ATD Tool</span>
         </div>
       </div>
@@ -46,7 +46,7 @@
       <div class="login-logo">
         <div class="brand-mark"><span>2K</span></div>
         <div class="login-logo-text">
-          <span class="login-title">NBA 2K26</span>
+          <span class="login-title">ATD 2K APP</span>
           <span class="login-sub">ATD Tool</span>
         </div>
       </div>
@@ -82,7 +82,7 @@
           <span>2K</span>
         </div>
         <div class="brand-text">
-          <span class="brand-title">NBA 2K26</span>
+          <span class="brand-title">ATD 2K APP</span>
           <span class="brand-sub">ATD Tool</span>
         </div>
       </div>
@@ -97,6 +97,15 @@
             <rect x="11" y="11" width="7" height="7" rx="2" fill="currentColor" opacity=".3"/>
           </svg>
           <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" id="navPlayerGenBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5" opacity=".85"/>
+            <path d="M3 18c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+            <path d="M14 3l2 2-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
+          </svg>
+          <span>Player Gen</span>
         </button>
 
         <button class="nav-item" id="openTeamPageBtn">
@@ -116,6 +125,17 @@
           <span>Playbook</span>
         </button>
 
+        <button class="nav-item" id="openProgressionBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <path d="M2 16l4-5 3 3 4-6 5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
+            <circle cx="6" cy="11" r="1.5" fill="currentColor" opacity=".7"/>
+            <circle cx="9" cy="14" r="1.5" fill="currentColor" opacity=".7"/>
+            <circle cx="13" cy="8" r="1.5" fill="currentColor" opacity=".7"/>
+            <circle cx="18" cy="12" r="1.5" fill="currentColor" opacity=".7"/>
+          </svg>
+          <span>Progression</span>
+        </button>
+
         <button class="nav-item" id="openStatsBtn">
           <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
             <rect x="2" y="10" width="3" height="8" rx="1" fill="currentColor" opacity=".7"/>
@@ -124,6 +144,16 @@
             <path d="M3.5 9L8.5 5.5L13.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
           </svg>
           <span>NBA Stats</span>
+        </button>
+
+        <button class="nav-item hidden" id="openShotChartBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4" opacity=".6"/>
+            <circle cx="10" cy="10" r="5" stroke="currentColor" stroke-width="1.4" opacity=".8"/>
+            <circle cx="10" cy="10" r="2" fill="currentColor"/>
+            <path d="M10 2v2M10 16v2M2 10h2M16 10h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity=".5"/>
+          </svg>
+          <span>Shot Chart</span>
         </button>
 
         <button class="nav-item" id="openNotesBtn">
@@ -175,6 +205,180 @@
 
       <!-- ══ Dashboard Page ══ -->
       <section id="dashboardPage" class="page">
+        <div class="db-header">
+          <div>
+            <p class="page-eyebrow">Command Center</p>
+            <h1 class="page-title">Dashboard</h1>
+          </div>
+          <div class="db-live-badge">
+            <span class="db-live-dot"></span>
+            <span>Live</span>
+          </div>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="db-stats-row">
+          <div class="db-stat-card">
+            <svg class="db-stat-icon" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" opacity=".25"/>
+              <path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+            <div class="db-stat-body">
+              <div class="db-stat-value" id="dbStatOverallVal">—</div>
+              <div class="db-stat-label">Console Progress</div>
+            </div>
+          </div>
+          <div class="db-stat-card">
+            <svg class="db-stat-icon" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" opacity=".25"/>
+              <path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="db-stat-body">
+              <div class="db-stat-value" id="dbStatTeamsVal">—</div>
+              <div class="db-stat-label">Teams Complete</div>
+            </div>
+          </div>
+          <div class="db-stat-card">
+            <svg class="db-stat-icon" viewBox="0 0 24 24" fill="none">
+              <circle cx="9" cy="8" r="4" stroke="currentColor" stroke-width="1.5" opacity=".6"/>
+              <path d="M3 20c0-3.866 2.686-7 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+              <path d="M16 14l2 2 3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="db-stat-body">
+              <div class="db-stat-value" id="dbStatGeneratedVal">—</div>
+              <div class="db-stat-label">Players Generated</div>
+            </div>
+          </div>
+          <div class="db-stat-card">
+            <svg class="db-stat-icon" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="3" fill="currentColor" opacity=".9"/>
+              <circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="1.5" opacity=".35"/>
+              <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1" opacity=".12"/>
+            </svg>
+            <div class="db-stat-body">
+              <div class="db-stat-value" id="dbStatWipVal">—</div>
+              <div class="db-stat-label">Active WIP</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main grid (3 columns) -->
+        <div class="db-main-grid">
+
+          <!-- Col 1: Quick Navigate -->
+          <div class="db-left-col">
+            <div class="db-card db-card-nav">
+              <div class="db-card-label">Navigate</div>
+              <div class="db-nav-hub">
+                <button class="db-nav-tile db-nav-playergen" onclick="document.getElementById('navPlayerGenBtn').click()">
+                  <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
+                    <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M3 18c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M14 3l2 2-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="db-nav-tile-name">Player Gen</span>
+                </button>
+                <button class="db-nav-tile db-nav-teams" onclick="document.getElementById('openTeamPageBtn').click()">
+                  <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
+                    <circle cx="7" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="13" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M1 17c0-3.314 2.686-6 6-6h6c3.314 0 6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <span class="db-nav-tile-name">Teams</span>
+                </button>
+                <button class="db-nav-tile db-nav-playbook" onclick="document.getElementById('openPlaybookBtn').click()">
+                  <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
+                    <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <span class="db-nav-tile-name">Playbook</span>
+                </button>
+                <button class="db-nav-tile db-nav-progression" onclick="document.getElementById('openProgressionBtn').click()">
+                  <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
+                    <path d="M2 16l4-5 3 3 4-6 5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="db-nav-tile-name">Progression</span>
+                </button>
+                <button class="db-nav-tile db-nav-stats" onclick="document.getElementById('openStatsBtn').click()">
+                  <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
+                    <rect x="2" y="10" width="3" height="8" rx="1" fill="currentColor" opacity=".7"/>
+                    <rect x="7" y="6" width="3" height="12" rx="1" fill="currentColor" opacity=".85"/>
+                    <rect x="12" y="2" width="3" height="16" rx="1" fill="currentColor"/>
+                  </svg>
+                  <span class="db-nav-tile-name">NBA Stats</span>
+                </button>
+                <button class="db-nav-tile db-nav-notes" onclick="document.getElementById('openNotesBtn').click()">
+                  <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
+                    <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M6 7h8M6 10h8M6 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <span class="db-nav-tile-name">Notes</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2: What's New -->
+          <div class="db-center-col">
+            <div class="db-card db-cl-card">
+              <div class="db-cl-header">
+                <div class="db-cl-header-left">
+                  <span class="db-cl-eyebrow">App Updates</span>
+                  <h2 class="db-cl-title">What's New</h2>
+                </div>
+                <button class="db-cl-post-btn hidden" id="dbClPostBtn" title="Post update">
+                  <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                    <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                  Post Update
+                </button>
+              </div>
+              <div class="db-cl-form hidden" id="dbClForm">
+                <div class="db-cl-form-row">
+                  <select class="db-cl-tag-select" id="dbClTag">
+                    <option value="feature">Feature</option>
+                    <option value="update">Update</option>
+                    <option value="fix">Fix</option>
+                  </select>
+                  <input class="db-cl-title-input" id="dbClTitle" type="text" placeholder="What changed?" maxlength="80" />
+                </div>
+                <textarea class="db-cl-desc-input" id="dbClDesc" placeholder="Add more detail (optional)…" rows="2" maxlength="200"></textarea>
+                <div class="db-cl-form-actions">
+                  <button class="db-cl-cancel-btn" id="dbClCancelBtn">Cancel</button>
+                  <button class="db-cl-submit-btn" id="dbClSubmitBtn">Publish</button>
+                </div>
+              </div>
+              <div id="dbChangelogList" class="db-cl-feed">
+                <div class="db-snap-loading">Loading…</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 3: Snapshot + Recent -->
+          <div class="db-right-col">
+            <div class="db-card">
+              <div class="db-card-header">
+                <div class="db-card-label">Progression</div>
+                <div class="db-plat-tabs" id="dbPlatTabs">
+                  <button class="db-plat-btn active" data-plat="console">Console</button>
+                  <button class="db-plat-btn" data-plat="pc">PC</button>
+                </div>
+              </div>
+              <div id="dbProgSnapshot" class="db-prog-snapshot">
+                <div class="db-snap-loading">Loading…</div>
+              </div>
+            </div>
+            <div class="db-card">
+              <div class="db-card-label">Recent Players</div>
+              <div id="dbRecentList" class="db-recent-list"></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══ Player Generator Page ══ -->
+      <section id="playerGenPage" class="page hidden">
         <div class="page-header">
           <div class="page-header-left">
             <p class="page-eyebrow">Generator Panel</p>
@@ -237,43 +441,9 @@
             </div>
           </div>
 
-          <!-- Quick actions card -->
+          <!-- Top scorers card -->
           <div class="dash-card actions-card">
-            <div class="card-label">Quick Actions</div>
-            <div class="quick-actions">
-              <button class="action-tile action-teams" onclick="document.getElementById('openTeamPageBtn').click()">
-                <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-                  <circle cx="8" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
-                  <circle cx="16" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M2 21c0-4 2.686-7 6-7h8c3.314 0 6 3 6 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-                <span class="action-name">Team Generator</span>
-                <span class="action-desc">Build full rosters</span>
-                <svg class="action-arrow" viewBox="0 0 16 16" fill="none" width="14" height="14">
-                  <path d="M4 8h8M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="action-tile action-playbook" onclick="document.getElementById('openPlaybookBtn').click()">
-                <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-                  <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-                <span class="action-name">Playbook Editor</span>
-                <span class="action-desc">Edit team plays</span>
-                <svg class="action-arrow" viewBox="0 0 16 16" fill="none" width="14" height="14">
-                  <path d="M4 8h8M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="action-tile action-users" disabled>
-                <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-                  <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-                <span class="action-name">Manage Users</span>
-                <span class="action-desc">Coming soon</span>
-                <span class="action-soon-tag">Soon</span>
-              </button>
-            </div>
+            <div class="card-label">League Leaders</div>
             <div class="dash-qs-wrap">
               <div class="dash-qs-header">
                 <span class="dash-qs-title">Top Scorers</span>
@@ -655,101 +825,226 @@
               <div class="spd-bio-row" id="spdBioRow"></div>
             </div>
           </div>
-          <!-- Shot Chart (collapsible) -->
-          <div class="spd-shotchart-section" id="spdShotSection">
-            <div class="spd-section-title spd-collapse-header" id="spdCollapseBtn" role="button" aria-expanded="false">
-              <span class="spd-collapse-icon" id="spdCollapseIcon">▶</span>
-              Shot Chart
-              <span class="spd-section-sub" id="spdShotSeason"></span>
-              <div class="spd-shotchart-controls hidden" id="spdShotControls">
-                <select id="spdSeasonSelect" class="spd-season-select">
-                  <option value="2025-26">2025-26</option>
-                  <option value="2024-25" selected>2024-25</option>
-                  <option value="2023-24">2023-24</option>
-                  <option value="2022-23">2022-23</option>
-                  <option value="2021-22">2021-22</option>
-                  <option value="2020-21">2020-21</option>
-                  <option value="2019-20">2019-20</option>
-                </select>
-                <div class="spd-view-btns">
-                  <button class="spd-view-btn active" data-view="dots">Dots</button>
-                  <button class="spd-view-btn" data-view="heat">Heat Map</button>
-                  <button class="spd-view-btn" data-view="hexbin">Hexbin</button>
-                </div>
-                <span class="spd-shotchart-legend" id="spdShotLegend">
-                  <span class="spd-shot-make">● Made</span>
-                  <span class="spd-shot-miss">● Missed</span>
-                </span>
-              </div>
-            </div>
-            <div class="spd-shotchart-body" id="spdShotBody">
-              <div class="spd-shot-layout">
-                <!-- Canvas -->
-                <div class="spd-shotchart-wrap">
-                  <canvas id="spdShotCanvas" width="500" height="470"></canvas>
-                  <div id="spdShotMsg" class="spd-shot-msg"></div>
-                </div>
-                <!-- Filter sidebar -->
-                <div class="spd-shot-sidebar" id="spdShotSidebar">
-                  <div class="spd-filter-group">
-                    <div class="spd-filter-label">Season Type</div>
-                    <div class="spd-stype-pills">
-                      <button class="spd-stype-btn active" data-stype="Regular Season">Regular</button>
-                      <button class="spd-stype-btn" data-stype="Playoffs">Playoffs</button>
-                    </div>
-                  </div>
-                  <div class="spd-filter-group">
-                    <div class="spd-filter-label">Show</div>
-                    <div class="spd-toggle-row">
-                      <button class="spd-toggle-btn active" id="spdShowMade">Made</button>
-                      <button class="spd-toggle-btn active" id="spdShowMissed">Missed</button>
-                    </div>
-                  </div>
-                  <div class="spd-filter-group" id="spdDotControls">
-                    <div class="spd-filter-label">Dot Size <span class="spd-filter-val" id="spdDotSizeVal">4</span></div>
-                    <input type="range" class="spd-range" id="spdDotSize" min="2" max="12" value="4">
-                    <div class="spd-filter-label" style="margin-top:5px">Opacity <span class="spd-filter-val" id="spdDotOpacityVal">75%</span></div>
-                    <input type="range" class="spd-range" id="spdDotOpacity" min="10" max="100" value="75">
-                  </div>
-                  <div class="spd-filter-group">
-                    <div class="spd-filter-label">Shot Zones</div>
-                    <div class="spd-zone-pills" id="spdZonePills">
-                      <button class="spd-zone-pill active" data-zone="Restricted Area">RA</button>
-                      <button class="spd-zone-pill active" data-zone="In The Paint (Non-RA)">Paint</button>
-                      <button class="spd-zone-pill active" data-zone="Mid-Range">Mid</button>
-                      <button class="spd-zone-pill active" data-zone="Left Corner 3">LC3</button>
-                      <button class="spd-zone-pill active" data-zone="Right Corner 3">RC3</button>
-                      <button class="spd-zone-pill active" data-zone="Above the Break 3">ATB3</button>
-                    </div>
-                  </div>
-                  <div class="spd-filter-group">
-                    <div class="spd-filter-label">Shot Angles</div>
-                    <div class="spd-zone-pills" id="spdAnglePills">
-                      <button class="spd-zone-pill active" data-angle="Left Side(L)">Left</button>
-                      <button class="spd-zone-pill active" data-angle="Left Side Center(LC)">L-Ctr</button>
-                      <button class="spd-zone-pill active" data-angle="Center(C)">Ctr</button>
-                      <button class="spd-zone-pill active" data-angle="Right Side Center(RC)">R-Ctr</button>
-                      <button class="spd-zone-pill active" data-angle="Right Side(R)">Right</button>
-                    </div>
-                  </div>
-                  <div class="spd-filter-group">
-                    <div class="spd-filter-label">Distance (ft)</div>
-                    <div class="spd-dist-row">
-                      <input type="number" class="spd-dist-input" id="spdDistMin" min="0" max="35" value="0">
-                      <span class="spd-dist-sep">–</span>
-                      <input type="number" class="spd-dist-input" id="spdDistMax" min="0" max="35" value="30">
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Zone breakdown stats table -->
-              <div class="spd-zone-stats-wrap" id="spdZoneStats"></div>
-            </div>
-          </div>
-
           <div class="spd-section-title">Career Stats <span class="spd-section-sub">Per Game</span></div>
           <div id="spdCareerTable" class="stats-table-wrap"></div>
         </div>
+      </section>
+
+      <!-- ══ Shot Chart Page (Admin) ══ -->
+      <section id="shotChartPage" class="page hidden">
+        <div class="stats-page-header">
+          <div class="stats-header-left">
+            <p class="page-eyebrow">Admin Tool</p>
+            <h1 class="page-title">Shot Chart</h1>
+          </div>
+        </div>
+
+        <!-- Player search -->
+        <div class="sc-search-wrap">
+          <input type="text" id="scPlayerSearch" placeholder="Search player…" class="sc-search-input" autocomplete="off" />
+          <div id="scSearchResults" class="sc-autocomplete hidden"></div>
+        </div>
+
+        <!-- Active player header -->
+        <div id="scPlayerHeader" class="sc-player-header hidden">
+          <span id="scPlayerName" class="sc-player-name"></span>
+          <button id="scClearBtn" class="btn-ghost btn-sm">✕ Clear</button>
+        </div>
+
+        <!-- Shot chart UI -->
+        <div class="spd-shotchart-section" id="spdShotSection">
+          <div class="spd-shotchart-controls" id="spdShotControls">
+            <select id="spdSeasonSelect" class="spd-season-select">
+              <option value="2025-26">2025-26</option>
+              <option value="2024-25" selected>2024-25</option>
+              <option value="2023-24">2023-24</option>
+              <option value="2022-23">2022-23</option>
+              <option value="2021-22">2021-22</option>
+              <option value="2020-21">2020-21</option>
+              <option value="2019-20">2019-20</option>
+            </select>
+            <div class="spd-view-btns">
+              <button class="spd-view-btn active" data-view="dots">Dots</button>
+              <button class="spd-view-btn" data-view="heat">Heat Map</button>
+              <button class="spd-view-btn" data-view="hexbin">Hexbin</button>
+            </div>
+            <span class="spd-shotchart-legend" id="spdShotLegend">
+              <span class="spd-shot-make">● Made</span>
+              <span class="spd-shot-miss">● Missed</span>
+            </span>
+          </div>
+          <div class="spd-shot-layout">
+            <div class="spd-shotchart-wrap">
+              <canvas id="spdShotCanvas" width="500" height="470"></canvas>
+              <div id="spdShotMsg" class="spd-shot-msg">Search a player to view their shot chart.</div>
+            </div>
+            <div class="spd-shot-sidebar" id="spdShotSidebar">
+              <div class="spd-filter-group">
+                <div class="spd-filter-label">Season Type</div>
+                <div class="spd-stype-pills">
+                  <button class="spd-stype-btn active" data-stype="Regular Season">Regular</button>
+                  <button class="spd-stype-btn" data-stype="Playoffs">Playoffs</button>
+                </div>
+              </div>
+              <div class="spd-filter-group">
+                <div class="spd-filter-label">Show</div>
+                <div class="spd-toggle-row">
+                  <button class="spd-toggle-btn active" id="spdShowMade">Made</button>
+                  <button class="spd-toggle-btn active" id="spdShowMissed">Missed</button>
+                </div>
+              </div>
+              <div class="spd-filter-group" id="spdDotControls">
+                <div class="spd-filter-label">Dot Size <span class="spd-filter-val" id="spdDotSizeVal">4</span></div>
+                <input type="range" class="spd-range" id="spdDotSize" min="2" max="12" value="4">
+                <div class="spd-filter-label" style="margin-top:5px">Opacity <span class="spd-filter-val" id="spdDotOpacityVal">75%</span></div>
+                <input type="range" class="spd-range" id="spdDotOpacity" min="10" max="100" value="75">
+              </div>
+              <div class="spd-filter-group">
+                <div class="spd-filter-label">Shot Zones</div>
+                <div class="spd-zone-pills" id="spdZonePills">
+                  <button class="spd-zone-pill active" data-zone="Restricted Area">RA</button>
+                  <button class="spd-zone-pill active" data-zone="In The Paint (Non-RA)">Paint</button>
+                  <button class="spd-zone-pill active" data-zone="Mid-Range">Mid</button>
+                  <button class="spd-zone-pill active" data-zone="Left Corner 3">LC3</button>
+                  <button class="spd-zone-pill active" data-zone="Right Corner 3">RC3</button>
+                  <button class="spd-zone-pill active" data-zone="Above the Break 3">ATB3</button>
+                </div>
+              </div>
+              <div class="spd-filter-group">
+                <div class="spd-filter-label">Shot Angles</div>
+                <div class="spd-zone-pills" id="spdAnglePills">
+                  <button class="spd-zone-pill active" data-angle="Left Side(L)">Left</button>
+                  <button class="spd-zone-pill active" data-angle="Left Side Center(LC)">L-Ctr</button>
+                  <button class="spd-zone-pill active" data-angle="Center(C)">Ctr</button>
+                  <button class="spd-zone-pill active" data-angle="Right Side Center(RC)">R-Ctr</button>
+                  <button class="spd-zone-pill active" data-angle="Right Side(R)">Right</button>
+                </div>
+              </div>
+              <div class="spd-filter-group">
+                <div class="spd-filter-label">Distance (ft)</div>
+                <div class="spd-dist-row">
+                  <input type="number" class="spd-dist-input" id="spdDistMin" min="0" max="35" value="0">
+                  <span class="spd-dist-sep">–</span>
+                  <input type="number" class="spd-dist-input" id="spdDistMax" min="0" max="35" value="30">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="spd-zone-stats-wrap" id="spdZoneStats"></div>
+        </div>
+      </section>
+
+      <!-- ══ Progression Tracker ══ -->
+      <section id="progressionPage" class="page hidden">
+
+        <!-- ── Header ── -->
+        <div class="pt-header">
+          <div class="pt-hdr-left">
+            <p class="page-eyebrow">Roster Building</p>
+            <h1 class="pt-title">Progression</h1>
+            <div class="pt-plat-tabs">
+              <button class="pt-plat-btn active" id="ptTabConsole">Console</button>
+              <button class="pt-plat-btn" id="ptTabPc">PC</button>
+            </div>
+          </div>
+
+          <div class="pt-hdr-center">
+            <div class="pt-ring-wrap">
+              <svg class="pt-ring-svg" viewBox="0 0 80 80">
+                <circle class="pt-ring-track" cx="40" cy="40" r="32"/>
+                <circle class="pt-ring-fill" id="ptRingFill" cx="40" cy="40" r="32" stroke-dasharray="201 201" stroke-dashoffset="201"/>
+              </svg>
+              <div class="pt-ring-inner">
+                <span class="pt-ring-pct" id="ptRingPct">0%</span>
+                <span class="pt-ring-sub">done</span>
+              </div>
+            </div>
+            <div class="pt-center-stats">
+              <div class="pt-stat-nums">
+                <span id="ptDoneCount" class="pt-num-done">0</span>
+                <span class="pt-num-sep">/</span>
+                <span id="ptTotalCount" class="pt-num-total">510</span>
+                <span class="pt-num-label">cells complete</span>
+              </div>
+              <div class="pt-breakdown" id="ptBreakdown"></div>
+            </div>
+          </div>
+
+          <div class="pt-hdr-right">
+            <div class="pt-view-tabs">
+              <button class="pt-view-btn active" data-view="grid">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+                Grid
+              </button>
+              <button class="pt-view-btn" data-view="focus">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2.5" fill="currentColor"/></svg>
+                Focus
+              </button>
+            </div>
+            <button class="pt-sprint-toggle" id="ptSprintToggle">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M9 1L3 9h5l-1 6 6-8H8l1-6z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              Sprint
+            </button>
+          </div>
+        </div>
+
+        <!-- ── WIP strip ── -->
+        <div class="pt-wip-strip hidden" id="ptWipStrip">
+          <div class="pt-wip-pulse"></div>
+          <span class="pt-wip-strip-label">Working On</span>
+          <div class="pt-wip-items" id="ptWipItems"></div>
+          <button class="pt-wip-edit-btn hidden" id="ptEditWipBtn">Edit</button>
+        </div>
+
+        <!-- ── Critical path banner ── -->
+        <div class="pt-critical hidden" id="ptCritical">
+          <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M8 2L1 14h14L8 2z" stroke="#f59e0b" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 7v3M8 12v.5" stroke="#f59e0b" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <span id="ptCriticalText"></span>
+          <button class="pt-critical-show" id="ptCriticalShow">Filter to these</button>
+          <button class="pt-critical-dismiss" id="ptCriticalDismiss">✕</button>
+        </div>
+
+        <!-- ── Sprint bar (content built by JS) ── -->
+        <div class="pt-sprint-bar hidden" id="ptSprintBar"></div>
+
+        <!-- ── Main layout ── -->
+        <div class="pt-layout">
+
+          <!-- Left sidebar: team list -->
+          <div class="pt-sidebar">
+            <div class="pt-sb-top">
+              <input type="text" id="ptSearch" class="pt-search" placeholder="Search teams…"/>
+              <div class="pt-sort-btns">
+                <button class="pt-sort-btn active" data-sort="name">A–Z</button>
+                <button class="pt-sort-btn" data-sort="pct">%</button>
+                <button class="pt-sort-btn" data-sort="done">Done</button>
+              </div>
+            </div>
+            <div class="pt-team-list" id="ptTeamList"></div>
+          </div>
+
+          <!-- Main content area (grid / focus) -->
+          <div class="pt-content" id="ptContent">
+            <div class="pt-loading">Loading…</div>
+          </div>
+
+        </div>
+
+        <!-- WIP editor modal -->
+        <div id="ptWipEditor" class="pt-wip-editor hidden">
+          <div class="pt-wip-editor-inner">
+            <div class="pt-wip-editor-hdr">
+              <span class="pt-wip-editor-title">Edit Working On</span>
+              <button class="pt-wip-editor-close" id="ptWipCancel">✕</button>
+            </div>
+            <textarea id="ptWipTextarea" class="pt-wip-textarea" rows="5" placeholder="One item per line — e.g. MIA — Knicks Attributes"></textarea>
+            <div class="pt-wip-editor-foot">
+              <button class="btn-ghost btn-sm" id="ptWipCancel2">Cancel</button>
+              <button class="btn-primary btn-sm" id="ptWipSave">Save</button>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       <!-- ══ Users Management Page ══ -->
@@ -860,6 +1155,22 @@
     </svg>
   </button>
   <div id="chatPanel" class="chat-panel hidden"></div>
+
+  <!-- Progression status dropdown (portal, fixed-positioned) -->
+  <div id="ptDropdown" class="pt-dropdown hidden">
+    <button class="pt-dd-opt" data-st="ns">
+      <span class="pt-dd-dot pt-dd-ns"></span>Not Started
+    </button>
+    <button class="pt-dd-opt" data-st="wo">
+      <span class="pt-dd-dot pt-dd-wo"></span>Working On
+    </button>
+    <button class="pt-dd-opt" data-st="ir">
+      <span class="pt-dd-dot pt-dd-ir"></span>In Review
+    </button>
+    <button class="pt-dd-opt" data-st="done">
+      <span class="pt-dd-dot pt-dd-done"></span>Completed
+    </button>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>

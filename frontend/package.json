@@ -1,6 +1,6 @@
 {
-  "name": "atd-2k26",
-  "version": "1.0.7",
+  "name": "atd-2k-app",
+  "version": "1.1.0",
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "build": {
     "appId": "com.atd2k26.app",
-    "productName": "ATD 2K26",
+    "productName": "ATD 2K APP",
     "copyright": "Copyright © 2026 ATD",
     "publish": [
       {
@@ -69,7 +69,7 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "ATD 2K26"
+      "shortcutName": "ATD 2K APP"
     },
     "mac": {
       "target": [

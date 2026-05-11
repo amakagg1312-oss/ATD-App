@@ -1,4 +1,5 @@
 const dashboardPageEl = document.getElementById("dashboardPage");
+const playerGenPageEl = document.getElementById("playerGenPage");
 const teamPageEl = document.getElementById("teamPage");
 const profilePageEl = document.getElementById("profilePage");
 const comparePageEl = document.getElementById("comparePage");
@@ -35,6 +36,8 @@ const panelFilterEl = document.getElementById("panelFilter");
 const navDashboardBtn = document.getElementById("navDashboardBtn");
 const openStatsBtn = document.getElementById("openStatsBtn");
 const statsPageEl = document.getElementById("statsPage");
+const shotChartPageEl    = document.getElementById("shotChartPage");
+const progressionPageEl  = document.getElementById("progressionPage");
 
 // Playbook Editor
 const playbookPageEl = document.getElementById("playbookPage");
@@ -246,7 +249,9 @@ function applyTeamTheme(team) {
 }
 
 function setActiveNav(activeId) {
-  [navDashboardBtn, openTeamPageBtn, openPlaybookBtn, openStatsBtn].forEach(btn => {
+  [navDashboardBtn, document.getElementById("navPlayerGenBtn"), openTeamPageBtn, openPlaybookBtn, openStatsBtn,
+   document.getElementById("openShotChartBtn"),
+   document.getElementById("openProgressionBtn")].forEach(btn => {
     if (!btn) return;
     btn.classList.toggle("nav-active", btn.id === activeId);
   });
@@ -254,11 +259,14 @@ function setActiveNav(activeId) {
 
 function _hideAllPages() {
   dashboardPageEl.classList.add("hidden");
+  playerGenPageEl?.classList.add("hidden");
   teamPageEl.classList.add("hidden");
   profilePageEl.classList.add("hidden");
   playbookPageEl.classList.add("hidden");
   comparePageEl.classList.add("hidden");
   if (statsPageEl) statsPageEl.classList.add("hidden");
+  if (shotChartPageEl)   shotChartPageEl.classList.add("hidden");
+  if (progressionPageEl) progressionPageEl.classList.add("hidden");
   document.getElementById("notesPage")?.classList.add("hidden");
   document.getElementById("usersPage")?.classList.add("hidden");
 }
@@ -268,7 +276,295 @@ function showDashboard() {
   dashboardPageEl.classList.remove("hidden");
   document.body.classList.remove("profile-open");
   setActiveNav("navDashboardBtn");
+  renderDashboard();
+}
+
+function showPlayerGenPage() {
+  _hideAllPages();
+  playerGenPageEl.classList.remove("hidden");
+  document.body.classList.remove("profile-open");
+  setActiveNav("navPlayerGenBtn");
   loadDashboardTopPlayers();
+  renderRecentPlayers();
+}
+
+// ── Dashboard render ───────────────────────────────────────────────────────
+
+let _dbPlatform = "console";
+
+let _dbInited = false;
+
+function renderDashboard() {
+  const recent = loadRecentPlayers();
+  const genEl = document.getElementById("dbStatGeneratedVal");
+  if (genEl) genEl.textContent = recent.length || "0";
+  _dbRenderRecentActivity(recent);
+  _dbFetchSnapshot(_dbPlatform);
+  document.getElementById("dbPlatTabs")?.querySelectorAll(".db-plat-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll("#dbPlatTabs .db-plat-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      _dbPlatform = btn.dataset.plat;
+      _dbFetchSnapshot(_dbPlatform);
+    };
+  });
+  if (!_dbInited) { _dbInited = true; _dbInitChangelog(); }
+}
+
+async function _dbFetchSnapshot(platform) {
+  const snapEl = document.getElementById("dbProgSnapshot");
+  if (!snapEl) return;
+  if (!_fireDb) { snapEl.innerHTML = '<div class="db-snap-loading">Not connected</div>'; return; }
+  snapEl.innerHTML = '<div class="db-snap-loading">Loading…</div>';
+  try {
+    const doc = await _fireDb.collection("progression").doc(platform).get();
+    _dbRenderSnapshot(doc.exists ? doc.data() : {});
+  } catch {
+    snapEl.innerHTML = '<div class="db-snap-loading">Failed to load</div>';
+  }
+}
+
+function _dbRenderSnapshot(data) {
+  const snapEl = document.getElementById("dbProgSnapshot");
+  if (!snapEl) return;
+
+  const teams = PROG_TEAMS.map(name => {
+    const tk = progKey(name);
+    const td = data[tk] || {};
+    let done = 0, wo = 0, ir = 0;
+    for (const c of PROG_CATS) {
+      const st = td[c.key] || "ns";
+      if (st === "done") done++;
+      else if (st === "wo") wo++;
+      else if (st === "ir") ir++;
+    }
+    return { name, pct: Math.round((done / PROG_CATS.length) * 100), done, active: wo + ir };
+  });
+
+  const totalCells = PROG_TEAMS.length * PROG_CATS.length;
+  const totalDone = teams.reduce((s, t) => s + t.done, 0);
+  const teamsComplete = teams.filter(t => t.done === PROG_CATS.length).length;
+  let totalWip = 0;
+  for (const tk of Object.keys(data)) {
+    if (tk === "catPriorities" || tk === "workingOn") continue;
+    const td = data[tk];
+    if (typeof td !== "object" || td === null) continue;
+    for (const ck of Object.keys(td)) {
+      if (td[ck] === "wo" || td[ck] === "ir") totalWip++;
+    }
+  }
+  const overallPct = Math.round((totalDone / totalCells) * 100);
+
+  const ovEl = document.getElementById("dbStatOverallVal");
+  const tcEl = document.getElementById("dbStatTeamsVal");
+  const wipEl = document.getElementById("dbStatWipVal");
+  if (ovEl) ovEl.textContent = overallPct + "%";
+  if (tcEl) tcEl.textContent = `${teamsComplete} / ${PROG_TEAMS.length}`;
+  if (wipEl) wipEl.textContent = totalWip;
+
+  const sorted = [...teams].sort((a, b) => b.pct - a.pct);
+  const top5 = sorted.slice(0, 5);
+  const bot5 = sorted.slice(-5).reverse();
+  const wip = data?.workingOn || [];
+  const tc = (name) => PROG_TEAM_COLORS[name] || "#4da8ff";
+
+  const teamRow = (t) => `
+    <div class="db-snap-team-row">
+      <span class="db-snap-team-dot" style="background:${tc(t.name)}"></span>
+      <span class="db-snap-team-name">${t.name.split(" ").pop()}</span>
+      <div class="db-snap-mini-bar"><div class="db-snap-mini-fill" style="width:${Math.max(t.pct, 2)}%;background:${tc(t.name)}"></div></div>
+      <span class="db-snap-team-pct">${t.pct}%</span>
+    </div>`;
+
+  snapEl.innerHTML = `
+    <div class="db-snap-overall">
+      <div class="db-snap-bar-wrap">
+        <div class="db-snap-bar-track"><div class="db-snap-bar-fill" style="width:${overallPct}%"></div></div>
+        <span class="db-snap-pct">${overallPct}%</span>
+      </div>
+      <span class="db-snap-sublabel">${totalDone} / ${totalCells} cells complete</span>
+    </div>
+    <div class="db-snap-cols">
+      <div class="db-snap-col">
+        <div class="db-snap-col-label">Top Teams</div>
+        ${top5.map(teamRow).join("")}
+      </div>
+      <div class="db-snap-col">
+        <div class="db-snap-col-label">Need Attention</div>
+        ${bot5.map(teamRow).join("")}
+      </div>
+    </div>
+    ${wip.length ? `<div class="db-snap-wip"><div class="db-snap-col-label">Working On</div><div class="db-snap-wip-items">${
+      wip.slice(0, 5).map(w => `<span class="db-snap-wip-chip">${w}</span>`).join("")
+    }${wip.length > 5 ? `<span class="db-snap-wip-chip db-snap-wip-more">+${wip.length - 5}</span>` : ""}</div></div>` : ""}
+  `;
+}
+
+function _dbRenderRecentActivity(recent) {
+  const el = document.getElementById("dbRecentList");
+  if (!el) return;
+  if (!recent?.length) {
+    el.innerHTML = '<div class="db-recent-empty">No players generated yet. Head to Player Gen to get started.</div>';
+    return;
+  }
+  el.innerHTML = recent.map(p => `
+    <div class="db-recent-row">
+      <div class="db-recent-avatar">${(p.name || "?")[0].toUpperCase()}</div>
+      <div class="db-recent-info">
+        <span class="db-recent-name">${p.name}</span>
+        <span class="db-recent-meta">${[p.team, p.position, p.season].filter(Boolean).join(" · ")}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+// ── Changelog (What's New) ─────────────────────────────────────────────────
+
+let _clUnsub = null;
+
+function _dbInitChangelog() {
+  const postBtn = document.getElementById("dbClPostBtn");
+  const form    = document.getElementById("dbClForm");
+  const cancelBtn = document.getElementById("dbClCancelBtn");
+  const submitBtn = document.getElementById("dbClSubmitBtn");
+
+  if (_currentRole === "head_admin") {
+    postBtn?.classList.remove("hidden");
+  }
+
+  postBtn?.addEventListener("click", () => form?.classList.toggle("hidden"));
+  cancelBtn?.addEventListener("click", () => {
+    form?.classList.add("hidden");
+    _dbClClearForm();
+  });
+  submitBtn?.addEventListener("click", _dbClSubmit);
+
+  _dbSubscribeChangelog();
+}
+
+function _dbSubscribeChangelog() {
+  if (!_fireDb) {
+    document.getElementById("dbChangelogList").innerHTML = '<div class="db-snap-loading">Not connected</div>';
+    return;
+  }
+  if (_clUnsub) return;
+  _clUnsub = _fireDb.collection("meta").doc("changelog")
+    .onSnapshot(snap => {
+      const entries = (snap.exists ? snap.data()?.entries : null) || [];
+      _dbRenderChangelog(entries);
+    }, () => {
+      document.getElementById("dbChangelogList").innerHTML = '<div class="db-snap-loading">Failed to load</div>';
+    });
+}
+
+function _dbRenderChangelog(entries) {
+  const el = document.getElementById("dbChangelogList");
+  if (!el) return;
+  if (!entries.length) {
+    el.innerHTML = `
+      <div class="db-cl-empty-state">
+        <svg viewBox="0 0 48 48" fill="none" width="40" height="40" opacity=".25">
+          <rect x="8" y="6" width="32" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M16 16h16M16 22h16M16 28h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p>No updates posted yet.</p>
+      </div>`;
+    return;
+  }
+
+  const sorted = [...entries].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  const now = Date.now();
+  const isNew = (e) => e.date && (now - new Date(e.date).getTime()) < 7 * 86400000;
+
+  const HERO_BG = {
+    feature: "linear-gradient(135deg, rgba(77,168,255,0.16) 0%, rgba(77,168,255,0.04) 80%)",
+    update:  "linear-gradient(135deg, rgba(167,139,250,0.16) 0%, rgba(167,139,250,0.04) 80%)",
+    fix:     "linear-gradient(135deg, rgba(251,191,36,0.14) 0%, rgba(251,191,36,0.03) 80%)",
+  };
+  const HERO_GLOW = {
+    feature: "rgba(77,168,255,0.22)",
+    update:  "rgba(167,139,250,0.22)",
+    fix:     "rgba(251,191,36,0.2)",
+  };
+  const TAG_LABEL = { feature: "Feature", update: "Update", fix: "Fix" };
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+
+  const [hero, ...rest] = sorted;
+  const hTag = hero.tag || "update";
+
+  const heroHtml = `
+    <div class="db-cl-hero" style="background:${HERO_BG[hTag] || HERO_BG.update};border-color:${HERO_GLOW[hTag] || HERO_GLOW.update}">
+      <div class="db-cl-hero-top">
+        <span class="db-cl-tag db-cl-tag-${hTag}">${TAG_LABEL[hTag] || hTag}</span>
+        ${isNew(hero) ? '<span class="db-cl-new-badge">NEW</span>' : ""}
+        <span class="db-cl-hero-meta">${fmtDate(hero.date)}${hero.author ? ` · ${safeHtml(hero.author)}` : ""}</span>
+      </div>
+      <div class="db-cl-hero-title">${safeHtml(hero.title)}</div>
+      ${hero.desc ? `<div class="db-cl-hero-desc">${safeHtml(hero.desc)}</div>` : ""}
+    </div>`;
+
+  const timelineHtml = rest.length ? `
+    <div class="db-cl-timeline">
+      ${rest.map(e => {
+        const tag = e.tag || "update";
+        return `
+          <div class="db-cl-tl-row">
+            <div class="db-cl-tl-line">
+              <div class="db-cl-tl-dot db-cl-tl-dot-${tag}"></div>
+              <div class="db-cl-tl-track"></div>
+            </div>
+            <div class="db-cl-tl-body">
+              <div class="db-cl-tl-top">
+                <span class="db-cl-tag db-cl-tag-${tag}">${TAG_LABEL[tag] || tag}</span>
+                ${isNew(e) ? '<span class="db-cl-new-badge">NEW</span>' : ""}
+                <span class="db-cl-tl-date">${fmtDate(e.date)}</span>
+              </div>
+              <div class="db-cl-tl-title">${safeHtml(e.title)}</div>
+              ${e.desc ? `<div class="db-cl-tl-desc">${safeHtml(e.desc)}</div>` : ""}
+            </div>
+          </div>`;
+      }).join("")}
+    </div>` : "";
+
+  el.innerHTML = heroHtml + timelineHtml;
+}
+
+async function _dbClSubmit() {
+  const title = document.getElementById("dbClTitle")?.value.trim();
+  const desc  = document.getElementById("dbClDesc")?.value.trim();
+  const tag   = document.getElementById("dbClTag")?.value || "update";
+  if (!title) return;
+
+  const submitBtn = document.getElementById("dbClSubmitBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Posting…";
+
+  try {
+    const ref  = _fireDb.collection("meta").doc("changelog");
+    const snap = await ref.get();
+    const entries = snap.exists ? (snap.data()?.entries || []) : [];
+    const newEntry = {
+      id: Date.now().toString(),
+      tag, title, desc,
+      date: new Date().toISOString(),
+      author: getDisplayName() || "—",
+    };
+    const updated = [newEntry, ...entries].slice(0, 50);
+    await ref.set({ entries: updated }, { merge: true });
+    document.getElementById("dbClForm")?.classList.add("hidden");
+    _dbClClearForm();
+  } catch (err) {
+    console.error("Changelog post failed:", err);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Post Update";
+  }
+}
+
+function _dbClClearForm() {
+  const t = document.getElementById("dbClTitle"); if (t) t.value = "";
+  const d = document.getElementById("dbClDesc");  if (d) d.value = "";
+  const s = document.getElementById("dbClTag");   if (s) s.value = "feature";
 }
 
 let _dashTopLoaded = false;
@@ -325,6 +621,24 @@ function showStatsPage() {
   document.body.classList.add("profile-open");
   setActiveNav("openStatsBtn");
   statsInit();
+}
+
+function showProgressionPage() {
+  if (!progressionPageEl) return;
+  _hideAllPages();
+  progressionPageEl.classList.remove("hidden");
+  document.body.classList.add("profile-open");
+  setActiveNav("openProgressionBtn");
+  progressionPageInit();
+}
+
+function showShotChartPage() {
+  if (!shotChartPageEl) return;
+  _hideAllPages();
+  shotChartPageEl.classList.remove("hidden");
+  document.body.classList.add("profile-open");
+  setActiveNav("openShotChartBtn");
+  shotChartPageInit();
 }
 
 function showProfile() {
@@ -1864,7 +2178,7 @@ async function exportProfileAsImage() {
 
   ctx.fillStyle = "#f4f8ff";
   ctx.font = "bold 14px Sora, sans-serif";
-  ctx.fillText("NBA 2K26 — Generated Profile", 24, 30);
+  ctx.fillText("ATD 2K APP — Generated Profile", 24, 30);
 
   ctx.fillStyle = "#f4f8ff";
   ctx.font = "bold 42px Bebas Neue, Sora, sans-serif";
@@ -1951,7 +2265,7 @@ async function exportProfileAsImage() {
 
   ctx.fillStyle = "#555";
   ctx.font = "10px Sora, sans-serif";
-  ctx.fillText("Generated by NBA 2K26 ATD Committee Helper Tool", 24, H - 16);
+  ctx.fillText("Generated by ATD 2K APP", 24, H - 16);
 
   canvas.toBlob((blob) => {
     if (!blob) return;
@@ -2160,6 +2474,7 @@ if (teamGenerateBtn) {
 if (navDashboardBtn) {
   navDashboardBtn.addEventListener("click", () => showDashboard());
 }
+document.getElementById("navPlayerGenBtn")?.addEventListener("click", () => showPlayerGenPage());
 if (openTeamPageBtn) {
   openTeamPageBtn.addEventListener("click", () => {
     teamResultsEl.innerHTML = "";
@@ -2245,7 +2560,7 @@ if (teamImportGameBtn) {
       return;
     }
     teamImportGameBtn.disabled = true;
-    teamStatusEl.textContent = "Connecting to NBA 2K26 and importing players...";
+    teamStatusEl.textContent = "Connecting to ATD 2K APP and importing players...";
     try {
       const result = await window.nba2kDesktop.importToGame(lastTeamExportPayload);
       if (result?.ok) {
@@ -2490,6 +2805,54 @@ const _spd = {
   showMade: true, showMissed: true,
   dotSize: 4, dotOpacity: 75,
 };
+
+// ── Progression Tracker — constants ─────────────────────────────────────────
+
+const PROG_TEAMS = [
+  "Philadelphia 76ers","Milwaukee Bucks","Chicago Bulls","Cleveland Cavaliers",
+  "Boston Celtics","LA Clippers","Memphis Grizzlies","Atlanta Hawks",
+  "Miami Heat","Charlotte Hornets","Utah Jazz","Sacramento Kings",
+  "New York Knicks","LA Lakers","Orlando Magic","Dallas Mavericks",
+  "Brooklyn Nets","Denver Nuggets","Indiana Pacers","New Orleans Pelicans",
+  "Detroit Pistons","Toronto Raptors","Houston Rockets","San Antonio Spurs",
+  "Phoenix Suns","Oklahoma City Thunder","Minnesota Timberwolves",
+  "Portland Trail Blazers","Golden State Warriors","Washington Wizards",
+];
+
+const PROG_CATS = [
+  { key:"tends",       label:"Tendencies",         s:"Tendencies",    p:"high" },
+  { key:"attrs",       label:"Attributes",         s:"Attributes",    p:"high" },
+  { key:"sim",         label:"Sim Settings",       s:"Sim Settings",  p:"high" },
+  { key:"boomBust",    label:"Boom vs Bust",       s:"Boom vs Bust",  p:"high" },
+  { key:"body",        label:"Player Body",        s:"Player Body",   p:"mid"  },
+  { key:"playbooks",   label:"Playbooks",          s:"Playbooks",     p:"mid"  },
+  { key:"freeAgents",  label:"Free Agents",        s:"Free Agents",   p:"mid"  },
+  { key:"gLeague",     label:"G-League",           s:"G-League",      p:"mid"  },
+  { key:"sigEdits",    label:"Sig Edits",          s:"Sig Edits",     p:"mid"  },
+  { key:"coachProf",   label:"Coaching Profiles",  s:"Coaching",      p:"mid"  },
+  { key:"plyrPrio",    label:"Player Priorities",  s:"Plyr Prios",    p:"low"  },
+  { key:"poes",        label:"POEs",               s:"POEs",          p:"low"  },
+  { key:"coachAttrs",  label:"Coach Profile Attrs",s:"Coach Attrs",   p:"low"  },
+  { key:"peakTiming",  label:"Peak Start / End",   s:"Peak Timing",   p:"low"  },
+  { key:"injuries",    label:"Injuries",           s:"Injuries",      p:"low"  },
+  { key:"accessories", label:"Accessories",        s:"Accessories",   p:"low"  },
+  { key:"badges",      label:"Player Badges",      s:"Badges",        p:"low"  },
+];
+
+const PROG_STATUS_LABEL = {
+  ns:   "Not Started",
+  wo:   "Working On",
+  ir:   "In Review",
+  done: "Completed",
+};
+
+const PROG_CYCLE = ["ns", "wo", "ir", "done"];
+
+function progKey(teamName) {
+  return teamName.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+}
+
+// ── Progression Tracker — end constants ─────────────────────────────────────
 
 const LEAGUE_AVG = {
   "Restricted Area":         { fgPct: 0.681, pts: 1.363 },
@@ -3416,50 +3779,6 @@ async function openPlayerDetail(name, playerId) {
   if (avgsEl) avgsEl.innerHTML = "";
   if (careerEl) careerEl.innerHTML = '<div class="stats-loading"><div class="stats-spinner"></div></div>';
 
-  // Reset shot chart section to collapsed state
-  const shotBody = document.getElementById("spdShotBody");
-  const shotIcon = document.getElementById("spdCollapseIcon");
-  const shotHeader = document.getElementById("spdCollapseBtn");
-  const shotControls = document.getElementById("spdShotControls");
-  const shotSeasonEl = document.getElementById("spdShotSeason");
-  if (shotBody) { shotBody.classList.remove("expanded"); }
-  if (shotIcon) shotIcon.style.transform = "";
-  if (shotHeader) shotHeader.setAttribute("aria-expanded", "false");
-  if (shotControls) shotControls.classList.add("hidden");
-  if (shotSeasonEl) shotSeasonEl.textContent = "";
-
-  // Init _spd state for this player
-  const { season } = statsGetFilters();
-  _spd.playerId = playerId;
-  _spd.season = season;
-  _spd.seasonType = "Regular Season";
-  _spd.shots = null;
-  _spd.loaded = false;
-  _spd.view = "dots";
-  _spd.zoneFilter = []; _spd.angleFilter = [];
-  _spd.distMin = 0; _spd.distMax = 30;
-  _spd.showMade = true; _spd.showMissed = true;
-  _spd.dotSize = 4; _spd.dotOpacity = 75;
-
-  // Sync season select and view buttons
-  const seasonSel = document.getElementById("spdSeasonSelect");
-  if (seasonSel) seasonSel.value = season;
-  document.querySelectorAll(".spd-view-btn").forEach((b) => b.classList.toggle("active", b.dataset.view === "dots"));
-
-  // Reset sidebar filters
-  document.querySelectorAll(".spd-stype-btn").forEach((b) => b.classList.toggle("active", b.dataset.stype === "Regular Season"));
-  document.getElementById("spdShowMade")?.classList.add("active");
-  document.getElementById("spdShowMissed")?.classList.add("active");
-  document.querySelectorAll(".spd-zone-pill").forEach((p) => p.classList.remove("active"));
-  const dotSizeEl = document.getElementById("spdDotSize");
-  if (dotSizeEl) { dotSizeEl.value = 4; document.getElementById("spdDotSizeVal").textContent = "4"; }
-  const dotOpEl = document.getElementById("spdDotOpacity");
-  if (dotOpEl) { dotOpEl.value = 75; document.getElementById("spdDotOpacityVal").textContent = "75%"; }
-  const dMin = document.getElementById("spdDistMin"), dMax = document.getElementById("spdDistMax");
-  if (dMin) dMin.value = 0;
-  if (dMax) dMax.value = 30;
-  document.getElementById("spdDotControls")?.classList.remove("hidden");
-  document.getElementById("spdZoneStats") && (document.getElementById("spdZoneStats").innerHTML = "");
 
   const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   if (photoEl && playerId) {
@@ -3859,103 +4178,6 @@ function statsInit() {
       switchStatsTab(statsState.tab);
     });
 
-    // Shot chart collapse toggle
-    document.getElementById("spdCollapseBtn")?.addEventListener("click", (e) => {
-      if (e.target.closest("select") || e.target.closest(".spd-view-btn")) return;
-      toggleShotChartSection();
-    });
-
-    // Season selector inside player detail
-    document.getElementById("spdSeasonSelect")?.addEventListener("change", (e) => {
-      e.stopPropagation();
-      _spd.loaded = false;
-      loadShotChart(e.target.value);
-    });
-
-    // Dots / Heat Map / Hexbin view toggle
-    document.querySelectorAll(".spd-view-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        document.querySelectorAll(".spd-view-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        _spd.view = btn.dataset.view;
-        document.getElementById("spdDotControls")?.classList.toggle("hidden", _spd.view !== "dots");
-        if (_spd.loaded && _spd.shots) renderCurrentShotView();
-      });
-    });
-
-    // Season type (Regular / Playoffs) inside shot chart sidebar
-    document.querySelectorAll(".spd-stype-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".spd-stype-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        _spd.seasonType = btn.dataset.stype;
-        _spd.loaded = false;
-        if (document.getElementById("spdShotBody")?.classList.contains("expanded")) {
-          loadShotChart(_spd.season);
-        }
-      });
-    });
-
-    // Made / Missed toggles
-    document.getElementById("spdShowMade")?.addEventListener("click", function () {
-      _spd.showMade = !_spd.showMade;
-      this.classList.toggle("active", _spd.showMade);
-      refreshShotChart();
-    });
-    document.getElementById("spdShowMissed")?.addEventListener("click", function () {
-      _spd.showMissed = !_spd.showMissed;
-      this.classList.toggle("active", _spd.showMissed);
-      refreshShotChart();
-    });
-
-    // Dot size slider
-    document.getElementById("spdDotSize")?.addEventListener("input", function () {
-      _spd.dotSize = Number(this.value);
-      const v = document.getElementById("spdDotSizeVal");
-      if (v) v.textContent = this.value;
-      if (_spd.view === "dots") refreshShotChart();
-    });
-
-    // Opacity slider
-    document.getElementById("spdDotOpacity")?.addEventListener("input", function () {
-      _spd.dotOpacity = Number(this.value);
-      const v = document.getElementById("spdDotOpacityVal");
-      if (v) v.textContent = this.value + "%";
-      if (_spd.view === "dots") refreshShotChart();
-    });
-
-    // Zone pills
-    document.getElementById("spdZonePills")?.querySelectorAll(".spd-zone-pill").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        btn.classList.toggle("active");
-        const allPills = [...document.getElementById("spdZonePills").querySelectorAll(".spd-zone-pill")];
-        const active = allPills.filter((p) => p.classList.contains("active"));
-        _spd.zoneFilter = active.map((p) => p.dataset.zone);
-        refreshShotChart();
-      });
-    });
-
-    // Angle pills
-    document.getElementById("spdAnglePills")?.querySelectorAll(".spd-zone-pill").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        btn.classList.toggle("active");
-        const allPills = [...document.getElementById("spdAnglePills").querySelectorAll(".spd-zone-pill")];
-        const active = allPills.filter((p) => p.classList.contains("active"));
-        _spd.angleFilter = active.map((p) => p.dataset.angle);
-        refreshShotChart();
-      });
-    });
-
-    // Distance inputs
-    const updateDist = () => {
-      _spd.distMin = Math.max(0, Math.min(35, Number(document.getElementById("spdDistMin")?.value || 0)));
-      _spd.distMax = Math.max(_spd.distMin, Math.min(35, Number(document.getElementById("spdDistMax")?.value || 30)));
-      refreshShotChart();
-    };
-    document.getElementById("spdDistMin")?.addEventListener("change", updateDist);
-    document.getElementById("spdDistMax")?.addEventListener("change", updateDist);
-
     // Category pills (leaders)
     document.getElementById("statsCategoryPills")?.querySelectorAll(".stat-pill").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -4014,6 +4236,927 @@ function statsInit() {
 // Stats nav button
 if (openStatsBtn) {
   openStatsBtn.addEventListener("click", () => showStatsPage());
+}
+
+// Shot Chart nav button
+document.getElementById("openShotChartBtn")?.addEventListener("click", () => showShotChartPage());
+
+// Progression nav button
+document.getElementById("openProgressionBtn")?.addEventListener("click", () => showProgressionPage());
+
+// ── Shot Chart Page ───────────────────────────────────────────────────────────
+
+const _scPage = { inited: false, playerId: null, playerName: null, _cache: {}, _debounce: null };
+
+function shotChartPageInit() {
+  if (_scPage.inited) return;
+  _scPage.inited = true;
+
+  const searchInput = document.getElementById("scPlayerSearch");
+  const resultsEl   = document.getElementById("scSearchResults");
+
+  searchInput?.addEventListener("input", () => {
+    clearTimeout(_scPage._debounce);
+    const q = (searchInput.value || "").trim();
+    if (q.length < 2) { resultsEl?.classList.add("hidden"); return; }
+    _scPage._debounce = setTimeout(() => scSearchPlayers(q), 280);
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".sc-search-wrap")) resultsEl?.classList.add("hidden");
+  });
+
+  document.getElementById("scClearBtn")?.addEventListener("click", () => {
+    _scPage.playerId = null;
+    _scPage.playerName = null;
+    _spd.shots = null;
+    _spd.loaded = false;
+    document.getElementById("scPlayerHeader")?.classList.add("hidden");
+    document.getElementById("scSearchResults")?.classList.add("hidden");
+    const canvas = document.getElementById("spdShotCanvas");
+    if (canvas) drawCourt(canvas.getContext("2d"), canvas.width, canvas.height);
+    const msgEl = document.getElementById("spdShotMsg");
+    if (msgEl) { msgEl.textContent = "Search a player to view their shot chart."; msgEl.className = "spd-shot-msg"; }
+    if (document.getElementById("spdZoneStats")) document.getElementById("spdZoneStats").innerHTML = "";
+  });
+
+  document.getElementById("spdSeasonSelect")?.addEventListener("change", (e) => {
+    _spd.season = e.target.value;
+    _spd.loaded = false;
+    if (_scPage.playerId) loadShotChart(e.target.value);
+  });
+
+  document.querySelectorAll(".spd-view-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".spd-view-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      _spd.view = btn.dataset.view;
+      document.getElementById("spdDotControls")?.classList.toggle("hidden", _spd.view !== "dots");
+      if (_spd.loaded && _spd.shots) renderCurrentShotView();
+    });
+  });
+
+  document.querySelectorAll(".spd-stype-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".spd-stype-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      _spd.seasonType = btn.dataset.stype;
+      _spd.loaded = false;
+      if (_scPage.playerId) loadShotChart(_spd.season);
+    });
+  });
+
+  document.getElementById("spdShowMade")?.addEventListener("click", function () {
+    _spd.showMade = !_spd.showMade;
+    this.classList.toggle("active", _spd.showMade);
+    refreshShotChart();
+  });
+  document.getElementById("spdShowMissed")?.addEventListener("click", function () {
+    _spd.showMissed = !_spd.showMissed;
+    this.classList.toggle("active", _spd.showMissed);
+    refreshShotChart();
+  });
+
+  document.getElementById("spdDotSize")?.addEventListener("input", function () {
+    _spd.dotSize = Number(this.value);
+    const v = document.getElementById("spdDotSizeVal");
+    if (v) v.textContent = this.value;
+    if (_spd.view === "dots") refreshShotChart();
+  });
+
+  document.getElementById("spdDotOpacity")?.addEventListener("input", function () {
+    _spd.dotOpacity = Number(this.value);
+    const v = document.getElementById("spdDotOpacityVal");
+    if (v) v.textContent = this.value + "%";
+    if (_spd.view === "dots") refreshShotChart();
+  });
+
+  document.getElementById("spdZonePills")?.querySelectorAll(".spd-zone-pill").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+      const allPills = [...document.getElementById("spdZonePills").querySelectorAll(".spd-zone-pill")];
+      _spd.zoneFilter = allPills.filter((p) => p.classList.contains("active")).map((p) => p.dataset.zone);
+      refreshShotChart();
+    });
+  });
+
+  document.getElementById("spdAnglePills")?.querySelectorAll(".spd-zone-pill").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+      const allPills = [...document.getElementById("spdAnglePills").querySelectorAll(".spd-zone-pill")];
+      _spd.angleFilter = allPills.filter((p) => p.classList.contains("active")).map((p) => p.dataset.angle);
+      refreshShotChart();
+    });
+  });
+
+  const updateDist = () => {
+    _spd.distMin = Math.max(0, Math.min(35, Number(document.getElementById("spdDistMin")?.value || 0)));
+    _spd.distMax = Math.max(_spd.distMin, Math.min(35, Number(document.getElementById("spdDistMax")?.value || 30)));
+    refreshShotChart();
+  };
+  document.getElementById("spdDistMin")?.addEventListener("change", updateDist);
+  document.getElementById("spdDistMax")?.addEventListener("change", updateDist);
+
+  const canvas = document.getElementById("spdShotCanvas");
+  if (canvas) drawCourt(canvas.getContext("2d"), canvas.width, canvas.height);
+}
+
+async function scSearchPlayers(query) {
+  const season = document.getElementById("spdSeasonSelect")?.value || "2024-25";
+  const resultsEl = document.getElementById("scSearchResults");
+  if (!resultsEl) return;
+
+  resultsEl.classList.remove("hidden");
+
+  let players = _scPage._cache[season];
+  if (!players) {
+    resultsEl.innerHTML = '<div class="sc-search-loading">Searching…</div>';
+    try {
+      const result = await window.nba2kDesktop.fetchPlayerStats({ season, seasonType: "Regular Season", perMode: "PerGame", measureType: "Base" });
+      if (!result?.ok || !result.data?.length) {
+        resultsEl.innerHTML = '<div class="sc-search-empty">Could not load players.</div>';
+        return;
+      }
+      players = result.data;
+      _scPage._cache[season] = players;
+    } catch {
+      resultsEl.innerHTML = '<div class="sc-search-empty">Search failed. Try again.</div>';
+      return;
+    }
+  }
+
+  const lq = query.toLowerCase();
+  const matches = players.filter((p) =>
+    (p.PLAYER_NAME || p.PLAYER || "").toLowerCase().includes(lq)
+  ).slice(0, 8);
+
+  if (!matches.length) {
+    resultsEl.innerHTML = `<div class="sc-search-empty">No players matching "${query}".</div>`;
+    return;
+  }
+
+  resultsEl.innerHTML = matches.map((p) => {
+    const name = p.PLAYER_NAME || p.PLAYER || "";
+    const team = p.TEAM_ABBREVIATION || p.TEAM || "";
+    const id   = p.PLAYER_ID || "";
+    return `<button class="sc-result-btn" data-name="${name}" data-id="${id}">${name}<span class="sc-result-team">${team}</span></button>`;
+  }).join("");
+
+  resultsEl.querySelectorAll(".sc-result-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      scLoadChartForPlayer(btn.dataset.name, btn.dataset.id);
+      resultsEl.classList.add("hidden");
+      const inp = document.getElementById("scPlayerSearch");
+      if (inp) inp.value = "";
+    });
+  });
+}
+
+function scLoadChartForPlayer(name, playerId) {
+  _scPage.playerName = name;
+  _scPage.playerId = playerId;
+
+  const header = document.getElementById("scPlayerHeader");
+  const nameEl = document.getElementById("scPlayerName");
+  if (header) header.classList.remove("hidden");
+  if (nameEl) nameEl.textContent = name;
+
+  const useSeason = document.getElementById("spdSeasonSelect")?.value || "2024-25";
+  _spd.playerId = playerId;
+  _spd.season = useSeason;
+  _spd.seasonType = "Regular Season";
+  _spd.shots = null;
+  _spd.loaded = false;
+  _spd.view = "dots";
+  _spd.zoneFilter = []; _spd.angleFilter = [];
+  _spd.distMin = 0; _spd.distMax = 30;
+  _spd.showMade = true; _spd.showMissed = true;
+  _spd.dotSize = 4; _spd.dotOpacity = 75;
+
+  const seasonSel = document.getElementById("spdSeasonSelect");
+  if (seasonSel) seasonSel.value = useSeason;
+  document.querySelectorAll(".spd-view-btn").forEach((b) => b.classList.toggle("active", b.dataset.view === "dots"));
+  document.querySelectorAll(".spd-stype-btn").forEach((b) => b.classList.toggle("active", b.dataset.stype === "Regular Season"));
+  document.getElementById("spdShowMade")?.classList.add("active");
+  document.getElementById("spdShowMissed")?.classList.add("active");
+  document.querySelectorAll(".spd-zone-pill").forEach((p) => p.classList.remove("active"));
+  const dotSizeEl = document.getElementById("spdDotSize");
+  if (dotSizeEl) { dotSizeEl.value = 4; const v = document.getElementById("spdDotSizeVal"); if (v) v.textContent = "4"; }
+  const dotOpEl = document.getElementById("spdDotOpacity");
+  if (dotOpEl) { dotOpEl.value = 75; const v = document.getElementById("spdDotOpacityVal"); if (v) v.textContent = "75%"; }
+  const dMin = document.getElementById("spdDistMin"), dMax = document.getElementById("spdDistMax");
+  if (dMin) dMin.value = 0; if (dMax) dMax.value = 30;
+  document.getElementById("spdDotControls")?.classList.remove("hidden");
+  if (document.getElementById("spdZoneStats")) document.getElementById("spdZoneStats").innerHTML = "";
+
+  loadShotChart(useSeason);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROGRESSION TRACKER v2
+// ═══════════════════════════════════════════════════════════════
+
+const PROG_TEAM_COLORS = {
+  "Philadelphia 76ers":    "#1a7ee0",
+  "Milwaukee Bucks":       "#00b060",
+  "Chicago Bulls":         "#d01433",
+  "Cleveland Cavaliers":   "#9a1a3e",
+  "Boston Celtics":        "#00a84a",
+  "LA Clippers":           "#c8102e",
+  "Memphis Grizzlies":     "#5d76a9",
+  "Atlanta Hawks":         "#e03a3e",
+  "Miami Heat":            "#e0303a",
+  "Charlotte Hornets":     "#7b5fbf",
+  "Utah Jazz":             "#3a80d2",
+  "Sacramento Kings":      "#8452b0",
+  "New York Knicks":       "#1a7ee0",
+  "LA Lakers":             "#8040be",
+  "Orlando Magic":         "#0077c0",
+  "Dallas Mavericks":      "#0076b0",
+  "Brooklyn Nets":         "#7080a0",
+  "Denver Nuggets":        "#2a7aba",
+  "Indiana Pacers":        "#d4a820",
+  "New Orleans Pelicans":  "#1a5aaa",
+  "Detroit Pistons":       "#c8102e",
+  "Toronto Raptors":       "#ce1141",
+  "Houston Rockets":       "#ce1141",
+  "San Antonio Spurs":     "#8090a8",
+  "Phoenix Suns":          "#5a3fa8",
+  "Oklahoma City Thunder": "#007ac1",
+  "Minnesota Timberwolves":"#1a6898",
+  "Portland Trail Blazers":"#e03a3e",
+  "Golden State Warriors": "#2055b8",
+  "Washington Wizards":    "#1a4898",
+};
+
+const _pt = {
+  inited: false,
+  platform: "console",
+  view: "grid",           // "grid" | "focus"
+  data: { console: null, pc: null },
+  unsub: { console: null, pc: null },
+  catPrios: {},
+  focusTeam: null,
+  search: "",
+  sort: "name",
+  criticalDismissed: false,
+  criticalFilter: false,
+  sprint: {
+    phase: "off",        // "off" | "select" | "active"
+    cells: new Set(),    // "teamKey:catKey" — selected cells
+  },
+  _ddTarget: null,
+};
+
+// ── Helpers ──────────────────────────────────────────────────────────
+
+function _ptCatPrio(key) {
+  return _pt.catPrios[key] || PROG_CATS.find(c => c.key === key)?.p || "low";
+}
+
+function _ptTeamColor(name) {
+  return PROG_TEAM_COLORS[name] || "#4da8ff";
+}
+
+function _ptTeamStats(teamData) {
+  const cats = PROG_CATS;
+  let done = 0, wo = 0, ir = 0, ns = 0;
+  for (const c of cats) {
+    const st = (teamData[c.key] || "ns");
+    if (st === "done") done++;
+    else if (st === "wo") wo++;
+    else if (st === "ir") ir++;
+    else ns++;
+  }
+  return { done, wo, ir, ns, total: cats.length, pct: Math.round(done / cats.length * 100) };
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+
+function progressionPageInit() {
+  const canEdit = _currentRole !== "viewer";
+
+  if (!_pt.inited) {
+    _pt.inited = true;
+
+    // Platform tabs
+    document.getElementById("ptTabConsole")?.addEventListener("click", () => {
+      _pt.platform = "console";
+      document.getElementById("ptTabConsole")?.classList.add("active");
+      document.getElementById("ptTabPc")?.classList.remove("active");
+      _ptSubscribe("console");
+    });
+    document.getElementById("ptTabPc")?.addEventListener("click", () => {
+      _pt.platform = "pc";
+      document.getElementById("ptTabPc")?.classList.add("active");
+      document.getElementById("ptTabConsole")?.classList.remove("active");
+      _ptSubscribe("pc");
+    });
+
+    // View switcher
+    document.getElementById("progressionPage")?.addEventListener("click", async (e) => {
+      const viewBtn = e.target.closest(".pt-view-btn");
+      if (viewBtn) {
+        _pt.view = viewBtn.dataset.view;
+        document.querySelectorAll(".pt-view-btn").forEach(b => b.classList.toggle("active", b === viewBtn));
+        if (_pt.view === "focus" && !_pt.focusTeam && PROG_TEAMS.length) {
+          _pt.focusTeam = progKey(PROG_TEAMS[0]);
+        }
+        _ptRenderContent();
+        return;
+      }
+
+      // Sort buttons
+      const sortBtn = e.target.closest(".pt-sort-btn");
+      if (sortBtn) {
+        _pt.sort = sortBtn.dataset.sort;
+        document.querySelectorAll(".pt-sort-btn").forEach(b => b.classList.toggle("active", b === sortBtn));
+        _ptRenderSidebar();
+        return;
+      }
+
+      // Team row in sidebar
+      const teamRow = e.target.closest(".pt-team-row[data-team]");
+      if (teamRow && !e.target.closest(".pt-sprint-check")) {
+        const tk = teamRow.dataset.team;
+        if (_pt.view === "focus") {
+          _pt.focusTeam = tk;
+          document.querySelectorAll(".pt-team-row").forEach(r => r.classList.toggle("active", r.dataset.team === tk));
+          _ptRenderFocus();
+        } else if (_pt.view === "grid") {
+          // Scroll the grid to that team's row
+          const row = document.querySelector(`.pt-grid-row[data-team="${tk}"]`);
+          row?.scrollIntoView({ behavior: "smooth", block: "center" });
+          document.querySelectorAll(".pt-team-row").forEach(r => r.classList.toggle("active", r.dataset.team === tk));
+        }
+        return;
+      }
+
+      // Grid cell click
+      const gridCell = e.target.closest(".pt-grid-cell[data-team]");
+      if (gridCell && canEdit) {
+        if (_pt.sprint.phase === "select") {
+          _ptSprintToggleCell(gridCell.dataset.team, gridCell.dataset.cat);
+          return;
+        }
+        _ptShowDropdown(gridCell);
+        return;
+      }
+
+      // Focus card click
+      const focusCard = e.target.closest(".pt-focus-card[data-team]");
+      if (focusCard && canEdit) {
+        _ptShowDropdown(focusCard);
+        return;
+      }
+
+      // Rev cell
+      const revCell = e.target.closest(".pt-grid-rev-cell[data-team]");
+      if (revCell && canEdit) {
+        await _ptToggleRev(revCell.dataset.team);
+        return;
+      }
+
+    });
+
+    // Dropdown is a portal outside #progressionPage — needs its own listener
+    document.getElementById("ptDropdown")?.addEventListener("click", async (e) => {
+      const ddOpt = e.target.closest(".pt-dd-opt");
+      if (ddOpt && _pt._ddTarget) {
+        const { teamKey, catKey } = _pt._ddTarget;
+        _ptHideDropdown();
+        await _ptSetStatus(teamKey, catKey, ddOpt.dataset.st);
+      }
+    });
+
+    // Outside click closes dropdown
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#ptDropdown") && !e.target.closest("[data-team][data-cat]")) {
+        _ptHideDropdown();
+      }
+    });
+
+    // Search
+    document.getElementById("ptSearch")?.addEventListener("input", (e) => {
+      _pt.search = e.target.value.toLowerCase();
+      _ptRenderSidebar();
+      if (_pt.view === "grid") _ptRenderGrid();
+    });
+
+    // Sprint
+    document.getElementById("ptSprintToggle")?.addEventListener("click", _ptSprintClickToggle);
+    document.getElementById("ptSprintBar")?.addEventListener("click", (e) => {
+      if (e.target.closest("#ptSprintStart"))  _ptSprintStart();
+      if (e.target.closest("#ptSprintCancel")) _ptSprintOff();
+      if (e.target.closest("#ptSprintEnd"))    _ptSprintOff();
+    });
+
+    // Critical banner
+    document.getElementById("ptCriticalShow")?.addEventListener("click", () => {
+      _pt.criticalFilter = true;
+      _ptRenderContent();
+      document.getElementById("ptCritical")?.classList.add("hidden");
+    });
+    document.getElementById("ptCriticalDismiss")?.addEventListener("click", () => {
+      _pt.criticalDismissed = true;
+      document.getElementById("ptCritical")?.classList.add("hidden");
+    });
+
+    // WIP
+    document.getElementById("ptEditWipBtn")?.addEventListener("click", () => {
+      const ta = document.getElementById("ptWipTextarea");
+      if (ta) ta.value = (_pt.data[_pt.platform]?.workingOn || []).join("\n");
+      document.getElementById("ptWipEditor")?.classList.remove("hidden");
+      ta?.focus();
+    });
+    document.getElementById("ptWipSave")?.addEventListener("click", async () => {
+      const ta = document.getElementById("ptWipTextarea");
+      if (!ta || !_fireDb) return;
+      const items = ta.value.split("\n").map(s => s.trim()).filter(Boolean);
+      try {
+        await _fireDb.collection("progression").doc(_pt.platform)
+          .set({ workingOn: items }, { merge: true });
+        document.getElementById("ptWipEditor")?.classList.add("hidden");
+      } catch (e) { console.error("WIP save:", e); }
+    });
+    const wipClose = () => document.getElementById("ptWipEditor")?.classList.add("hidden");
+    document.getElementById("ptWipCancel")?.addEventListener("click", wipClose);
+    document.getElementById("ptWipCancel2")?.addEventListener("click", wipClose);
+  }
+
+  document.getElementById("ptEditWipBtn")?.classList.toggle("hidden", !canEdit);
+  _ptSubscribe(_pt.platform);
+  const existing = _pt.data[_pt.platform];
+  _ptRenderWipStrip(existing?.workingOn || []);
+}
+
+// ── Firestore ─────────────────────────────────────────────────────────
+
+function _ptSubscribe(platform) {
+  if (!_fireDb || _pt.unsub[platform]) return;
+  _pt.unsub[platform] = _fireDb.collection("progression").doc(platform)
+    .onSnapshot(snap => {
+      _pt.data[platform] = snap.exists ? snap.data() : {};
+      if (_pt.platform === platform) _ptRender();
+    }, err => console.error("Progression snapshot:", err));
+}
+
+// ── Main render ───────────────────────────────────────────────────────
+
+function _ptRender() {
+  const data = _pt.data[_pt.platform] || {};
+  _pt.catPrios = data.catPriorities || {};
+  _ptRenderHeader(data);
+  _ptRenderSidebar();
+  _ptRenderCritical(data);
+  _ptRenderContent();
+  if (_pt.sprint.phase === "active") _ptUpdateSprintBar();
+}
+
+// ── Header ────────────────────────────────────────────────────────────
+
+function _ptRenderHeader(data) {
+  let ns = 0, wo = 0, ir = 0, done = 0;
+  const total = PROG_TEAMS.length * PROG_CATS.length;
+  for (const team of PROG_TEAMS) {
+    const tk = progKey(team);
+    const td = data[tk] || {};
+    for (const c of PROG_CATS) {
+      const st = td[c.key] || "ns";
+      if (st === "done") done++;
+      else if (st === "wo") wo++;
+      else if (st === "ir") ir++;
+      else ns++;
+    }
+  }
+  const pct = Math.round(done / total * 100);
+  const circ = 2 * Math.PI * 32;
+  const offset = circ - (pct / 100) * circ;
+
+  const fill = document.getElementById("ptRingFill");
+  if (fill) {
+    fill.style.strokeDasharray = `${circ} ${circ}`;
+    fill.style.strokeDashoffset = offset;
+    const col = pct >= 80 ? "#4ade80" : pct >= 40 ? "#4da8ff" : "#f59e0b";
+    fill.style.stroke = col;
+  }
+  const ptPct = document.getElementById("ptRingPct");
+  if (ptPct) ptPct.textContent = pct + "%";
+  const ptDone = document.getElementById("ptDoneCount");
+  if (ptDone) ptDone.textContent = done;
+  const ptTotal = document.getElementById("ptTotalCount");
+  if (ptTotal) ptTotal.textContent = total;
+
+  const bd = document.getElementById("ptBreakdown");
+  if (bd) bd.innerHTML = [
+    ["ns", ns, "NS"], ["wo", wo, "WO"], ["ir", ir, "IR"], ["done", done, "Done"]
+  ].map(([k, v, l]) =>
+    `<div class="pt-bd-item pt-bd-${k}"><span class="pt-bd-dot"></span>${v} ${l}</div>`
+  ).join("");
+
+  _ptRenderWipStrip(data.workingOn || []);
+}
+
+// ── WIP strip ────────────────────────────────────────────────────────
+
+function _ptRenderWipStrip(items) {
+  const strip = document.getElementById("ptWipStrip");
+  const list  = document.getElementById("ptWipItems");
+  if (!strip || !list) return;
+  const canEdit = _currentRole !== "viewer";
+  if (!items.length && !canEdit) {
+    strip.classList.add("hidden");
+    return;
+  }
+  list.innerHTML = items.length
+    ? items.map(w => `<span class="pt-wip-item">${w}</span>`).join("")
+    : `<span class="pt-wip-empty">Nothing logged yet</span>`;
+  strip.classList.remove("hidden");
+}
+
+// ── Critical path ─────────────────────────────────────────────────────
+
+function _ptRenderCritical(data) {
+  if (_pt.criticalDismissed) return;
+  const highCats = PROG_CATS.filter(c => (c.p === "high" || _pt.catPrios[c.key] === "high"));
+  let blocked = 0;
+  for (const team of PROG_TEAMS) {
+    const td = data[progKey(team)] || {};
+    for (const c of highCats) {
+      if ((td[c.key] || "ns") === "ns") blocked++;
+    }
+  }
+  const banner = document.getElementById("ptCritical");
+  if (!banner) return;
+  if (blocked > 0) {
+    document.getElementById("ptCriticalText").textContent =
+      `${blocked} high-priority cell${blocked !== 1 ? "s" : ""} not yet started`;
+    banner.classList.remove("hidden");
+  } else {
+    banner.classList.add("hidden");
+  }
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────
+
+function _ptRenderSidebar() {
+  const el = document.getElementById("ptTeamList");
+  if (!el) return;
+  const data = _pt.data[_pt.platform] || {};
+  let teams = PROG_TEAMS.map(name => {
+    const tk = progKey(name);
+    const td = data[tk] || {};
+    const stats = _ptTeamStats(td);
+    return { name, tk, stats };
+  });
+  if (_pt.search) teams = teams.filter(t => t.name.toLowerCase().includes(_pt.search));
+  if (_pt.sort === "pct")  teams.sort((a, b) => b.stats.pct - a.stats.pct);
+  else if (_pt.sort === "done") teams.sort((a, b) => b.stats.done - a.stats.done);
+  else teams.sort((a, b) => a.name.localeCompare(b.name));
+
+  el.innerHTML = teams.map(({ name, tk, stats }) => {
+    const color = _ptTeamColor(name);
+    const circ = 2 * Math.PI * 10;
+    const offset = circ - (stats.pct / 100) * circ;
+    const ringColor = stats.pct >= 100 ? "#4ade80" : stats.pct >= 60 ? "#4da8ff" : stats.pct >= 30 ? "#f59e0b" : "#ef4444";
+    const isFocus = _pt.view === "focus" && _pt.focusTeam === tk;
+    const isComplete = stats.done === stats.total;
+    return `<div class="pt-team-row${isFocus ? " active" : ""}${isComplete ? " pt-tr-complete" : ""}" data-team="${tk}">
+      <div class="pt-mini-ring">
+        <svg viewBox="0 0 24 24">
+          <circle class="pt-mini-ring-track" cx="12" cy="12" r="10"/>
+          <circle class="pt-mini-ring-fill" cx="12" cy="12" r="10"
+            stroke="${ringColor}"
+            stroke-dasharray="${circ} ${circ}"
+            stroke-dashoffset="${offset}"
+            stroke-linecap="round"
+            transform="rotate(-90 12 12)"/>
+        </svg>
+        <div class="pt-mini-ring-label">${stats.pct}</div>
+      </div>
+      <div class="pt-team-info">
+        <div class="pt-team-name-sb">${name.replace(" 76ers","").replace("Portland Trail ","PDX ").replace("Golden State ","GS ").replace("Oklahoma City ","OKC ").replace("Minnesota ","MIN ")}</div>
+        <div class="pt-team-frac">${stats.done}/${stats.total}</div>
+      </div>
+      ${isComplete ? `<div class="pt-team-done-badge"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#4ade80" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+// ── Content dispatcher ────────────────────────────────────────────────
+
+function _ptRenderContent() {
+  if (_pt.view === "grid") _ptRenderGrid();
+  else if (_pt.view === "focus") _ptRenderFocus();
+}
+
+// ── GRID VIEW ─────────────────────────────────────────────────────────
+
+function _ptRenderGrid() {
+  const el = document.getElementById("ptContent");
+  if (!el) return;
+  const data = _pt.data[_pt.platform] || {};
+  const canEdit = _currentRole !== "viewer";
+  const highCats = new Set(PROG_CATS.filter(c => _ptCatPrio(c.key) === "high").map(c => c.key));
+
+  let teams = PROG_TEAMS;
+  if (_pt.search) teams = teams.filter(t => t.toLowerCase().includes(_pt.search));
+
+  const visCats = PROG_CATS;
+
+  const headerCells = visCats.map(c => {
+    const prio = _ptCatPrio(c.key);
+    return `<th class="pt-grid-cat-th">
+      <div class="pt-cat-pip pt-pip-${prio}"></div>
+      <div class="pt-cat-name">${c.s}</div>
+    </th>`;
+  }).join("");
+
+  const rows = teams.map(team => {
+    const tk = progKey(team);
+    const td = data[tk] || {};
+    const stats = _ptTeamStats(td);
+    const isComplete = stats.done === stats.total;
+    const dim = _pt.criticalFilter &&
+      !visCats.some(c => _ptCatPrio(c.key) === "high" && (td[c.key] || "ns") === "ns")
+      ? " pt-dim" : "";
+
+    const cells = visCats.map(c => {
+      const st = td[c.key] || "ns";
+      const key = `${tk}:${c.key}`;
+      const inSprint = _pt.sprint.cells.has(key);
+      let sprintCls = "";
+      if (_pt.sprint.phase === "select") sprintCls = inSprint ? " pt-sprint-sel" : "";
+      else if (_pt.sprint.phase === "active") sprintCls = inSprint ? (st === "done" ? " pt-sprint-cell-done" : " pt-sprint-cell") : "";
+      let inner = st === "ns"
+        ? `<span class="pt-cell-dash">—</span>`
+        : `<span class="pt-cell-pill">${PROG_STATUS_LABEL[st]}</span>`;
+      if (_pt.sprint.phase === "select" && inSprint) inner += `<span class="pt-sprint-check-mark">✓</span>`;
+      return `<td class="pt-grid-cell pt-st-${st}${sprintCls}"
+        data-team="${tk}" data-cat="${c.key}">${inner}</td>`;
+    }).join("");
+
+    const rev = td.finalReview === true;
+    const color = _ptTeamColor(team);
+    return `<tr class="pt-grid-row${isComplete ? " pt-grid-row-complete" : ""}${dim}" data-team="${tk}">
+      <td class="pt-grid-team-td">
+        <div class="pt-team-td-inner" style="border-left-color:${isComplete ? "#4ade80" : color}20">
+          <div class="pt-grid-team-name" style="border-left: 3px solid ${color}; padding-left:8px; margin-left:-8px; border-radius:1px">${team}</div>
+          <div class="pt-grid-team-pct">${stats.pct}%</div>
+        </div>
+      </td>
+      ${cells}
+      <td class="pt-grid-rev-cell${rev ? " pt-rev-done-cell" : ""}" data-team="${tk}" data-rev="1">${rev ? "✓" : ""}</td>
+    </tr>`;
+  }).join("");
+
+  const scroll = el.scrollTop;
+  const scrollL = el.scrollLeft;
+  el.innerHTML = `<div class="pt-grid-wrap"><table class="pt-grid-table">
+    <thead><tr>
+      <th class="pt-grid-team-th">Team</th>
+      ${headerCells}
+      <th class="pt-grid-rev-th">Rev</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+  el.scrollTop = scroll;
+  el.scrollLeft = scrollL;
+}
+
+// ── FOCUS VIEW ────────────────────────────────────────────────────────
+
+function _ptRenderFocus() {
+  const el = document.getElementById("ptContent");
+  if (!el) return;
+  const data = _pt.data[_pt.platform] || {};
+  const canEdit = _currentRole !== "viewer";
+
+  if (!_pt.focusTeam) {
+    el.innerHTML = `<div class="pt-focus-placeholder">
+      <svg viewBox="0 0 48 48" fill="none" width="48" height="48"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="24" r="8" fill="currentColor"/></svg>
+      <span>Select a team from the sidebar to focus</span>
+    </div>`;
+    return;
+  }
+
+  const teamName = PROG_TEAMS.find(t => progKey(t) === _pt.focusTeam) || _pt.focusTeam;
+  const td = data[_pt.focusTeam] || {};
+  const stats = _ptTeamStats(td);
+  const color = _ptTeamColor(teamName);
+
+  const circ = 2 * Math.PI * 26;
+  const offset = circ - (stats.pct / 100) * circ;
+  const ringColor = stats.pct >= 100 ? "#4ade80" : stats.pct >= 60 ? "#4da8ff" : stats.pct >= 30 ? "#f59e0b" : "#ef4444";
+
+  const priGroups = [
+    { label: "High Priority", key: "high", cats: PROG_CATS.filter(c => _ptCatPrio(c.key) === "high") },
+    { label: "Mid Priority",  key: "mid",  cats: PROG_CATS.filter(c => _ptCatPrio(c.key) === "mid")  },
+    { label: "Low Priority",  key: "low",  cats: PROG_CATS.filter(c => _ptCatPrio(c.key) === "low")  },
+  ].filter(g => g.cats.length > 0);
+
+  const sections = priGroups.map(g => `
+    <div class="pt-focus-prio-section">
+      <div class="pt-focus-prio-label">${g.label}</div>
+      <div class="pt-focus-cards">${
+        g.cats.map(c => {
+          const st = td[c.key] || "ns";
+          return `<div class="pt-focus-card pt-fcs-${st}" data-team="${_pt.focusTeam}" data-cat="${c.key}">
+            <div class="pt-focus-card-name">${c.label}</div>
+            <div class="pt-focus-card-status">
+              <span class="pt-focus-card-dot"></span>${PROG_STATUS_LABEL[st]}
+            </div>
+          </div>`;
+        }).join("")
+      }</div>
+    </div>`).join("");
+
+  el.innerHTML = `<div class="pt-focus">
+    <div class="pt-focus-panel">
+      <div class="pt-focus-hero" style="border-left-color:${color}; background: linear-gradient(135deg, ${color}08 0%, transparent 60%)">
+        <div class="pt-focus-ring-wrap">
+          <svg class="pt-focus-ring-svg" viewBox="0 0 56 56">
+            <circle class="pt-focus-ring-track" cx="28" cy="28" r="23"/>
+            <circle class="pt-focus-ring-fill" cx="28" cy="28" r="23"
+              stroke="${ringColor}"
+              stroke-dasharray="${circ} ${circ}"
+              stroke-dashoffset="${offset}"
+              stroke-linecap="round"
+              transform="rotate(-90 28 28)"/>
+          </svg>
+          <div class="pt-focus-ring-inner">
+            <span class="pt-focus-ring-pct">${stats.pct}%</span>
+          </div>
+        </div>
+        <div class="pt-focus-hero-info">
+          <div class="pt-focus-team-name">${teamName}</div>
+          <div class="pt-focus-meta">
+            <span><strong>${stats.done}</strong> done</span>
+            <span><strong>${stats.wo}</strong> in progress</span>
+            <span><strong>${stats.ns}</strong> not started</span>
+            ${td.finalReview ? '<span style="color:#4ade80">✓ Final Review</span>' : ""}
+          </div>
+        </div>
+      </div>
+      ${sections}
+    </div>
+  </div>`;
+}
+
+// ── Dropdown ──────────────────────────────────────────────────────────
+
+function _ptShowDropdown(cell) {
+  const dd = document.getElementById("ptDropdown");
+  if (!dd) return;
+  const tk = cell.dataset.team;
+  const ck = cell.dataset.cat;
+  _pt._ddTarget = { teamKey: tk, catKey: ck };
+  const curSt = ((_pt.data[_pt.platform] || {})[tk] || {})[ck] || "ns";
+  dd.querySelectorAll(".pt-dd-opt").forEach(btn => {
+    btn.classList.toggle("pt-dd-current", btn.dataset.st === curSt);
+  });
+  const rect = cell.getBoundingClientRect();
+  const ddH = 180;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const top = spaceBelow > ddH
+    ? rect.bottom + window.scrollY + 4
+    : rect.top + window.scrollY - ddH - 4;
+  dd.style.top  = top + "px";
+  dd.style.left = Math.min(rect.left, window.innerWidth - 170) + "px";
+  dd.classList.remove("hidden");
+}
+
+function _ptHideDropdown() {
+  document.getElementById("ptDropdown")?.classList.add("hidden");
+  _pt._ddTarget = null;
+}
+
+// ── Status write ──────────────────────────────────────────────────────
+
+async function _ptSetStatus(teamKey, catKey, status) {
+  if (!_fireDb) return;
+  const from = ((_pt.data[_pt.platform] || {})[teamKey] || {})[catKey] || "ns";
+  if (from === status) return;
+  try {
+    await _fireDb.collection("progression").doc(_pt.platform)
+      .set({ [teamKey]: { [catKey]: status } }, { merge: true });
+  } catch (e) { console.error("Progression update:", e); }
+}
+
+async function _ptSetCatPrio(catKey, prio) {
+  if (!_fireDb) return;
+  try {
+    await _fireDb.collection("progression").doc(_pt.platform)
+      .set({ catPriorities: { [catKey]: prio } }, { merge: true });
+  } catch (e) { console.error("Cat priority:", e); }
+}
+
+async function _ptToggleRev(teamKey) {
+  if (!_fireDb) return;
+  const td = (_pt.data[_pt.platform] || {})[teamKey] || {};
+  const next = !(td.finalReview === true);
+  try {
+    await _fireDb.collection("progression").doc(_pt.platform)
+      .set({ [teamKey]: { finalReview: next } }, { merge: true });
+  } catch (e) { console.error("Rev toggle:", e); }
+}
+
+// ── Sprint mode ───────────────────────────────────────────────────────
+
+function _ptSprintClickToggle() {
+  if (_pt.sprint.phase === "off") {
+    // Enter selection mode
+    _pt.sprint.phase = "select";
+    _pt.sprint.cells.clear();
+    document.getElementById("ptSprintToggle")?.classList.add("active");
+    document.getElementById("ptSprintBar")?.classList.remove("hidden");
+    _ptUpdateSprintBar();
+    _ptRenderContent();
+  } else {
+    _ptSprintOff();
+  }
+}
+
+function _ptSprintStart() {
+  if (_pt.sprint.cells.size === 0) return;
+  _pt.sprint.phase = "active";
+  _ptUpdateSprintBar();
+  _ptRenderContent();
+}
+
+function _ptSprintOff() {
+  _pt.sprint.phase = "off";
+  _pt.sprint.cells.clear();
+  document.getElementById("ptSprintBar")?.classList.add("hidden");
+  document.getElementById("ptSprintToggle")?.classList.remove("active");
+  _ptRenderContent();
+}
+
+function _ptSprintToggleCell(teamKey, catKey) {
+  const key = `${teamKey}:${catKey}`;
+  if (_pt.sprint.cells.has(key)) _pt.sprint.cells.delete(key);
+  else _pt.sprint.cells.add(key);
+  _ptUpdateSprintBar();
+  // Just update cell highlights without full re-render for speed
+  _ptApplySprintHighlights();
+}
+
+function _ptUpdateSprintBar() {
+  const bar = document.getElementById("ptSprintBar");
+  if (!bar) return;
+  const total = _pt.sprint.cells.size;
+  const data  = _pt.data[_pt.platform] || {};
+
+  if (_pt.sprint.phase === "select") {
+    bar.innerHTML = `
+      <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M9 1L3 9h5l-1 6 6-8H8l1-6z" stroke="#fbbf24" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      <span class="pt-sprint-label">Select cells to sprint</span>
+      <span class="pt-sprint-sel-count">${total} cell${total !== 1 ? "s" : ""} selected</span>
+      <button id="ptSprintStart" class="pt-sprint-start-btn" ${total === 0 ? "disabled" : ""}>Start Sprint →</button>
+      <button id="ptSprintCancel" class="pt-sprint-end">Cancel</button>`;
+    return;
+  }
+
+  // Active phase
+  let done = 0;
+  for (const key of _pt.sprint.cells) {
+    const [tk, ck] = key.split(":");
+    if (((data[tk] || {})[ck] || "ns") === "done") done++;
+  }
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const allDone = done === total && total > 0;
+  bar.innerHTML = `
+    <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M9 1L3 9h5l-1 6 6-8H8l1-6z" fill="#fbbf24" stroke="#fbbf24" stroke-width="0.5" stroke-linejoin="round"/></svg>
+    <span class="pt-sprint-label">${allDone ? "Sprint Complete! 🎉" : "Sprint"}</span>
+    <div class="pt-sprint-track"><div class="pt-sprint-fill" style="width:${pct}%"></div></div>
+    <span class="pt-sprint-count">${done} / ${total} done</span>
+    <button id="ptSprintEnd" class="pt-sprint-end">End Sprint</button>`;
+}
+
+function _ptApplySprintHighlights() {
+  document.querySelectorAll(".pt-grid-cell[data-team]").forEach(cell => {
+    const key = `${cell.dataset.team}:${cell.dataset.cat}`;
+    const inSprint = _pt.sprint.cells.has(key);
+    cell.classList.toggle("pt-sprint-sel", inSprint && _pt.sprint.phase === "select");
+    if (_pt.sprint.phase === "active") {
+      const data = _pt.data[_pt.platform] || {};
+      const st = ((data[cell.dataset.team] || {})[cell.dataset.cat] || "ns");
+      cell.classList.toggle("pt-sprint-cell", inSprint);
+      cell.classList.toggle("pt-sprint-cell-done", inSprint && st === "done");
+    }
+  });
+  _ptUpdateSprintBar();
+}
+
+// ── Legacy aliases used by old code paths (kept for safety) ──────────
+
+function _progRender() { _ptRender(); }
+
+// ── Stubs for old function names (no-ops, replaced above) ─────────────
+
+function _progCatPrio(key) {
+  return _ptCatPrio(key);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4085,6 +5228,7 @@ function onLoggedIn(firestoreData) {
   // Role-based nav visibility
   document.getElementById("openNotesBtn")?.classList.toggle("hidden", role === "viewer");
   document.getElementById("openUsersBtn")?.classList.toggle("hidden", role !== "head_admin");
+  document.getElementById("openShotChartBtn")?.classList.toggle("hidden", role === "viewer");
 
   // Show app, hide login
   document.getElementById("loginPage").classList.add("hidden");
@@ -4100,6 +5244,7 @@ function onLoggedIn(firestoreData) {
 
 function onLoggedOut(message) {
   if (_notesUnsub) { _notesUnsub(); _notesUnsub = null; }
+  if (_clUnsub)    { _clUnsub();    _clUnsub = null; _dbInited = false; }
   _currentUser = null;
   _currentRole = null;
 
