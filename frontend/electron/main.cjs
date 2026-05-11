@@ -99,6 +99,10 @@ function resolvePythonPath() {
   if (envPath) { _resolvedPython = envPath; return envPath; }
 
   if (process.platform === "win32") {
+    if (app.isPackaged) {
+      const p = path.join(process.resourcesPath, "python", "python.exe");
+      _pythonVerified = true; _resolvedPython = p; return p;
+    }
     const venv312 = path.join(getProjectRoot(), ".venv312", "Scripts", "python.exe");
     if (fs.existsSync(venv312)) { _pythonVerified = true; _resolvedPython = venv312; return venv312; }
     const venv = path.join(getProjectRoot(), ".venv", "Scripts", "python.exe");
