@@ -1,6 +1,6 @@
 {
   "name": "atd-2k-app",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
@@ -33,13 +33,6 @@
     ],
     "extraResources": [
       {
-        "from": "resources/python",
-        "to": "python",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
         "from": "resources/data",
         "to": "data",
         "filter": [
@@ -55,6 +48,15 @@
       }
     ],
     "win": {
+      "extraResources": [
+        {
+          "from": "resources/python",
+          "to": "python",
+          "filter": [
+            "**/*"
+          ]
+        }
+      ],
       "target": [
         {
           "target": "nsis",
@@ -72,6 +74,15 @@
       "shortcutName": "ATD 2K APP"
     },
     "mac": {
+      "extraResources": [
+        {
+          "from": "resources/python-mac-${arch}",
+          "to": "python",
+          "filter": [
+            "**/*"
+          ]
+        }
+      ],
       "target": [
         {
           "target": "dmg",

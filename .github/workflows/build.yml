@@ -36,15 +36,8 @@ jobs:
         include:
           - os: windows-latest
             platform: win
-            dist_cmd: dist:win
-          - os: macos-13        # Intel — builds x64 DMG with x64 Python
-            platform: mac
-            dist_cmd: dist:mac
-            mac_arch: x64
-          - os: macos-latest    # Apple Silicon — builds arm64 DMG with arm64 Python
-            platform: mac
-            dist_cmd: dist:mac
-            mac_arch: arm64
+          - os: macos-latest      # Apple Silicon — builds BOTH x64 + arm64 DMGs
+            platform: mac         # x64 uses Rosetta for Python package install
 
     runs-on: ${{ matrix.os }}
 
@@ -91,45 +84,59 @@ jobs:
           & "$dest\python.exe" -m pip install nba_api openpyxl pandas scikit-learn --no-warn-script-location
           Write-Output "Python bundle complete"
 
-      # ── macOS: python-build-standalone for this runner's arch only ──────
-      # macos-13 runner = Intel x64, macos-latest runner = Apple Silicon arm64.
-      # Each runner builds only its own arch DMG so Python always matches.
-      - name: Bundle Python (macOS)
+      # ── macOS: download both arch Pythons, use Rosetta for x64 pip ──────
+      # Single macos-latest (arm64) runner builds both x64 and arm64 DMGs.
+      # Rosetta 2 is pre-installed on GitHub's Apple Silicon runners, so
+      # "arch -x86_64 python3.12" runs the x64 binary to install x64 packages.
+      - name: Bundle Python (macOS — both architectures)
         if: runner.os == 'macOS'
         run: |
           set -e
           mkdir -p frontend/resources
-          ARCH=$(uname -m)   # x86_64 on macos-13, arm64 on macos-latest
-          if [ "$ARCH" = "arm64" ]; then
-            PBS_ARCH="aarch64"
-          else
-            PBS_ARCH="x86_64"
-          fi
-          DOWNLOADED=false
 
-          for TAG in 20250316 20250212 20241219 20241010; do
-            for PY_VER in "3.12.9" "3.12.8"; do
-              URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-${PBS_ARCH}-apple-darwin-install_only.tar.gz"
-              echo "Trying: $URL"
-              if curl -fL --retry 2 --max-time 120 -o /tmp/py_standalone.tar.gz "$URL" 2>/dev/null; then
-                if tar -xzf /tmp/py_standalone.tar.gz -C frontend/resources 2>/dev/null; then
-                  if [ -d "frontend/resources/python/bin" ]; then
-                    echo "Success: Python ${PY_VER} (${PBS_ARCH}) from tag ${TAG}"
+          download_python() {
+            local PBS_ARCH=$1   # x86_64 or aarch64
+            local OUT_DIR=$2    # destination folder
+            local DOWNLOADED=false
+
+            for TAG in 20250316 20250212 20241219 20241010; do
+              for PY_VER in "3.12.9" "3.12.8"; do
+                URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-${PBS_ARCH}-apple-darwin-install_only.tar.gz"
+                echo "  Trying ${PBS_ARCH} Python ${PY_VER} (${TAG})..."
+                if curl -fsSL --retry 2 --max-time 120 -o /tmp/py_dl.tar.gz "$URL" 2>/dev/null; then
+                  if tar -xzf /tmp/py_dl.tar.gz -C /tmp/py_extract 2>/dev/null && [ -d "/tmp/py_extract/python/bin" ]; then
+                    mv /tmp/py_extract/python "$OUT_DIR"
+                    rm -rf /tmp/py_extract /tmp/py_dl.tar.gz
+                    echo "  Downloaded: ${PBS_ARCH} Python ${PY_VER}"
                     DOWNLOADED=true
                     break 2
                   fi
                 fi
-              fi
-              echo "  -> Not available, trying next..."
-              rm -f /tmp/py_standalone.tar.gz
+                rm -rf /tmp/py_extract /tmp/py_dl.tar.gz
+              done
             done
-          done
+            [ "$DOWNLOADED" = "true" ] || (echo "ERROR: failed to download ${PBS_ARCH} Python" && exit 1)
+          }
 
-          [ "$DOWNLOADED" = "true" ] || (echo "ERROR: all Python downloads failed" && exit 1)
-          rm -f /tmp/py_standalone.tar.gz
-          ls frontend/resources/python/bin/
-          frontend/resources/python/bin/pip3 install nba_api openpyxl pandas scikit-learn
-          echo "Python bundle complete (${PBS_ARCH})"
+          mkdir -p /tmp/py_extract
+
+          # arm64 Python — runs natively
+          echo "==> arm64 Python"
+          download_python "aarch64" "frontend/resources/python-mac-arm64"
+          frontend/resources/python-mac-arm64/bin/pip3 install --quiet \
+            nba_api openpyxl pandas scikit-learn requests
+          echo "arm64 Python ready"
+
+          # x64 Python — use Rosetta (arch -x86_64) to run the x64 binary for pip
+          echo "==> x64 Python"
+          download_python "x86_64" "frontend/resources/python-mac-x64"
+          arch -x86_64 frontend/resources/python-mac-x64/bin/python3.12 -m pip install --quiet \
+            nba_api openpyxl pandas scikit-learn requests
+          echo "x64 Python ready"
+
+          echo "==> Both Mac Python bundles complete"
+          ls frontend/resources/python-mac-arm64/bin/
+          ls frontend/resources/python-mac-x64/bin/
 
       # ── Bundle project data files ────────────────────────────────────────
       - name: Bundle data files (Windows)
@@ -178,18 +185,20 @@ jobs:
         run: python3 scripts/make_icons.py frontend/build-assets
 
       # ── Electron-builder: build & upload to existing draft release ───────
-      - name: Build & publish
+      - name: Build & publish (Windows)
+        if: runner.os == 'Windows'
+        working-directory: frontend
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist:win
+
+      - name: Build & publish (macOS)
+        if: runner.os == 'macOS'
         working-directory: frontend
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
-        run: |
-          if [ -n "${{ matrix.mac_arch }}" ]; then
-            npm run ${{ matrix.dist_cmd }} -- --${{ matrix.mac_arch }}
-          else
-            npm run ${{ matrix.dist_cmd }}
-          fi
-        shell: bash
+        run: npm run dist:mac
 
       # ── Upload artifacts ─────────────────────────────────────────────────
       - name: Upload artifacts
