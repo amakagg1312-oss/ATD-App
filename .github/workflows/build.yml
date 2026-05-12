@@ -90,6 +90,8 @@ jobs:
       # "arch -x86_64 python3.12" runs the x64 binary to install x64 packages.
       - name: Bundle Python (macOS — both architectures)
         if: runner.os == 'macOS'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           mkdir -p frontend/resources
@@ -105,6 +107,7 @@ jobs:
             # Use the GitHub API to find the actual download URL rather than guessing dates
             local ASSET_URL
             ASSET_URL=$(curl -fsSL --max-time 30 \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
               "https://api.github.com/repos/astral-sh/python-build-standalone/releases?per_page=20" \
               | python3 -c "import sys,json; d=json.load(sys.stdin); a=next((a['browser_download_url'] for r in d for a in r.get('assets',[]) if 'cpython-3.12' in a['name'] and '${PBS_ARCH}-apple-darwin-install_only' in a['name']),None); print(a or '')" 2>/dev/null)
 
