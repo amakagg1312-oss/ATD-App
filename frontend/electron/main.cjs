@@ -109,24 +109,26 @@ function resolvePythonPath() {
     _pythonVerified = true; _resolvedPython = venv; return venv;
   }
 
-  // macOS / Linux — build a prioritised candidate list
-  const candidates = [];
-
+  // macOS / Linux — packaged app uses bundled python-build-standalone; trust
+  // fs.existsSync only (no _tryPython) because Gatekeeper/quarantine can make
+  // execFileSync fail on the bundled binary even when it is perfectly valid.
   if (app.isPackaged) {
-    // Bundled Python (python-build-standalone layout)
     const pyRoot = path.join(process.resourcesPath, "python");
     for (const rel of ["bin/python3.12", "bin/python3", "python"]) {
-      candidates.push(path.join(pyRoot, rel));
+      const p = path.join(pyRoot, rel);
+      if (fs.existsSync(p)) { _pythonVerified = true; _resolvedPython = p; return p; }
     }
-  } else {
-    // Dev venv
-    candidates.push(path.join(getProjectRoot(), ".venv312", "bin", "python3"));
-    candidates.push(path.join(getProjectRoot(), ".venv312", "bin", "python"));
-    candidates.push(path.join(getProjectRoot(), ".venv", "bin", "python3"));
   }
 
-  // Well-known absolute paths — covers Homebrew on Apple Silicon and Intel,
-  // system Python, and common pyenv/conda layouts
+  // Dev / fallback — verify each candidate actually runs (catches EBADARCH on Apple Silicon)
+  const candidates = [];
+  if (!app.isPackaged) {
+    candidates.push(
+      path.join(getProjectRoot(), ".venv312", "bin", "python3"),
+      path.join(getProjectRoot(), ".venv312", "bin", "python"),
+      path.join(getProjectRoot(), ".venv", "bin", "python3"),
+    );
+  }
   candidates.push(
     "/opt/homebrew/bin/python3.12",
     "/opt/homebrew/bin/python3",
