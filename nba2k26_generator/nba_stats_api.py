@@ -136,6 +136,23 @@ def fetch_team_stats(season="2024-25", season_type="Regular Season",
         raise
 
 
+def _leaders_from_player_stats(season, season_type, stat_category, per_mode):
+    """Derive leaders by sorting cached player stats — fallback when LeagueLeaders fails."""
+    ps_key = _key("players_v3", season, season_type, per_mode, "Base")
+    ps = _read(ps_key) or _read_stale(ps_key)
+    if not ps or not ps.get("data"):
+        return None
+    rows = [r for r in ps["data"] if r.get(stat_category) is not None]
+    # Minimum GP guard for percentage stats to avoid 1-game flukes
+    if stat_category.endswith("_PCT"):
+        rows = [r for r in rows if (r.get("GP") or 0) >= 20]
+    rows.sort(key=lambda r: r.get(stat_category) or 0, reverse=True)
+    return {
+        "ok": True, "data": rows, "cached": True, "stale": ps.get("stale", False),
+        "category": stat_category,
+    }
+
+
 def fetch_league_leaders(season="2024-25", season_type="Regular Season",
                          stat_category="PTS", per_mode="PerGame"):
     key = _key("leaders", season, season_type, stat_category, per_mode)
@@ -158,10 +175,13 @@ def fetch_league_leaders(season="2024-25", season_type="Regular Season",
                   "category": stat_category}
         _write(key, result)
         return result
-    except Exception as e:
+    except Exception:
         stale = _read_stale(key)
         if stale:
             return stale
+        derived = _leaders_from_player_stats(season, season_type, stat_category, per_mode)
+        if derived:
+            return derived
         raise
 
 
