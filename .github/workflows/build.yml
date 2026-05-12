@@ -94,34 +94,51 @@ jobs:
           set -e
           mkdir -p frontend/resources
 
-          # python-build-standalone archives are .tar.zst since ~2024
+          # python-build-standalone archives are .tar.zst — ensure zstd is available
           brew install zstd 2>/dev/null || true
 
           download_python() {
             local PBS_ARCH=$1   # x86_64 or aarch64
             local OUT_DIR=$2    # destination folder
-            local DOWNLOADED=false
 
-            # Try recent release dates (newest first) with current Python 3.12.x versions
-            for TAG in 20260203 20251224 20251112 20251009 20250812 20250702 20250409 20250316 20250212 20241219; do
-              for PY_VER in "3.12.10" "3.12.9" "3.12.8"; do
-                URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-${PBS_ARCH}-apple-darwin-install_only.tar.zst"
-                echo "  Trying ${PBS_ARCH} Python ${PY_VER} (${TAG})..."
-                rm -rf /tmp/py_extract /tmp/py_dl.tar.zst
-                mkdir -p /tmp/py_extract
-                if curl -fsSL --retry 2 --max-time 300 -o /tmp/py_dl.tar.zst "$URL" 2>/dev/null; then
-                  if zstd -d --quiet /tmp/py_dl.tar.zst --stdout | tar -xf - -C /tmp/py_extract 2>/dev/null \
-                      && [ -d "/tmp/py_extract/python/bin" ]; then
-                    mv /tmp/py_extract/python "$OUT_DIR"
-                    rm -rf /tmp/py_extract /tmp/py_dl.tar.zst
-                    echo "  Downloaded: ${PBS_ARCH} Python ${PY_VER} (${TAG})"
-                    DOWNLOADED=true
-                    break 2
-                  fi
-                fi
-              done
-            done
-            [ "$DOWNLOADED" = "true" ] || (echo "ERROR: failed to download ${PBS_ARCH} Python" && exit 1)
+            echo "  Querying GitHub API for latest cpython-3.12 ${PBS_ARCH} asset..."
+            # Use the GitHub API to find the actual download URL rather than guessing dates
+            local ASSET_URL
+            ASSET_URL=$(curl -fsSL --max-time 30 \
+              "https://api.github.com/repos/astral-sh/python-build-standalone/releases?per_page=20" \
+              | python3 -c "
+import sys, json
+releases = json.load(sys.stdin)
+for release in releases:
+    for asset in release.get('assets', []):
+        n = asset['name']
+        if 'cpython-3.12' in n and '${PBS_ARCH}-apple-darwin-install_only' in n:
+            print(asset['browser_download_url'])
+            sys.exit(0)
+sys.exit(1)
+" 2>/dev/null)
+
+            if [ -z "$ASSET_URL" ]; then
+              echo "ERROR: no cpython-3.12 ${PBS_ARCH}-apple-darwin asset found in recent releases"
+              exit 1
+            fi
+
+            echo "  Downloading: $ASSET_URL"
+            rm -rf /tmp/py_extract /tmp/py_dl_arch
+            mkdir -p /tmp/py_extract
+
+            if curl -fsSL --retry 2 --max-time 300 -o /tmp/py_dl_arch "$ASSET_URL"; then
+              if zstd -d --quiet /tmp/py_dl_arch --stdout | tar -xf - -C /tmp/py_extract 2>/dev/null \
+                  && [ -d "/tmp/py_extract/python/bin" ]; then
+                mv /tmp/py_extract/python "$OUT_DIR"
+                rm -rf /tmp/py_extract /tmp/py_dl_arch
+                echo "  Bundled: ${PBS_ARCH} Python → ${OUT_DIR}"
+                return 0
+              fi
+            fi
+
+            echo "ERROR: failed to extract ${PBS_ARCH} Python from $ASSET_URL"
+            exit 1
           }
 
           # arm64 Python — runs natively
