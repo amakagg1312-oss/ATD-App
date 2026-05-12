@@ -25,4 +25,6 @@ contextBridge.exposeInMainWorld("nba2kDesktop", {
   fetchShotChart: async (params) => ipcRenderer.invoke("stats:shot-chart", params),
   fetchContracts: async (params) => ipcRenderer.invoke("contracts:fetch", params),
   fetchPlayerHistory: async (params) => ipcRenderer.invoke("contracts:player", params),
+  fetchGearPlayers: async (params) => ipcRenderer.invoke("gear:players", params),
+  fetchGearPlayer: async (params) => ipcRenderer.invoke("gear:player", params),
 });

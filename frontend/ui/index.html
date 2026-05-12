@@ -156,6 +156,15 @@
           <span>Contracts</span>
         </button>
 
+        <button class="nav-item" id="navGearBtn">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+            <path d="M2 12c0-2 1.5-4 4-4h1l1-3h4l1 3h1c2.5 0 4 2 4 4v1a1 1 0 01-1 1H3a1 1 0 01-1-1v-1z" stroke="currentColor" stroke-width="1.4" opacity=".8"/>
+            <path d="M6 8l1 4M14 8l-1 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
+            <ellipse cx="10" cy="13" rx="2" ry="1" fill="currentColor" opacity=".4"/>
+          </svg>
+          <span>Player Gear</span>
+        </button>
+
         <button class="nav-item hidden" id="openShotChartBtn">
           <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
             <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4" opacity=".6"/>
@@ -1134,6 +1143,81 @@
             </svg>
             Loading contract data…
           </div>
+        </div>
+
+      </section>
+
+      <!-- ══ Player Gear Page ══ -->
+      <section id="gearPage" class="page hidden">
+
+        <div class="gear-header">
+          <div>
+            <p class="page-eyebrow">Player Equipment</p>
+            <h1 class="page-title">Player Gear</h1>
+          </div>
+          <div class="gear-header-right">
+            <span class="gear-source-badge">via colendri.com</span>
+            <button id="gearRefreshBtn" class="btn-ghost btn-sm" title="Force refresh">
+              <svg viewBox="0 0 16 16" fill="none" width="12" height="12">
+                <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M8 2l2-2v4H6l2-2z" fill="currentColor"/>
+              </svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="gear-toolbar">
+          <!-- Player search with autocomplete -->
+          <div class="gear-search-wrap" id="gearSearchWrap">
+            <svg class="gear-search-icon" viewBox="0 0 16 16" fill="none" width="13" height="13">
+              <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M11 11l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <input id="gearSearchInput" class="gear-search-input" type="text"
+                   placeholder="Loading players…" autocomplete="off" disabled />
+            <div id="gearSearchDropdown" class="gear-search-dropdown hidden"></div>
+          </div>
+          <!-- Season filter -->
+          <select id="gearSeasonFilter" class="select-sm gear-season-filter">
+            <option value="all">All Seasons</option>
+          </select>
+          <!-- View toggle -->
+          <div class="gr-view-tabs" id="grViewTabs">
+            <button class="gr-view-btn active" data-view="game-log">Game Log</button>
+            <button class="gr-view-btn" data-view="by-shoe">By Shoe</button>
+          </div>
+        </div>
+
+        <!-- Empty / welcome state -->
+        <div id="gearEmpty" class="gear-empty">
+          <svg viewBox="0 0 64 48" fill="none" width="64" height="48" opacity=".25">
+            <path d="M8 32c0-6 5-12 12-12h3l3-9h12l3 9h3c7 0 12 6 12 12v3a2 2 0 01-2 2H10a2 2 0 01-2-2v-3z" stroke="currentColor" stroke-width="2"/>
+            <path d="M20 20l3 12M44 20l-3 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <ellipse cx="32" cy="37" rx="6" ry="2.5" fill="currentColor"/>
+          </svg>
+          <p id="gearEmptyMsg">Search for a player to view their shoe history</p>
+        </div>
+
+        <!-- Loading -->
+        <div id="gearLoading" class="gear-loading hidden">
+          <svg class="ct-spinner" viewBox="0 0 24 24" fill="none" width="22" height="22">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" opacity=".2"/>
+            <path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          Loading shoe data…
+        </div>
+
+        <!-- Content (populated by JS) -->
+        <div id="gearContent" class="gear-content hidden">
+          <!-- Player header with hero shoe -->
+          <div id="gearPlayerHdr" class="gear-player-hdr"></div>
+          <!-- 4 stat summary cards -->
+          <div id="gearSummaryRow" class="gear-summary-row"></div>
+          <!-- Brand distribution bar -->
+          <div id="gearBrandBar" class="gear-brand-section"></div>
+          <!-- Game log / by-shoe views (swapped by JS) -->
+          <div id="gearShoeView"></div>
         </div>
 
       </section>

@@ -7126,3 +7126,477 @@ option {
   border-color: rgba(74,222,128,0.24);
 }
 
+/* ══════════════════════════════════════════════════════════════
+   Player Gear Page
+   ══════════════════════════════════════════════════════════════ */
+
+/* Header */
+.gear-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.gear-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.gear-source-badge {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 3px 8px;
+  letter-spacing: .02em;
+}
+
+/* Toolbar */
+.gear-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.gear-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  max-width: 340px;
+}
+.gear-search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.35);
+  pointer-events: none;
+}
+.gear-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 32px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color .15s;
+}
+.gear-search-input:focus { border-color: rgba(255,255,255,0.25); }
+.gear-search-input:disabled { opacity: .5; cursor: default; }
+.gear-search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #1e2130;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  max-height: 280px;
+  overflow-y: auto;
+}
+.gr-dd-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background .12s;
+}
+.gr-dd-item:last-child { border-bottom: none; }
+.gr-dd-item:hover, .gr-dd-item:focus { background: rgba(255,255,255,0.07); outline: none; }
+.gr-dd-name { font-weight: 500; }
+.gr-dd-team { font-size: 11px; color: rgba(255,255,255,0.45); }
+
+.gear-season-filter { flex-shrink: 0; }
+
+/* View tabs */
+.gr-view-tabs {
+  display: flex;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.gr-view-btn {
+  padding: 7px 14px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color .15s, background .15s;
+  white-space: nowrap;
+}
+.gr-view-btn.active {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+.gr-view-btn:hover:not(.active) { color: rgba(255,255,255,.75); }
+
+/* Empty / loading states */
+.gear-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 80px 20px;
+  color: rgba(255,255,255,0.35);
+  font-size: 14px;
+  text-align: center;
+}
+.gear-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 80px 20px;
+  color: rgba(255,255,255,0.4);
+  font-size: 13px;
+}
+
+/* Content container */
+.gear-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Player header ── */
+.gear-player-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 20px 24px;
+  flex-wrap: wrap;
+}
+.gr-phdr-left { flex: 1; min-width: 140px; }
+.gr-phdr-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: .04em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.gr-phdr-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.gr-phdr-team, .gr-phdr-pos {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.06);
+  border-radius: 5px;
+  padding: 2px 7px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.gr-phdr-shoe-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 14px 18px;
+  min-width: 220px;
+  max-width: 340px;
+  position: relative;
+}
+.gr-phdr-shoe-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 10px;
+}
+.gr-phdr-shoe-inner { display: flex; align-items: center; gap: 12px; }
+.gr-phdr-img-wrap { flex-shrink: 0; }
+.gr-phdr-img {
+  width: 80px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+.gr-phdr-img-placeholder {
+  width: 80px;
+  height: 52px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gr-phdr-shoe-model {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+.gr-phdr-shoe-cw {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+.gr-phdr-shoe-date {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+}
+.gr-brand-dot {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* ── Summary cards ── */
+.gear-summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 700px) {
+  .gear-summary-row { grid-template-columns: repeat(2, 1fr); }
+}
+.gr-stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+.gr-stat-card-wide { grid-column: span 1; }
+.gr-stat-val {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gr-stat-shoe { font-size: 14px; font-weight: 600; }
+.gr-stat-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: rgba(255,255,255,0.4);
+}
+
+/* ── Brand distribution bar ── */
+.gear-brand-section {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.gr-bar-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 12px;
+}
+.gr-bar-track {
+  display: flex;
+  height: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  gap: 1px;
+  margin-bottom: 14px;
+}
+.gr-bar-seg {
+  height: 100%;
+  border-radius: 2px;
+  transition: opacity .15s;
+  min-width: 2px;
+}
+.gr-bar-seg:hover { opacity: .8; }
+.gr-bar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.gr-bar-legend-item { display: flex; align-items: center; gap: 6px; }
+.gr-bar-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.gr-bar-brand { font-size: 12px; font-weight: 500; }
+.gr-bar-count { font-size: 11px; color: rgba(255,255,255,0.45); }
+
+/* ── Season group / game log ── */
+.gr-game-log { display: flex; flex-direction: column; gap: 20px; }
+.gr-season-group {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.gr-season-lbl {
+  padding: 11px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.gr-season-count {
+  font-weight: 400;
+  color: rgba(255,255,255,0.3);
+  margin-left: 6px;
+  text-transform: none;
+}
+.gr-log-table { font-size: 12.5px; }
+.gr-log-hdr {
+  display: grid;
+  grid-template-columns: 100px 110px 1fr 1fr 40px 40px 40px;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: rgba(255,255,255,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.gr-log-row {
+  display: grid;
+  grid-template-columns: 100px 110px 1fr 1fr 40px 40px 40px;
+  gap: 8px;
+  padding: 9px 16px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background .1s;
+}
+.gr-log-row:last-child { border-bottom: none; }
+.gr-log-row:hover { background: rgba(255,255,255,0.04); }
+.gr-log-date { color: rgba(255,255,255,0.5); white-space: nowrap; }
+.gr-log-opp  { color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gr-log-shoe {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gr-brand-pip {
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.gr-log-cw { color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gr-col-stat {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255,255,255,0.6);
+}
+.gr-stat-pts { color: #4ade80; font-weight: 600; }
+
+/* ── By-shoe grid ── */
+.gr-shoe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.gr-shoe-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color .15s, transform .15s;
+}
+.gr-shoe-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+.gr-shoe-card-img {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  border-top: 3px solid transparent;
+}
+.gr-shoe-card-img img {
+  max-width: 100%;
+  max-height: 90px;
+  object-fit: contain;
+}
+.gr-shoe-placeholder {
+  width: 70%;
+  height: 60%;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+}
+.gr-shoe-card-body { padding: 12px 14px; }
+.gr-shoe-card-brand {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+}
+.gr-shoe-card-model {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.gr-shoe-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gr-shoe-games {
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+.gr-shoe-avg {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+}
+
+.gr-empty-view {
+  padding: 40px;
+  text-align: center;
+  color: rgba(255,255,255,0.35);
+  font-size: 13px;
+}
+

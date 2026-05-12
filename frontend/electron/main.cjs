@@ -2370,6 +2370,60 @@ ipcMain.handle("contracts:player", async (_event, p) => {
   });
 });
 
+// ── Gear Explorer ─────────────────────────────────────────────────────────────
+
+function _gearSpawn(args, resolve) {
+  const child = spawn(resolvePythonPath(), args, {
+    windowsHide: true,
+    env: { ...process.env, PYTHONIOENCODING: "utf-8" },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  let stdout = "", stderr = "";
+  child.stdout.on("data", (d) => { stdout += d; });
+  child.stderr.on("data", (d) => { stderr += d; });
+  child.on("close", () => {
+    try { resolve(JSON.parse(stdout.trim() || "{}")); }
+    catch { resolve({ ok: false, error: stderr.slice(0, 400) || "Parse error" }); }
+  });
+  child.on("error", (err) => resolve({ ok: false, error: String(err.message) }));
+}
+
+ipcMain.handle("gear:players", async (_event, p) => {
+  const force = Boolean(p?.force);
+  return new Promise((resolve) => {
+    const code = [
+      "import sys, json, os",
+      "sys.path.insert(0, os.path.join(sys.argv[1], 'nba2k26_generator'))",
+      "from gear_explorer import fetch_player_list",
+      "try:",
+      "    r = fetch_player_list(force=sys.argv[2]=='true')",
+      "    print(json.dumps(r))",
+      "except Exception as e:",
+      "    import traceback; print(json.dumps({'ok':False,'error':str(e),'trace':traceback.format_exc()[-400:]}))",
+    ].join("\n");
+    _gearSpawn(["-c", code, getProjectRoot(), force ? "true" : "false"], resolve);
+  });
+});
+
+ipcMain.handle("gear:player", async (_event, p) => {
+  const slug  = String(p?.slug  || "").trim();
+  const force = Boolean(p?.force);
+  if (!slug) return { ok: false, error: "Missing player slug" };
+  return new Promise((resolve) => {
+    const code = [
+      "import sys, json, os",
+      "sys.path.insert(0, os.path.join(sys.argv[1], 'nba2k26_generator'))",
+      "from gear_explorer import fetch_player_gear",
+      "try:",
+      "    r = fetch_player_gear(sys.argv[2], force=sys.argv[3]=='true')",
+      "    print(json.dumps(r))",
+      "except Exception as e:",
+      "    import traceback; print(json.dumps({'ok':False,'error':str(e),'trace':traceback.format_exc()[-400:]}))",
+    ].join("\n");
+    _gearSpawn(["-c", code, getProjectRoot(), slug, force ? "true" : "false"], resolve);
+  });
+});
+
 ipcMain.handle("generator:sheet-lookup", async (_event, payload) => {
   const playerName = String(payload?.player || "").trim();
   if (!playerName) return { ok: false, error: "Player name required." };

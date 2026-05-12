@@ -4,6 +4,7 @@ const teamPageEl = document.getElementById("teamPage");
 const profilePageEl = document.getElementById("profilePage");
 const comparePageEl = document.getElementById("comparePage");
 const contractPageEl = document.getElementById("contractPage");
+const gearPageEl     = document.getElementById("gearPage");
 
 const playerSearchEl = document.getElementById("playerSearch");
 const seasonEl = document.getElementById("season");
@@ -273,6 +274,7 @@ function _hideAllPages() {
   document.getElementById("notesPage")?.classList.add("hidden");
   document.getElementById("usersPage")?.classList.add("hidden");
   contractPageEl?.classList.add("hidden");
+  gearPageEl?.classList.add("hidden");
 }
 
 function showDashboard() {
@@ -6908,6 +6910,469 @@ function showContractPage() {
 }
 
 document.getElementById("navContractsBtn")?.addEventListener("click", () => showContractPage());
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Gear Explorer
+// ─────────────────────────────────────────────────────────────────────────────
+
+const _GR_BRAND_COLOR = {
+  "nike":          "#e5e5e5",
+  "jordan":        "#CF1F2E",
+  "jordan brand":  "#CF1F2E",
+  "adidas":        "#4169E1",
+  "new balance":   "#FF6B35",
+  "puma":          "#a855f7",
+  "under armour":  "#22D3EE",
+  "li-ning":       "#ef4444",
+  "li ning":       "#ef4444",
+  "anta":          "#16a34a",
+  "peak":          "#f59e0b",
+  "converse":      "#f97316",
+  "reebok":        "#0ea5e9",
+};
+
+function _grBrandColor(brand) {
+  return _GR_BRAND_COLOR[(brand || "").toLowerCase().trim()] || "#6b7280";
+}
+
+const _gr = {
+  playerList:   null,
+  listLoading:  false,
+  selectedSlug: null,
+  gearData:     null,
+  gearLoading:  false,
+  season:       "all",
+  view:         "game-log",
+  inited:       false,
+};
+
+// ── Init ──────────────────────────────────────────────────────
+
+function gearPageInit() {
+  if (!_gr.inited) {
+    _gr.inited = true;
+    _grBindEvents();
+  }
+  if (!_gr.playerList && !_gr.listLoading) _grLoadPlayerList();
+  _grRender();
+}
+
+async function _grLoadPlayerList(force) {
+  _gr.listLoading = true;
+  _grUpdateSearchPlaceholder();
+  const r = await window.nba2kDesktop.fetchGearPlayers({ force: !!force });
+  _gr.listLoading = false;
+  if (r?.ok && r.players?.length) {
+    _gr.playerList = r.players;
+    // Build season options from any existing data
+  } else {
+    _gr.playerList = [];
+  }
+  _grUpdateSearchPlaceholder();
+}
+
+function _grUpdateSearchPlaceholder() {
+  const inp = document.getElementById("gearSearchInput");
+  if (!inp) return;
+  if (_gr.listLoading) {
+    inp.placeholder = "Loading players…";
+    inp.disabled = true;
+  } else {
+    inp.placeholder = "Search player…";
+    inp.disabled = false;
+  }
+}
+
+// ── Events ────────────────────────────────────────────────────
+
+function _grBindEvents() {
+  const inp = document.getElementById("gearSearchInput");
+  const wrap = document.getElementById("gearSearchWrap");
+
+  inp?.addEventListener("input", () => {
+    const term = inp.value.trim();
+    if (term.length < 1) { _grCloseDropdown(); return; }
+    _grShowDropdown(term);
+  });
+
+  inp?.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") _grCloseDropdown();
+    if (e.key === "ArrowDown") {
+      const first = document.querySelector(".gr-dd-item");
+      first?.focus();
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!wrap?.contains(e.target)) _grCloseDropdown();
+  });
+
+  document.getElementById("gearSeasonFilter")?.addEventListener("change", (e) => {
+    _gr.season = e.target.value;
+    _grRenderShoeView();
+  });
+
+  document.getElementById("grViewTabs")?.addEventListener("click", (e) => {
+    const btn = e.target.closest(".gr-view-btn");
+    if (!btn) return;
+    document.querySelectorAll(".gr-view-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    _gr.view = btn.dataset.view;
+    _grRenderShoeView();
+  });
+
+  document.getElementById("gearRefreshBtn")?.addEventListener("click", async () => {
+    _gr.playerList = null;
+    await _grLoadPlayerList(true);
+    if (_gr.selectedSlug) {
+      _gr.gearData = null;
+      _gr.gearLoading = true;
+      _grRender();
+      const r = await window.nba2kDesktop.fetchGearPlayer({ slug: _gr.selectedSlug, force: true });
+      _gr.gearLoading = false;
+      _gr.gearData = r?.ok ? r : null;
+      _grRender();
+    }
+  });
+}
+
+// ── Search dropdown ───────────────────────────────────────────
+
+function _grShowDropdown(term) {
+  const dd = document.getElementById("gearSearchDropdown");
+  if (!dd) return;
+  if (!_gr.playerList?.length) {
+    dd.classList.add("hidden");
+    return;
+  }
+  const tl = term.toLowerCase();
+  const hits = _gr.playerList
+    .filter(p => p.name.toLowerCase().includes(tl) || p.slug.includes(tl))
+    .slice(0, 12);
+
+  if (!hits.length) { dd.classList.add("hidden"); return; }
+
+  dd.innerHTML = hits.map(p => `
+    <button class="gr-dd-item" data-slug="${p.slug}" data-name="${p.name}">
+      <span class="gr-dd-name">${p.name}</span>
+      ${p.team ? `<span class="gr-dd-team">${p.team}</span>` : ""}
+    </button>
+  `).join("");
+
+  dd.querySelectorAll(".gr-dd-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      _grSelectPlayer(btn.dataset.slug, btn.dataset.name);
+    });
+    btn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") _grSelectPlayer(btn.dataset.slug, btn.dataset.name);
+      if (e.key === "ArrowDown") btn.nextElementSibling?.focus();
+      if (e.key === "ArrowUp") btn.previousElementSibling?.focus();
+    });
+  });
+
+  dd.classList.remove("hidden");
+}
+
+function _grCloseDropdown() {
+  document.getElementById("gearSearchDropdown")?.classList.add("hidden");
+}
+
+// ── Load player gear ──────────────────────────────────────────
+
+async function _grSelectPlayer(slug, name) {
+  const inp = document.getElementById("gearSearchInput");
+  if (inp) inp.value = name;
+  _grCloseDropdown();
+
+  _gr.selectedSlug = slug;
+  _gr.gearData     = null;
+  _gr.gearLoading  = true;
+  _grRender();
+
+  const r = await window.nba2kDesktop.fetchGearPlayer({ slug });
+  _gr.gearLoading = false;
+
+  if (r?.ok && r.shoes?.length) {
+    _gr.gearData = r;
+    _grPopulateSeasons(r.shoes);
+  } else {
+    _gr.gearData = null;
+    const msg = document.getElementById("gearEmptyMsg");
+    if (msg) msg.textContent = r?.error || "No shoe data found for this player.";
+  }
+  _grRender();
+}
+
+function _grPopulateSeasons(shoes) {
+  const sel = document.getElementById("gearSeasonFilter");
+  if (!sel) return;
+  const seasons = [...new Set(shoes.map(s => s.season).filter(Boolean))].sort().reverse();
+  const cur = sel.value;
+  sel.innerHTML = `<option value="all">All Seasons</option>` +
+    seasons.map(s => `<option value="${s}">${s}</option>`).join("");
+  if (seasons.includes(cur)) sel.value = cur;
+  else sel.value = "all";
+  _gr.season = sel.value;
+}
+
+// ── Render orchestration ──────────────────────────────────────
+
+function _grRender() {
+  const empty   = document.getElementById("gearEmpty");
+  const loading = document.getElementById("gearLoading");
+  const content = document.getElementById("gearContent");
+  if (!empty || !loading || !content) return;
+
+  if (_gr.gearLoading) {
+    empty.classList.add("hidden");
+    loading.classList.remove("hidden");
+    content.classList.add("hidden");
+    return;
+  }
+  if (!_gr.gearData) {
+    empty.classList.remove("hidden");
+    loading.classList.add("hidden");
+    content.classList.add("hidden");
+    return;
+  }
+  empty.classList.add("hidden");
+  loading.classList.add("hidden");
+  content.classList.remove("hidden");
+
+  _grRenderPlayerHdr(_gr.gearData);
+  _grRenderSummary(_gr.gearData);
+  _grRenderBrandBar(_gr.gearData);
+  _grRenderShoeView();
+}
+
+// ── Player header ─────────────────────────────────────────────
+
+function _grRenderPlayerHdr(data) {
+  const el = document.getElementById("gearPlayerHdr");
+  if (!el) return;
+
+  const recent = data.shoes?.[0];
+  const color  = _grBrandColor(recent?.brand);
+  const img    = recent?.image_url || "";
+  const info   = data.player_info || {};
+
+  el.innerHTML = `
+    <div class="gr-phdr-left">
+      <div class="gr-phdr-name">${data.player_name || "—"}</div>
+      <div class="gr-phdr-meta">
+        ${info.team ? `<span class="gr-phdr-team">${info.team}</span>` : ""}
+        ${info.position ? `<span class="gr-phdr-pos">${info.position}</span>` : ""}
+      </div>
+    </div>
+    <div class="gr-phdr-shoe-card">
+      <div class="gr-phdr-shoe-label">Current Shoe</div>
+      <div class="gr-phdr-shoe-inner">
+        ${img
+          ? `<div class="gr-phdr-img-wrap"><img class="gr-phdr-img" src="${img}" alt="" onerror="this.parentElement.style.display='none'"/></div>`
+          : `<div class="gr-phdr-img-placeholder" style="background:${color}22"><svg viewBox="0 0 40 30" fill="none" width="40" height="30" opacity=".35"><path d="M4 20c0-4 3-7 7-7h2l2-6h10l2 6h2c4 0 7 3 7 7v2H4v-2z" stroke="currentColor" stroke-width="1.5"/></svg></div>`
+        }
+        <div class="gr-phdr-shoe-info">
+          <div class="gr-phdr-shoe-model">${recent ? `${recent.brand} ${recent.model}`.trim() : "—"}</div>
+          ${recent?.colorway ? `<div class="gr-phdr-shoe-cw">${recent.colorway}</div>` : ""}
+          ${recent?.date ? `<div class="gr-phdr-shoe-date">Last worn ${recent.date}</div>` : ""}
+        </div>
+        <div class="gr-brand-dot" style="background:${color}"></div>
+      </div>
+    </div>
+  `;
+}
+
+// ── Summary cards ─────────────────────────────────────────────
+
+function _grRenderSummary(data) {
+  const el = document.getElementById("gearSummaryRow");
+  if (!el) return;
+  const s    = data.summary || {};
+  const mc   = s.model_counts || {};
+  const topN = s.top_shoe_count || (s.top_shoe ? (mc[s.top_shoe] || 0) : 0);
+  const topC = _grBrandColor(s.top_brand);
+
+  // Current season: find most recent season in shoes
+  const seasons = [...new Set((data.shoes || []).map(sh => sh.season).filter(Boolean))].sort().reverse();
+  const curSeason = seasons[0] || "";
+  const curCount  = curSeason
+    ? (data.shoes || []).filter(sh => sh.season === curSeason).length
+    : 0;
+
+  el.innerHTML = `
+    <div class="gr-stat-card">
+      <div class="gr-stat-val">${s.total_games ?? 0}</div>
+      <div class="gr-stat-lbl">Games Tracked</div>
+    </div>
+    <div class="gr-stat-card">
+      <div class="gr-stat-val" style="color:${topC}">${s.top_brand || "—"}</div>
+      <div class="gr-stat-lbl">Top Brand</div>
+    </div>
+    <div class="gr-stat-card gr-stat-card-wide">
+      <div class="gr-stat-val gr-stat-shoe">${s.top_shoe || "—"}</div>
+      <div class="gr-stat-lbl">Most Worn Shoe${topN > 0 ? ` · ${topN}g` : ""}</div>
+    </div>
+    <div class="gr-stat-card">
+      <div class="gr-stat-val">${curCount}</div>
+      <div class="gr-stat-lbl">${curSeason || "This Season"}</div>
+    </div>
+  `;
+}
+
+// ── Brand distribution bar ────────────────────────────────────
+
+function _grRenderBrandBar(data) {
+  const el = document.getElementById("gearBrandBar");
+  if (!el) return;
+  const bc = data.summary?.brand_counts || {};
+  const total = Object.values(bc).reduce((a, b) => a + b, 0);
+  if (!total) { el.innerHTML = ""; return; }
+
+  const sorted = Object.entries(bc).sort((a, b) => b[1] - a[1]);
+  const segments = sorted.map(([brand, count]) => {
+    const pct = (count / total * 100).toFixed(1);
+    const c   = _grBrandColor(brand);
+    return `<div class="gr-bar-seg" style="width:${pct}%;background:${c}" title="${brand}: ${count} games (${pct}%)"></div>`;
+  }).join("");
+
+  const legend = sorted.map(([brand, count]) => {
+    const pct = (count / total * 100).toFixed(0);
+    const c   = _grBrandColor(brand);
+    return `<div class="gr-bar-legend-item">
+      <span class="gr-bar-dot" style="background:${c}"></span>
+      <span class="gr-bar-brand">${brand}</span>
+      <span class="gr-bar-count">${count}g · ${pct}%</span>
+    </div>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="gr-bar-label">Brand Distribution</div>
+    <div class="gr-bar-track">${segments}</div>
+    <div class="gr-bar-legend">${legend}</div>
+  `;
+}
+
+// ── Shoe view (game-log / by-shoe) ────────────────────────────
+
+function _grFilteredShoes(shoes) {
+  if (_gr.season === "all") return shoes;
+  return shoes.filter(s => s.season === _gr.season);
+}
+
+function _grRenderShoeView() {
+  if (!_gr.gearData) return;
+  if (_gr.view === "by-shoe") _grRenderByShoe(_gr.gearData);
+  else _grRenderGameLog(_gr.gearData);
+}
+
+// Game log view
+function _grRenderGameLog(data) {
+  const el = document.getElementById("gearShoeView");
+  if (!el) return;
+  const shoes = _grFilteredShoes(data.shoes || []);
+  if (!shoes.length) {
+    el.innerHTML = `<div class="gr-empty-view">No games for this filter.</div>`;
+    return;
+  }
+
+  // Group by season
+  const bySeason = {};
+  for (const s of shoes) {
+    const key = s.season || "Unknown Season";
+    if (!bySeason[key]) bySeason[key] = [];
+    bySeason[key].push(s);
+  }
+  const seasonKeys = Object.keys(bySeason).sort().reverse();
+
+  let html = `<div class="gr-game-log">`;
+  for (const season of seasonKeys) {
+    const rows = bySeason[season];
+    html += `<div class="gr-season-group">
+      <div class="gr-season-lbl">${season} <span class="gr-season-count">${rows.length} games</span></div>
+      <div class="gr-log-table">
+        <div class="gr-log-hdr">
+          <span>Date</span><span>Opponent</span><span>Shoe</span><span>Colorway</span>
+          <span class="gr-col-stat">PTS</span><span class="gr-col-stat">REB</span><span class="gr-col-stat">AST</span>
+        </div>`;
+    for (const s of rows) {
+      const bc = _grBrandColor(s.brand);
+      const shoe = `${s.brand} ${s.model}`.trim() || "—";
+      html += `<div class="gr-log-row">
+        <span class="gr-log-date">${s.date || "—"}</span>
+        <span class="gr-log-opp">${s.opponent || "—"}</span>
+        <span class="gr-log-shoe">
+          <span class="gr-brand-pip" style="background:${bc}"></span>
+          <span>${shoe}</span>
+        </span>
+        <span class="gr-log-cw">${s.colorway || "—"}</span>
+        <span class="gr-col-stat gr-stat-pts">${s.pts ?? "—"}</span>
+        <span class="gr-col-stat">${s.reb ?? "—"}</span>
+        <span class="gr-col-stat">${s.ast ?? "—"}</span>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+// By-shoe view
+function _grRenderByShoe(data) {
+  const el = document.getElementById("gearShoeView");
+  if (!el) return;
+  const shoes = _grFilteredShoes(data.shoes || []);
+
+  // Group by full shoe name
+  const byShoe = {};
+  for (const s of shoes) {
+    const key = `${s.brand} ${s.model}`.trim() || "Unknown";
+    if (!byShoe[key]) byShoe[key] = { brand: s.brand, model: s.model, image_url: s.image_url, games: [] };
+    byShoe[key].games.push(s);
+  }
+  const entries = Object.entries(byShoe).sort((a, b) => b[1].games.length - a[1].games.length);
+
+  if (!entries.length) {
+    el.innerHTML = `<div class="gr-empty-view">No shoes for this filter.</div>`;
+    return;
+  }
+
+  const cards = entries.map(([name, info]) => {
+    const bc   = _grBrandColor(info.brand);
+    const cnt  = info.games.length;
+    const avg  = (arr, key) => arr.length ? (arr.reduce((s, g) => s + (g[key] || 0), 0) / arr.length).toFixed(1) : "—";
+    const img  = info.image_url;
+    return `<div class="gr-shoe-card">
+      <div class="gr-shoe-card-img" style="border-top-color:${bc}">
+        ${img
+          ? `<img src="${img}" alt="${name}" onerror="this.parentElement.innerHTML='<div class=gr-shoe-placeholder></div>'"/>`
+          : `<div class="gr-shoe-placeholder"></div>`
+        }
+      </div>
+      <div class="gr-shoe-card-body">
+        <div class="gr-shoe-card-brand" style="color:${bc}">${info.brand || "—"}</div>
+        <div class="gr-shoe-card-model">${info.model || "—"}</div>
+        <div class="gr-shoe-card-stats">
+          <span class="gr-shoe-games">${cnt}g</span>
+          <span class="gr-shoe-avg">${avg(info.games, "pts")} PTS · ${avg(info.games, "reb")} REB · ${avg(info.games, "ast")} AST</span>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  el.innerHTML = `<div class="gr-shoe-grid">${cards}</div>`;
+}
+
+// ── Show page ─────────────────────────────────────────────────
+
+function showGearPage() {
+  _hideAllPages();
+  gearPageEl.classList.remove("hidden");
+  document.body.classList.add("profile-open");
+  setActiveNav("navGearBtn");
+  gearPageInit();
+}
+
+document.getElementById("navGearBtn")?.addEventListener("click", () => showGearPage());
 
 // ── Boot ──────────────────────────────────────────────────────
 
