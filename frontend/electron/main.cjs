@@ -109,15 +109,16 @@ function resolvePythonPath() {
     _pythonVerified = true; _resolvedPython = venv; return venv;
   }
 
-  // macOS / Linux — packaged app uses bundled python-build-standalone; trust
-  // fs.existsSync only (no _tryPython) because Gatekeeper/quarantine can make
-  // execFileSync fail on the bundled binary even when it is perfectly valid.
+  // macOS / Linux — try bundled Python first, but validate it actually runs.
+  // EBADARCH (-86) happens when the bundled binary is x86_64 but the user is on Apple Silicon.
+  // If _tryPython fails, fall through to system Python candidates below.
   if (app.isPackaged) {
     const pyRoot = path.join(process.resourcesPath, "python");
     for (const rel of ["bin/python3.12", "bin/python3", "python"]) {
       const p = path.join(pyRoot, rel);
-      if (fs.existsSync(p)) { _pythonVerified = true; _resolvedPython = p; return p; }
+      if (fs.existsSync(p) && _tryPython(p)) { _pythonVerified = true; _resolvedPython = p; return p; }
     }
+    // Bundled Python failed (arch mismatch or quarantine). Fall through to system Python.
   }
 
   // Dev / fallback — verify each candidate actually runs (catches EBADARCH on Apple Silicon)
@@ -163,8 +164,9 @@ function resolvePythonPath() {
     } catch { /* try next */ }
   }
 
-  _resolvedPython = "python3";
-  return "python3";
+  // Nothing found — return a sentinel that produces a clear error at spawn time
+  _resolvedPython = "__python_not_found__";
+  return "__python_not_found__";
 }
 
 async function _ensurePythonMac() {
@@ -1429,8 +1431,14 @@ function _waitForElectron(cb, attempt) {
 _waitForElectron((e) => {
   ({ app, BrowserWindow, ipcMain, dialog, net, protocol } = e);
 
-  // Set early so electron-updater and other systems see the right path
-  app.setPath("userData", path.join(os.tmpdir(), "NBA2K26-Generator-Desktop"));
+  // Set early so electron-updater and other systems see the right path.
+  // On macOS use the proper app-support directory — os.tmpdir() causes LevelDB LOCK
+  // errors when a previous instance crashes and leaves a stale lock file.
+  if (process.platform === "darwin") {
+    app.setPath("userData", path.join(os.homedir(), "Library", "Application Support", "ATD 2K APP"));
+  } else {
+    app.setPath("userData", path.join(os.tmpdir(), "NBA2K26-Generator-Desktop"));
+  }
 
   if (protocol && protocol.registerSchemesAsPrivileged) {
     protocol.registerSchemesAsPrivileged([
@@ -2225,12 +2233,20 @@ function runStatsScript(pythonPath, projectRoot, endpoint, args) {
       "except Exception as e:",
       "    print(json.dumps({'ok': False, 'error': str(e)}))",
     ].join("\n");
+    if (pythonPath === "__python_not_found__") {
+      return resolve({ ok: false, error: "Python not found. Please install Python 3.12 from python.org, then run: pip3 install nba_api" });
+    }
     const allArgs = ["-c", code, projectRoot, endpoint, ...args];
-    const child = spawn(pythonPath, allArgs, {
-      windowsHide: true,
-      env: { ...process.env, PYTHONIOENCODING: "utf-8" },
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+    let child;
+    try {
+      child = spawn(pythonPath, allArgs, {
+        windowsHide: true,
+        env: { ...process.env, PYTHONIOENCODING: "utf-8" },
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+    } catch (spawnErr) {
+      return resolve({ ok: false, error: `Python launch failed: ${spawnErr.message}` });
+    }
     let stdout = "", stderr = "", done = false;
 
     // Kill after 40 s — NBA.com sometimes hangs indefinitely

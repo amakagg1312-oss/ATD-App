@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 .venv/
 .venv312/
+frontend/resources/python-mac-x64/
+frontend/resources/python-mac-arm64/
 *.egg-info/
 nba2k26_generator/stats_cache/
 

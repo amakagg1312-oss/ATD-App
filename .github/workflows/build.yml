@@ -36,8 +36,15 @@ jobs:
         include:
           - os: windows-latest
             platform: win
-          - os: macos-latest
+            dist_cmd: dist:win
+          - os: macos-13        # Intel — builds x64 DMG with x64 Python
             platform: mac
+            dist_cmd: dist:mac
+            mac_arch: x64
+          - os: macos-latest    # Apple Silicon — builds arm64 DMG with arm64 Python
+            platform: mac
+            dist_cmd: dist:mac
+            mac_arch: arm64
 
     runs-on: ${{ matrix.os }}
 
@@ -84,31 +91,32 @@ jobs:
           & "$dest\python.exe" -m pip install nba_api openpyxl pandas scikit-learn --no-warn-script-location
           Write-Output "Python bundle complete"
 
-      # ── macOS: python-build-standalone (truly portable) ─────────────────
+      # ── macOS: python-build-standalone for this runner's arch only ──────
+      # macos-13 runner = Intel x64, macos-latest runner = Apple Silicon arm64.
+      # Each runner builds only its own arch DMG so Python always matches.
       - name: Bundle Python (macOS)
         if: runner.os == 'macOS'
         run: |
           set -e
           mkdir -p frontend/resources
-          ARCH=$(uname -m)
+          ARCH=$(uname -m)   # x86_64 on macos-13, arm64 on macos-latest
+          if [ "$ARCH" = "arm64" ]; then
+            PBS_ARCH="aarch64"
+          else
+            PBS_ARCH="x86_64"
+          fi
           DOWNLOADED=false
 
           for TAG in 20250316 20250212 20241219 20241010; do
             for PY_VER in "3.12.9" "3.12.8"; do
-              if [ "$ARCH" = "arm64" ]; then
-                URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-aarch64-apple-darwin-install_only.tar.gz"
-              else
-                URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-x86_64-apple-darwin-install_only.tar.gz"
-              fi
+              URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-${PBS_ARCH}-apple-darwin-install_only.tar.gz"
               echo "Trying: $URL"
               if curl -fL --retry 2 --max-time 120 -o /tmp/py_standalone.tar.gz "$URL" 2>/dev/null; then
-                if file /tmp/py_standalone.tar.gz | grep -q "gzip\|tar"; then
-                  if tar -xzf /tmp/py_standalone.tar.gz -C frontend/resources 2>/dev/null; then
-                    if [ -d "frontend/resources/python/bin" ]; then
-                      echo "Success: Python ${PY_VER} from tag ${TAG}"
-                      DOWNLOADED=true
-                      break 2
-                    fi
+                if tar -xzf /tmp/py_standalone.tar.gz -C frontend/resources 2>/dev/null; then
+                  if [ -d "frontend/resources/python/bin" ]; then
+                    echo "Success: Python ${PY_VER} (${PBS_ARCH}) from tag ${TAG}"
+                    DOWNLOADED=true
+                    break 2
                   fi
                 fi
               fi
@@ -117,12 +125,11 @@ jobs:
             done
           done
 
-          [ "$DOWNLOADED" = "true" ] || (echo "ERROR: all downloads failed" && exit 1)
-
+          [ "$DOWNLOADED" = "true" ] || (echo "ERROR: all Python downloads failed" && exit 1)
           rm -f /tmp/py_standalone.tar.gz
           ls frontend/resources/python/bin/
           frontend/resources/python/bin/pip3 install nba_api openpyxl pandas scikit-learn
-          echo "Python bundle complete"
+          echo "Python bundle complete (${PBS_ARCH})"
 
       # ── Bundle project data files ────────────────────────────────────────
       - name: Bundle data files (Windows)
@@ -176,7 +183,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
-        run: npm run dist
+        run: |
+          if [ -n "${{ matrix.mac_arch }}" ]; then
+            npm run ${{ matrix.dist_cmd }} -- --${{ matrix.mac_arch }}
+          else
+            npm run ${{ matrix.dist_cmd }}
+          fi
+        shell: bash
 
       # ── Upload artifacts ─────────────────────────────────────────────────
       - name: Upload artifacts
