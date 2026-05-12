@@ -106,17 +106,7 @@ jobs:
             local ASSET_URL
             ASSET_URL=$(curl -fsSL --max-time 30 \
               "https://api.github.com/repos/astral-sh/python-build-standalone/releases?per_page=20" \
-              | python3 -c "
-import sys, json
-releases = json.load(sys.stdin)
-for release in releases:
-    for asset in release.get('assets', []):
-        n = asset['name']
-        if 'cpython-3.12' in n and '${PBS_ARCH}-apple-darwin-install_only' in n:
-            print(asset['browser_download_url'])
-            sys.exit(0)
-sys.exit(1)
-" 2>/dev/null)
+              | python3 -c "import sys,json; d=json.load(sys.stdin); a=next((a['browser_download_url'] for r in d for a in r.get('assets',[]) if 'cpython-3.12' in a['name'] and '${PBS_ARCH}-apple-darwin-install_only' in a['name']),None); print(a or '')" 2>/dev/null)
 
             if [ -z "$ASSET_URL" ]; then
               echo "ERROR: no cpython-3.12 ${PBS_ARCH}-apple-darwin asset found in recent releases"
