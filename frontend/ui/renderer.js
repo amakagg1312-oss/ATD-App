@@ -7047,7 +7047,7 @@ function _grShowDropdown(term) {
   }
   const tl = term.toLowerCase();
   const hits = _gr.playerList
-    .filter(p => p.name.toLowerCase().includes(tl) || p.slug.includes(tl))
+    .filter(p => p.name.toLowerCase().includes(tl))
     .slice(0, 12);
 
   if (!hits.length) { dd.classList.add("hidden"); return; }
