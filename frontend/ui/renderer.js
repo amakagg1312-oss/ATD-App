@@ -6935,6 +6935,27 @@ function _grBrandColor(brand) {
   return _GR_BRAND_COLOR[(brand || "").toLowerCase().trim()] || "#6b7280";
 }
 
+function _grAvg(games, key) {
+  if (!games.length) return "—";
+  return (games.reduce((s, g) => s + (g[key] || 0), 0) / games.length).toFixed(1);
+}
+
+function _grFmt(val, fallback = "—") {
+  return val != null && val !== "" ? val : fallback;
+}
+
+// How many consecutive most-recent games used the same shoe model
+function _grCurrentStreak(shoes) {
+  if (!shoes.length) return { model: "", count: 0 };
+  const cur = shoes[0].model;
+  let count = 0;
+  for (const s of shoes) {
+    if (s.model !== cur) break;
+    count++;
+  }
+  return { model: cur, count };
+}
+
 const _gr = {
   playerList:   null,
   listLoading:  false,
@@ -7150,32 +7171,38 @@ function _grRenderPlayerHdr(data) {
   const el = document.getElementById("gearPlayerHdr");
   if (!el) return;
 
-  const recent = data.shoes?.[0];
-  const color  = _grBrandColor(recent?.brand);
-  const img    = recent?.image_url || "";
-  const info   = data.player_info || {};
+  const recent  = data.shoes?.[0];
+  const color   = _grBrandColor(recent?.brand);
+  const info    = data.player_info || {};
+  const streak  = _grCurrentStreak(data.shoes || []);
+  const slug    = data.player_slug || "";
 
   el.innerHTML = `
-    <div class="gr-phdr-left">
-      <div class="gr-phdr-name">${data.player_name || "—"}</div>
-      <div class="gr-phdr-meta">
-        ${info.team ? `<span class="gr-phdr-team">${info.team}</span>` : ""}
-        ${info.position ? `<span class="gr-phdr-pos">${info.position}</span>` : ""}
-      </div>
-    </div>
-    <div class="gr-phdr-shoe-card">
-      <div class="gr-phdr-shoe-label">Current Shoe</div>
-      <div class="gr-phdr-shoe-inner">
-        ${img
-          ? `<div class="gr-phdr-img-wrap"><img class="gr-phdr-img" src="${img}" alt="" onerror="this.parentElement.style.display='none'"/></div>`
-          : `<div class="gr-phdr-img-placeholder" style="background:${color}22"><svg viewBox="0 0 40 30" fill="none" width="40" height="30" opacity=".35"><path d="M4 20c0-4 3-7 7-7h2l2-6h10l2 6h2c4 0 7 3 7 7v2H4v-2z" stroke="currentColor" stroke-width="1.5"/></svg></div>`
+    <div class="gr-hero" style="--brand-color:${color}">
+      <div class="gr-hero-player">
+        ${info.image_url
+          ? `<img class="gr-hero-photo" src="${info.image_url}" alt="${data.player_name}" onerror="this.style.display='none'"/>`
+          : `<div class="gr-hero-photo-placeholder"></div>`
         }
-        <div class="gr-phdr-shoe-info">
-          <div class="gr-phdr-shoe-model">${recent ? `${recent.brand} ${recent.model}`.trim() : "—"}</div>
-          ${recent?.colorway ? `<div class="gr-phdr-shoe-cw">${recent.colorway}</div>` : ""}
-          ${recent?.date ? `<div class="gr-phdr-shoe-date">Last worn ${recent.date}</div>` : ""}
+        <div class="gr-hero-info">
+          <div class="gr-hero-name">${data.player_name || "—"}</div>
+          <div class="gr-hero-meta">
+            ${info.team ? `<span class="gr-hero-team">${info.team}</span>` : ""}
+          </div>
+          ${slug ? `<a class="gr-colendri-link" href="https://www.colendri.com/players/${slug}/" target="_blank">View on colendri.com ↗</a>` : ""}
         </div>
-        <div class="gr-brand-dot" style="background:${color}"></div>
+      </div>
+      <div class="gr-hero-divider"></div>
+      <div class="gr-hero-shoe">
+        <div class="gr-hero-shoe-label">Current Shoe</div>
+        ${recent?.image_url
+          ? `<img class="gr-hero-shoe-img" src="${recent.image_url}" alt="${recent.model}" onerror="this.style.display='none'"/>`
+          : `<div class="gr-hero-shoe-img-ph"></div>`
+        }
+        <div class="gr-hero-shoe-name">${recent ? recent.model : "—"}</div>
+        <div class="gr-hero-shoe-brand" style="color:${color}">${recent?.brand || ""}</div>
+        ${streak.count > 1 ? `<div class="gr-streak-badge">${streak.count} straight games</div>` : ""}
+        ${recent?.date ? `<div class="gr-hero-shoe-date">Last: ${recent.date}</div>` : ""}
       </div>
     </div>
   `;
@@ -7186,17 +7213,19 @@ function _grRenderPlayerHdr(data) {
 function _grRenderSummary(data) {
   const el = document.getElementById("gearSummaryRow");
   if (!el) return;
-  const s    = data.summary || {};
-  const mc   = s.model_counts || {};
-  const topN = s.top_shoe_count || (s.top_shoe ? (mc[s.top_shoe] || 0) : 0);
-  const topC = _grBrandColor(s.top_brand);
+  const s      = data.summary || {};
+  const shoes  = data.shoes || [];
+  const mc     = s.model_counts || {};
+  const topN   = s.top_shoe_count || (s.top_shoe ? (mc[s.top_shoe] || 0) : 0);
+  const topC   = _grBrandColor(s.top_brand);
+  const streak = _grCurrentStreak(shoes);
 
-  // Current season: find most recent season in shoes
-  const seasons = [...new Set((data.shoes || []).map(sh => sh.season).filter(Boolean))].sort().reverse();
+  const seasons   = [...new Set(shoes.map(sh => sh.season).filter(Boolean))].sort().reverse();
   const curSeason = seasons[0] || "";
-  const curCount  = curSeason
-    ? (data.shoes || []).filter(sh => sh.season === curSeason).length
-    : 0;
+  const curShoes  = curSeason ? shoes.filter(sh => sh.season === curSeason) : [];
+
+  const uniqueModels  = Object.keys(mc).length;
+  const avgPts = shoes.length ? (shoes.reduce((s,g) => s + (g.pts||0), 0) / shoes.length).toFixed(1) : "—";
 
   el.innerHTML = `
     <div class="gr-stat-card">
@@ -7207,12 +7236,20 @@ function _grRenderSummary(data) {
       <div class="gr-stat-val" style="color:${topC}">${s.top_brand || "—"}</div>
       <div class="gr-stat-lbl">Top Brand</div>
     </div>
-    <div class="gr-stat-card gr-stat-card-wide">
-      <div class="gr-stat-val gr-stat-shoe">${s.top_shoe || "—"}</div>
-      <div class="gr-stat-lbl">Most Worn Shoe${topN > 0 ? ` · ${topN}g` : ""}</div>
+    <div class="gr-stat-card">
+      <div class="gr-stat-val">${uniqueModels}</div>
+      <div class="gr-stat-lbl">Unique Models</div>
     </div>
     <div class="gr-stat-card">
-      <div class="gr-stat-val">${curCount}</div>
+      <div class="gr-stat-val">${streak.count > 0 ? streak.count : "—"}</div>
+      <div class="gr-stat-lbl">Current Streak</div>
+    </div>
+    <div class="gr-stat-card gr-stat-card-wide">
+      <div class="gr-stat-val gr-stat-shoe">${s.top_shoe || "—"}</div>
+      <div class="gr-stat-lbl">Most Worn${topN > 0 ? ` · ${topN} games` : ""}</div>
+    </div>
+    <div class="gr-stat-card">
+      <div class="gr-stat-val">${curShoes.length > 0 ? curShoes.length : "—"}</div>
       <div class="gr-stat-lbl">${curSeason || "This Season"}</div>
     </div>
   `;
@@ -7274,10 +7311,9 @@ function _grRenderGameLog(data) {
     return;
   }
 
-  // Group by season
   const bySeason = {};
   for (const s of shoes) {
-    const key = s.season || "Unknown Season";
+    const key = s.season || "Unknown";
     if (!bySeason[key]) bySeason[key] = [];
     bySeason[key].push(s);
   }
@@ -7286,27 +7322,46 @@ function _grRenderGameLog(data) {
   let html = `<div class="gr-game-log">`;
   for (const season of seasonKeys) {
     const rows = bySeason[season];
+    const avgPts = _grAvg(rows, "pts");
     html += `<div class="gr-season-group">
-      <div class="gr-season-lbl">${season} <span class="gr-season-count">${rows.length} games</span></div>
+      <div class="gr-season-lbl">
+        <span>${season}</span>
+        <span class="gr-season-count">${rows.length} games · ${avgPts} PPG</span>
+      </div>
       <div class="gr-log-table">
         <div class="gr-log-hdr">
-          <span>Date</span><span>Opponent</span><span>Shoe</span><span>Colorway</span>
-          <span class="gr-col-stat">PTS</span><span class="gr-col-stat">REB</span><span class="gr-col-stat">AST</span>
+          <span class="gr-log-col-shoe"></span>
+          <span>Date</span>
+          <span class="gr-log-col-name">Shoe</span>
+          <span class="gr-col-stat">MIN</span>
+          <span class="gr-col-stat gr-stat-pts-hdr">PTS</span>
+          <span class="gr-col-stat">REB</span>
+          <span class="gr-col-stat">AST</span>
+          <span class="gr-col-stat">STL</span>
+          <span class="gr-col-stat">BLK</span>
         </div>`;
     for (const s of rows) {
-      const bc = _grBrandColor(s.brand);
-      const shoe = `${s.brand} ${s.model}`.trim() || "—";
-      html += `<div class="gr-log-row">
-        <span class="gr-log-date">${s.date || "—"}</span>
-        <span class="gr-log-opp">${s.opponent || "—"}</span>
-        <span class="gr-log-shoe">
-          <span class="gr-brand-pip" style="background:${bc}"></span>
-          <span>${shoe}</span>
+      const bc  = _grBrandColor(s.brand);
+      const img = s.image_url;
+      const highPts = s.pts >= 30;
+      html += `<div class="gr-log-row${highPts ? " gr-log-row-hot" : ""}">
+        <span class="gr-log-col-shoe">
+          ${img
+            ? `<img class="gr-log-shoe-thumb" src="${img}" alt="" onerror="this.style.opacity=0"/>`
+            : `<span class="gr-log-shoe-pip" style="background:${bc}"></span>`
+          }
         </span>
-        <span class="gr-log-cw">${s.colorway || "—"}</span>
-        <span class="gr-col-stat gr-stat-pts">${s.pts ?? "—"}</span>
+        <span class="gr-log-date">${s.date || "—"}</span>
+        <span class="gr-log-shoe-name">
+          <span class="gr-log-brand-dot" style="background:${bc}"></span>
+          <span class="gr-log-model">${s.model || "—"}</span>
+        </span>
+        <span class="gr-col-stat gr-col-min">${s.min || "—"}</span>
+        <span class="gr-col-stat gr-stat-pts${highPts ? " gr-pts-fire" : ""}">${s.pts ?? "—"}</span>
         <span class="gr-col-stat">${s.reb ?? "—"}</span>
         <span class="gr-col-stat">${s.ast ?? "—"}</span>
+        <span class="gr-col-stat gr-col-minor">${s.stl ?? "—"}</span>
+        <span class="gr-col-stat gr-col-minor">${s.blk ?? "—"}</span>
       </div>`;
     }
     html += `</div></div>`;
@@ -7321,10 +7376,9 @@ function _grRenderByShoe(data) {
   if (!el) return;
   const shoes = _grFilteredShoes(data.shoes || []);
 
-  // Group by full shoe name
   const byShoe = {};
   for (const s of shoes) {
-    const key = `${s.brand} ${s.model}`.trim() || "Unknown";
+    const key = s.model || "Unknown";
     if (!byShoe[key]) byShoe[key] = { brand: s.brand, model: s.model, image_url: s.image_url, games: [] };
     byShoe[key].games.push(s);
   }
@@ -7335,24 +7389,55 @@ function _grRenderByShoe(data) {
     return;
   }
 
+  // Most recent shoe worn overall
+  const currentModel = shoes[0]?.model || "";
+
   const cards = entries.map(([name, info]) => {
-    const bc   = _grBrandColor(info.brand);
-    const cnt  = info.games.length;
-    const avg  = (arr, key) => arr.length ? (arr.reduce((s, g) => s + (g[key] || 0), 0) / arr.length).toFixed(1) : "—";
-    const img  = info.image_url;
-    return `<div class="gr-shoe-card">
-      <div class="gr-shoe-card-img" style="border-top-color:${bc}">
+    const bc      = _grBrandColor(info.brand);
+    const cnt     = info.games.length;
+    const img     = info.image_url;
+    const isCur   = name === currentModel;
+
+    // Date range
+    const dates   = info.games.map(g => g.date).filter(Boolean).sort();
+    const first   = dates[0] || "";
+    const last    = dates[dates.length - 1] || "";
+    const dateRng = first === last ? first : `${first} – ${last}`;
+
+    // Best game by PTS
+    const best    = info.games.reduce((a, b) => (b.pts||0) > (a.pts||0) ? b : a, info.games[0]);
+
+    // Seasons worn
+    const seasons = [...new Set(info.games.map(g => g.season).filter(Boolean))].sort();
+
+    // Avg stats
+    const avgPts  = _grAvg(info.games, "pts");
+    const avgReb  = _grAvg(info.games, "reb");
+    const avgAst  = _grAvg(info.games, "ast");
+
+    return `<div class="gr-shoe-card${isCur ? " gr-shoe-card-current" : ""}" style="--bc:${bc}">
+      <div class="gr-shoe-card-img">
+        ${isCur ? `<span class="gr-shoe-current-badge">Current</span>` : ""}
         ${img
-          ? `<img src="${img}" alt="${name}" onerror="this.parentElement.innerHTML='<div class=gr-shoe-placeholder></div>'"/>`
+          ? `<img src="${img}" alt="${name}" onerror="this.style.opacity=0"/>`
           : `<div class="gr-shoe-placeholder"></div>`
         }
       </div>
       <div class="gr-shoe-card-body">
         <div class="gr-shoe-card-brand" style="color:${bc}">${info.brand || "—"}</div>
         <div class="gr-shoe-card-model">${info.model || "—"}</div>
-        <div class="gr-shoe-card-stats">
-          <span class="gr-shoe-games">${cnt}g</span>
-          <span class="gr-shoe-avg">${avg(info.games, "pts")} PTS · ${avg(info.games, "reb")} REB · ${avg(info.games, "ast")} AST</span>
+        <div class="gr-shoe-card-meta">
+          <span class="gr-shoe-games">${cnt} game${cnt !== 1 ? "s" : ""}</span>
+          ${seasons.length ? `<span class="gr-shoe-seasons">${seasons.join(", ")}</span>` : ""}
+        </div>
+        <div class="gr-shoe-avgs">
+          <span class="gr-shoe-avg-item"><span class="gr-shoe-avg-val gr-pts-col">${avgPts}</span><span class="gr-shoe-avg-lbl">PTS</span></span>
+          <span class="gr-shoe-avg-item"><span class="gr-shoe-avg-val">${avgReb}</span><span class="gr-shoe-avg-lbl">REB</span></span>
+          <span class="gr-shoe-avg-item"><span class="gr-shoe-avg-val">${avgAst}</span><span class="gr-shoe-avg-lbl">AST</span></span>
+        </div>
+        <div class="gr-shoe-card-footer">
+          <span class="gr-shoe-date-range">${dateRng}</span>
+          ${best && best.pts > 0 ? `<span class="gr-shoe-best-game">Best: ${best.pts}pts ${best.reb}reb ${best.ast}ast</span>` : ""}
         </div>
       </div>
     </div>`;

@@ -2500,20 +2500,22 @@ function _gearParseHtml(html, playerName) {
     const shoeImg  = cells[2].match(/src="([^"]+)"/)?.[1] || "";
     const shoeName = strip(cells[3]);
     // cells[4] = game photo (skip)
-    // cells[5] = min:sec (skip)
+    const min      = strip(cells[5] || "");  // "36:51"
     const toInt = c => { const n = parseInt(strip(c), 10); return isNaN(n) ? 0 : n; };
     const pts = toInt(cells[6]);
     const reb = toInt(cells[7]);
     const ast = toInt(cells[8]);
+    const stl = cells[9]  ? toInt(cells[9])  : 0;
+    const blk = cells[10] ? toInt(cells[10]) : 0;
 
     if (!date || !shoeName) continue;
 
     shoes.push({
-      date,
+      date, min,
       brand:     _extractBrand(shoeName),
       model:     shoeName,
       image_url: shoeImg ? `https://www.colendri.com${shoeImg}` : "",
-      pts, reb, ast,
+      pts, reb, ast, stl, blk,
       season:    _dateToSeason(date),
     });
   }
