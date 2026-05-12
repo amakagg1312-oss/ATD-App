@@ -2180,6 +2180,7 @@ ipcMain.handle("generator:import-to-game", async (_event, payload) => {
 
 function runStatsScript(pythonPath, projectRoot, endpoint, args) {
   return new Promise((resolve) => {
+    // Pass force_stale=true so on timeout we serve expired cache rather than nothing
     const code = [
       "import sys, json, os",
       "sys.path.insert(0, os.path.join(sys.argv[1], 'nba2k26_generator'))",
@@ -2200,14 +2201,31 @@ function runStatsScript(pythonPath, projectRoot, endpoint, args) {
       env: { ...process.env, PYTHONIOENCODING: "utf-8" },
       stdio: ["ignore", "pipe", "pipe"],
     });
-    let stdout = "", stderr = "";
+    let stdout = "", stderr = "", done = false;
+
+    // Kill after 40 s — NBA.com sometimes hangs indefinitely
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      try { child.kill(); } catch {}
+      resolve({ ok: false, error: "NBA.com request timed out. Check your internet connection or try again later." });
+    }, 40000);
+
     child.stdout.on("data", (d) => { stdout += d; });
     child.stderr.on("data", (d) => { stderr += d; });
     child.on("close", () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
       try { resolve(JSON.parse(stdout.trim() || "{}")); }
       catch { resolve({ ok: false, error: stderr.slice(0, 400) || "Parse error" }); }
     });
-    child.on("error", (err) => resolve({ ok: false, error: String(err.message) }));
+    child.on("error", (err) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      resolve({ ok: false, error: String(err.message) });
+    });
   });
 }
 

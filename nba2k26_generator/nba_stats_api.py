@@ -25,9 +25,9 @@ def _cache_dir():
         pass
     # Fallback: user-writable location (handles Program Files installs on Windows)
     if sys.platform == "win32":
-        base = Path(os.environ.get("APPDATA", Path.home())) / "ATD 2K26" / "stats_cache"
+        base = Path(os.environ.get("APPDATA", Path.home())) / "ATD 2K APP" / "stats_cache"
     else:
-        base = Path.home() / "Library" / "Application Support" / "ATD 2K26" / "stats_cache"
+        base = Path.home() / "Library" / "Application Support" / "ATD 2K APP" / "stats_cache"
     base.mkdir(parents=True, exist_ok=True)
     return base
 
