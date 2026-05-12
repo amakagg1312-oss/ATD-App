@@ -2408,17 +2408,6 @@ async function _colendriGet(url) {
   return res.text();
 }
 
-function _gearNextData(html) {
-  const m = html.match(/id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
-  if (!m) return null;
-  try { return JSON.parse(m[1]); } catch { return null; }
-}
-
-function _gearAllQueries(nd) {
-  return nd?.props?.pageProps?.dehydratedState?.queries || [];
-}
-
-
 // gear:players — uses nba_api (no network dependency on colendri)
 ipcMain.handle("gear:players", async () => {
   return new Promise((resolve) => {
@@ -2448,74 +2437,7 @@ ipcMain.handle("gear:players", async () => {
 
 // ── Parse player gear page ─────────────────────────────────────
 
-function _gearNorm(v, ...fallbacks) {
-  for (const key of [v, ...fallbacks]) {
-    if (key && typeof key === "string") return key;
-    if (key && typeof key === "number") return key;
-  }
-  return "";
-}
-
-function _gearNormEntry(raw) {
-  if (!raw || typeof raw !== "object") return null;
-  const shoe = (raw.shoe && typeof raw.shoe === "object") ? raw.shoe : {};
-  const brand    = String(_gearNorm(shoe.brand, shoe.brandName, raw.brand, raw.shoeBrand) || "");
-  const model    = String(_gearNorm(shoe.name, shoe.model, raw.shoeName, raw.model) || "");
-  const colorway = String(_gearNorm(shoe.colorway, shoe.color, raw.colorway, raw.shoeColor) || "");
-  const imageUrl = String(_gearNorm(shoe.image, shoe.imageUrl, shoe.img, raw.shoeImage, raw.imageUrl, raw.image) || "");
-  const date     = String(raw.date || raw.gameDate || raw.playedAt || "");
-  const opponent = String(raw.opponent || raw.opponentTeam || raw.opp || "");
-  const season   = String(raw.season || raw.seasonYear || raw.seasonSlug || "");
-  const toInt = (v) => { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
-  const stats = (raw.stats && typeof raw.stats === "object") ? raw.stats : {};
-  const pts = toInt(stats.pts ?? stats.points ?? raw.pts ?? raw.points ?? 0);
-  const reb = toInt(stats.reb ?? stats.rebounds ?? raw.reb ?? raw.rebounds ?? 0);
-  const ast = toInt(stats.ast ?? stats.assists  ?? raw.ast ?? raw.assists  ?? 0);
-  if (!brand && !model) return null;
-  return { date, opponent, brand, model, colorway, image_url: imageUrl, pts, reb, ast, season };
-}
-
-function _gearShoesFromNextData(nd) {
-  const props = nd?.props?.pageProps || {};
-  let playerInfo = {};
-  let shoesRaw   = null;
-
-  const tryShoes = (qd) => {
-    if (!qd) return;
-    if (typeof qd === "object" && !Array.isArray(qd)) {
-      if (!playerInfo.name) {
-        for (const k of ["player","playerData","playerInfo"]) {
-          if (qd[k] && typeof qd[k] === "object") { playerInfo = qd[k]; break; }
-        }
-      }
-      for (const k of ["shoes","games","shoeHistory","playerGames","gameLog","data"]) {
-        if (Array.isArray(qd[k]) && !shoesRaw) { shoesRaw = qd[k]; break; }
-      }
-    }
-    if (Array.isArray(qd) && !shoesRaw) {
-      const s = qd[0] || {};
-      if (s.shoe || s.brand || s.date || s.gameDate) shoesRaw = qd;
-    }
-  };
-
-  for (const k of ["player","playerData","playerInfo"]) {
-    if (props[k] && typeof props[k] === "object") { playerInfo = props[k]; break; }
-  }
-  for (const k of ["shoes","games","shoeHistory","playerGames","gameLog","data"]) {
-    if (Array.isArray(props[k])) { shoesRaw = props[k]; break; }
-  }
-  for (const q of _gearAllQueries(nd)) tryShoes(q?.state?.data);
-
-  return { shoesRaw: shoesRaw || [], playerInfo };
-}
-
-function _slugToName(slug) {
-  const parts = slug.split("-");
-  const base  = parts[parts.length - 1].match(/^\d+$/) ? parts.slice(0, -1) : parts;
-  return base.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-}
-
-// Convert "LeBron James" → "lebron-james"
+// Convert "LeBron James" → "lebron-james" (used as in-memory cache key)
 function _nameToColendriSlug(name) {
   return name.toLowerCase()
     .normalize("NFD").replace(/[̀-ͯ]/g, "")
@@ -2523,16 +2445,94 @@ function _nameToColendriSlug(name) {
     .trim().replace(/\s+/g, "-");
 }
 
-// Find the colendri slug (name-number) for a given player name
+function _extractBrand(shoeName) {
+  const n = shoeName.toLowerCase();
+  if (n.startsWith("air jordan") || n.startsWith("jordan")) return "Jordan";
+  if (n.startsWith("new balance")) return "New Balance";
+  if (n.startsWith("under armour")) return "Under Armour";
+  if (n.startsWith("li-ning") || n.startsWith("li ning")) return "Li-Ning";
+  for (const b of ["Nike","Adidas","Puma","Anta","Peak","Converse","Reebok"]) {
+    if (n.startsWith(b.toLowerCase())) return b;
+  }
+  return shoeName.split(" ")[0] || "Unknown";
+}
+
+function _dateToSeason(date) {
+  const [y, m] = date.split("-").map(Number);
+  if (!y || !m) return "";
+  return m >= 10 ? `${y}-${String(y + 1).slice(2)}` : `${y - 1}-${String(y).slice(2)}`;
+}
+
+// Parse the colendri player page HTML (plain HTML, no __NEXT_DATA__)
+function _gearParseHtml(html, playerName) {
+  const strip = s => s.replace(/<[^>]+>/g, "").trim();
+
+  // Player name from <h1>
+  const h1m = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  const name = h1m ? strip(h1m[1]) : playerName;
+
+  // Team from first /teams/ href
+  const teamHref = html.match(/href="\/teams\/([^"\/]+)\//);
+  const team = teamHref
+    ? teamHref[1].split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+    : "";
+
+  // Player photo
+  const photoM = html.match(/<img[^>]+\/media\/players\/[^>]+>/i);
+  const photoSrc = photoM?.[0].match(/src="([^"]+)"/)?.[1] || "";
+  const imageUrl = photoSrc ? `https://www.colendri.com${photoSrc}` : "";
+
+  // Game-log table
+  const tbody = html.match(/<tbody[^>]*id="game-stats-body"[^>]*>([\s\S]*?)<\/tbody>/i)?.[1] || "";
+  const shoes = [];
+
+  const rowRe = /<tr>([\s\S]*?)<\/tr>/g;
+  let rowM;
+  while ((rowM = rowRe.exec(tbody)) !== null) {
+    const cells = [];
+    const cellRe = /<td>([\s\S]*?)<\/td>/g;
+    let cm;
+    while ((cm = cellRe.exec(rowM[1])) !== null) cells.push(cm[1]);
+    if (cells.length < 7) continue;
+
+    const date     = strip(cells[0]);
+    // cells[1] = jersey (skip)
+    const shoeImg  = cells[2].match(/src="([^"]+)"/)?.[1] || "";
+    const shoeName = strip(cells[3]);
+    // cells[4] = game photo (skip)
+    // cells[5] = min:sec (skip)
+    const toInt = c => { const n = parseInt(strip(c), 10); return isNaN(n) ? 0 : n; };
+    const pts = toInt(cells[6]);
+    const reb = toInt(cells[7]);
+    const ast = toInt(cells[8]);
+
+    if (!date || !shoeName) continue;
+
+    shoes.push({
+      date,
+      brand:     _extractBrand(shoeName),
+      model:     shoeName,
+      image_url: shoeImg ? `https://www.colendri.com${shoeImg}` : "",
+      pts, reb, ast,
+      season:    _dateToSeason(date),
+    });
+  }
+
+  return { name, team, imageUrl, shoes };
+}
+
+// Use colendri's search endpoint to find the slug (e.g. "lebron-james-57")
 async function _findColendriSlug(playerName) {
-  const prefix = _nameToColendriSlug(playerName);
-  if (_gearMem.slugMap[prefix]) return _gearMem.slugMap[prefix];
-  // Fetch the players listing and scan for href="/players/{prefix}-{digits}/"
-  const html = await _colendriGet("https://www.colendri.com/players/");
-  const re   = new RegExp(`href=["']/players/(${prefix.replace(/-/g, "-")}-\\d+)/?["']`, "i");
+  const key = _nameToColendriSlug(playerName);
+  if (_gearMem.slugMap[key]) return _gearMem.slugMap[key];
+
+  const q    = encodeURIComponent(playerName);
+  const html = await _colendriGet(`https://www.colendri.com/players/?q=${q}`);
+  // Slugs look like href="/players/lebron-james-57/"
+  const re   = new RegExp(`href=["']/players/(${key}-\\d+)/?["']`, "i");
   const m    = re.exec(html);
   const slug = m ? m[1] : null;
-  if (slug) _gearMem.slugMap[prefix] = slug;
+  if (slug) _gearMem.slugMap[key] = slug;
   return slug;
 }
 
@@ -2544,9 +2544,7 @@ ipcMain.handle("gear:player", async (_event, p) => {
 
   const cacheKey = _nameToColendriSlug(playerName);
   const cached   = _gearMem.gear[cacheKey];
-  if (!force && cached && (Date.now() - cached.at) < _GEAR_PLAYER_TTL) {
-    return cached.data;
-  }
+  if (!force && cached && (Date.now() - cached.at) < _GEAR_PLAYER_TTL) return cached.data;
 
   let slug;
   try {
@@ -2557,35 +2555,26 @@ ipcMain.handle("gear:player", async (_event, p) => {
   if (!slug) return { ok: false, error: `${playerName} was not found on colendri.com` };
 
   try {
-    const html = await _colendriGet(`https://www.colendri.com/players/${slug}/`);
-    const nd   = _gearNextData(html);
-    const { shoesRaw, playerInfo } = _gearShoesFromNextData(nd || {});
+    const html  = await _colendriGet(`https://www.colendri.com/players/${slug}/`);
+    const { name, team, imageUrl, shoes } = _gearParseHtml(html, playerName);
 
-    const shoes = shoesRaw.map(_gearNormEntry).filter(Boolean);
-    if (!shoes.length) return { ok: false, error: "No shoe data found — colendri may have changed its page structure." };
+    if (!shoes.length) return { ok: false, error: "No shoe data found for this player yet." };
 
-    shoes.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    shoes.sort((a, b) => b.date.localeCompare(a.date));
 
     const brandCounts = {}, modelCounts = {};
     for (const s of shoes) {
-      const b = s.brand || "Unknown";
-      const m = `${s.brand} ${s.model}`.trim();
-      brandCounts[b] = (brandCounts[b] || 0) + 1;
-      modelCounts[m] = (modelCounts[m] || 0) + 1;
+      brandCounts[s.brand] = (brandCounts[s.brand] || 0) + 1;
+      modelCounts[s.model] = (modelCounts[s.model] || 0) + 1;
     }
-    const topBrand = Object.keys(brandCounts).reduce((a, b) => brandCounts[a] > brandCounts[b] ? a : b, "");
-    const topShoe  = Object.keys(modelCounts).reduce((a, b) => modelCounts[a] > modelCounts[b] ? a : b, "");
+    const topBrand = Object.keys(brandCounts).reduce((a, b) => brandCounts[a] >= brandCounts[b] ? a : b, "");
+    const topShoe  = Object.keys(modelCounts).reduce((a, b) => modelCounts[a] >= modelCounts[b] ? a : b, "");
 
     const result = {
       ok: true,
-      player_name: playerInfo.name || playerInfo.fullName || playerName,
+      player_name: name,
       player_slug: slug,
-      player_info: {
-        team:      String(playerInfo.team || playerInfo.teamName || ""),
-        jersey:    String(playerInfo.jersey || playerInfo.number || ""),
-        position:  String(playerInfo.position || playerInfo.pos || ""),
-        image_url: String(playerInfo.image || playerInfo.imageUrl || ""),
-      },
+      player_info: { team, image_url: imageUrl, jersey: "", position: "" },
       summary: { total_games: shoes.length, top_brand: topBrand, top_shoe: topShoe,
                  top_shoe_count: modelCounts[topShoe] || 0, brand_counts: brandCounts, model_counts: modelCounts },
       shoes,
