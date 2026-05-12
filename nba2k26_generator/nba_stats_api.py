@@ -46,6 +46,18 @@ def _read(key):
     except Exception:
         return None
 
+def _read_stale(key):
+    """Return cached data regardless of age — used as fallback when live fetch fails."""
+    path = _cache_dir() / f"{key}.json"
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["stale"] = True
+        return data
+    except Exception:
+        return None
+
 def _write(key, data):
     path = _cache_dir() / f"{key}.json"
     path.write_text(json.dumps(data, default=str), encoding="utf-8")
@@ -73,21 +85,26 @@ def fetch_player_stats(season="2024-25", season_type="Regular Season",
         cached["cached"] = True
         return cached
 
-    from nba_api.stats.endpoints import LeagueDashPlayerStats
-    ep = LeagueDashPlayerStats(
-        season=season,
-        season_type_all_star=season_type,
-        per_mode_detailed=per_mode,
-        measure_type_detailed_defense=measure_type,
-        timeout=30,
-    )
-    df = ep.get_data_frames()[0]
-    # Drop duplicate column names that the NBA API occasionally returns
-    df = df.loc[:, ~df.columns.duplicated()]
-    result = {"ok": True, "data": _df_to_records(df), "cached": False,
-              "season": season, "season_type": season_type, "per_mode": per_mode, "measure_type": measure_type}
-    _write(key, result)
-    return result
+    try:
+        from nba_api.stats.endpoints import LeagueDashPlayerStats
+        ep = LeagueDashPlayerStats(
+            season=season,
+            season_type_all_star=season_type,
+            per_mode_detailed=per_mode,
+            measure_type_detailed_defense=measure_type,
+            timeout=25,
+        )
+        df = ep.get_data_frames()[0]
+        df = df.loc[:, ~df.columns.duplicated()]
+        result = {"ok": True, "data": _df_to_records(df), "cached": False,
+                  "season": season, "season_type": season_type, "per_mode": per_mode, "measure_type": measure_type}
+        _write(key, result)
+        return result
+    except Exception as e:
+        stale = _read_stale(key)
+        if stale:
+            return stale
+        raise
 
 
 def fetch_team_stats(season="2024-25", season_type="Regular Season",
@@ -98,19 +115,25 @@ def fetch_team_stats(season="2024-25", season_type="Regular Season",
         cached["cached"] = True
         return cached
 
-    from nba_api.stats.endpoints import LeagueDashTeamStats
-    ep = LeagueDashTeamStats(
-        season=season,
-        season_type_all_star=season_type,
-        per_mode_detailed=per_mode,
-        measure_type_detailed_defense=measure_type,
-        timeout=30,
-    )
-    df = ep.get_data_frames()[0]
-    result = {"ok": True, "data": _df_to_records(df), "cached": False,
-              "season": season, "season_type": season_type}
-    _write(key, result)
-    return result
+    try:
+        from nba_api.stats.endpoints import LeagueDashTeamStats
+        ep = LeagueDashTeamStats(
+            season=season,
+            season_type_all_star=season_type,
+            per_mode_detailed=per_mode,
+            measure_type_detailed_defense=measure_type,
+            timeout=25,
+        )
+        df = ep.get_data_frames()[0]
+        result = {"ok": True, "data": _df_to_records(df), "cached": False,
+                  "season": season, "season_type": season_type}
+        _write(key, result)
+        return result
+    except Exception as e:
+        stale = _read_stale(key)
+        if stale:
+            return stale
+        raise
 
 
 def fetch_league_leaders(season="2024-25", season_type="Regular Season",
@@ -121,19 +144,25 @@ def fetch_league_leaders(season="2024-25", season_type="Regular Season",
         cached["cached"] = True
         return cached
 
-    from nba_api.stats.endpoints import LeagueLeaders
-    ep = LeagueLeaders(
-        season=season,
-        season_type_all_star=season_type,
-        stat_category_abbreviation=stat_category,
-        per_mode48=per_mode,
-        timeout=30,
-    )
-    df = ep.get_data_frames()[0]
-    result = {"ok": True, "data": _df_to_records(df), "cached": False,
-              "category": stat_category}
-    _write(key, result)
-    return result
+    try:
+        from nba_api.stats.endpoints import LeagueLeaders
+        ep = LeagueLeaders(
+            season=season,
+            season_type_all_star=season_type,
+            stat_category_abbreviation=stat_category,
+            per_mode48=per_mode,
+            timeout=25,
+        )
+        df = ep.get_data_frames()[0]
+        result = {"ok": True, "data": _df_to_records(df), "cached": False,
+                  "category": stat_category}
+        _write(key, result)
+        return result
+    except Exception as e:
+        stale = _read_stale(key)
+        if stale:
+            return stale
+        raise
 
 
 def fetch_tracking_stats(season="2024-25", season_type="Regular Season",
@@ -143,30 +172,35 @@ def fetch_tracking_stats(season="2024-25", season_type="Regular Season",
     if cached:
         cached["cached"] = True
         return cached
-    from nba_api.stats.endpoints import LeagueDashPtStats
-    # player_or_team renamed from player_or_team_abbreviation in newer nba_api versions
     try:
-        ep = LeagueDashPtStats(
-            season=season,
-            season_type_all_star=season_type,
-            pt_measure_type=pt_measure_type,
-            per_mode_simple=per_mode,
-            player_or_team="Player",
-            timeout=30,
-        )
-    except TypeError:
-        ep = LeagueDashPtStats(
-            season=season,
-            season_type_all_star=season_type,
-            pt_measure_type=pt_measure_type,
-            per_mode_simple=per_mode,
-            timeout=30,
-        )
-    df = ep.get_data_frames()[0]
-    result = {"ok": True, "data": _df_to_records(df), "cached": False,
-              "season": season, "pt_measure_type": pt_measure_type}
-    _write(key, result)
-    return result
+        from nba_api.stats.endpoints import LeagueDashPtStats
+        try:
+            ep = LeagueDashPtStats(
+                season=season,
+                season_type_all_star=season_type,
+                pt_measure_type=pt_measure_type,
+                per_mode_simple=per_mode,
+                player_or_team="Player",
+                timeout=25,
+            )
+        except TypeError:
+            ep = LeagueDashPtStats(
+                season=season,
+                season_type_all_star=season_type,
+                pt_measure_type=pt_measure_type,
+                per_mode_simple=per_mode,
+                timeout=25,
+            )
+        df = ep.get_data_frames()[0]
+        result = {"ok": True, "data": _df_to_records(df), "cached": False,
+                  "season": season, "pt_measure_type": pt_measure_type}
+        _write(key, result)
+        return result
+    except Exception as e:
+        stale = _read_stale(key)
+        if stale:
+            return stale
+        raise
 
 
 def fetch_hustle_stats(season="2024-25", season_type="Regular Season", per_mode="PerGame"):
@@ -175,17 +209,23 @@ def fetch_hustle_stats(season="2024-25", season_type="Regular Season", per_mode=
     if cached:
         cached["cached"] = True
         return cached
-    from nba_api.stats.endpoints import LeagueHustleStatsPlayer
-    ep = LeagueHustleStatsPlayer(
-        season=season,
-        season_type_all_star=season_type,
-        per_mode_time=per_mode,
-        timeout=30,
-    )
-    df = ep.get_data_frames()[0]
-    result = {"ok": True, "data": _df_to_records(df), "cached": False, "season": season}
-    _write(key, result)
-    return result
+    try:
+        from nba_api.stats.endpoints import LeagueHustleStatsPlayer
+        ep = LeagueHustleStatsPlayer(
+            season=season,
+            season_type_all_star=season_type,
+            per_mode_time=per_mode,
+            timeout=25,
+        )
+        df = ep.get_data_frames()[0]
+        result = {"ok": True, "data": _df_to_records(df), "cached": False, "season": season}
+        _write(key, result)
+        return result
+    except Exception as e:
+        stale = _read_stale(key)
+        if stale:
+            return stale
+        raise
 
 
 def fetch_player_bio(player_id):
@@ -194,13 +234,19 @@ def fetch_player_bio(player_id):
     if cached:
         cached["cached"] = True
         return cached
-    from nba_api.stats.endpoints import CommonPlayerInfo
-    ep = CommonPlayerInfo(player_id=int(player_id), timeout=30)
-    dfs = ep.get_data_frames()
-    info = _df_to_records(dfs[0])[0] if dfs and len(dfs[0]) > 0 else {}
-    result = {"ok": True, "data": info, "cached": False}
-    _write(key, result)
-    return result
+    try:
+        from nba_api.stats.endpoints import CommonPlayerInfo
+        ep = CommonPlayerInfo(player_id=int(player_id), timeout=25)
+        dfs = ep.get_data_frames()
+        info = _df_to_records(dfs[0])[0] if dfs and len(dfs[0]) > 0 else {}
+        result = {"ok": True, "data": info, "cached": False}
+        _write(key, result)
+        return result
+    except Exception as e:
+        stale = _read_stale(key)
+        if stale:
+            return stale
+        raise
 
 
 def fetch_shot_chart(player_id, season="2024-25", season_type="Regular Season"):
@@ -209,25 +255,31 @@ def fetch_shot_chart(player_id, season="2024-25", season_type="Regular Season"):
     if cached:
         cached["cached"] = True
         return cached
-    from nba_api.stats.endpoints import ShotChartDetail
-    ep = ShotChartDetail(
-        player_id=int(player_id),
-        team_id=0,
-        season_nullable=season,
-        season_type_all_star=season_type,
-        context_measure_simple="FGA",
-        timeout=30,
-    )
-    dfs = ep.get_data_frames()
-    keep = {"LOC_X", "LOC_Y", "SHOT_MADE_FLAG", "SHOT_TYPE", "ACTION_TYPE",
-            "SHOT_ZONE_BASIC", "SHOT_ZONE_AREA", "SHOT_DISTANCE", "PERIOD",
-            "MINUTES_REMAINING", "SECONDS_REMAINING"}
-    raw = _df_to_records(dfs[0]) if dfs else []
-    shots = [{k: v for k, v in r.items() if k in keep} for r in raw]
-    result = {"ok": True, "shots": shots, "cached": False,
-              "season": season, "total": len(shots)}
-    _write(key, result)
-    return result
+    try:
+        from nba_api.stats.endpoints import ShotChartDetail
+        ep = ShotChartDetail(
+            player_id=int(player_id),
+            team_id=0,
+            season_nullable=season,
+            season_type_all_star=season_type,
+            context_measure_simple="FGA",
+            timeout=25,
+        )
+        dfs = ep.get_data_frames()
+        keep = {"LOC_X", "LOC_Y", "SHOT_MADE_FLAG", "SHOT_TYPE", "ACTION_TYPE",
+                "SHOT_ZONE_BASIC", "SHOT_ZONE_AREA", "SHOT_DISTANCE", "PERIOD",
+                "MINUTES_REMAINING", "SECONDS_REMAINING"}
+        raw = _df_to_records(dfs[0]) if dfs else []
+        shots = [{k: v for k, v in r.items() if k in keep} for r in raw]
+        result = {"ok": True, "shots": shots, "cached": False,
+                  "season": season, "total": len(shots)}
+        _write(key, result)
+        return result
+    except Exception as e:
+        stale = _read_stale(key)
+        if stale:
+            return stale
+        raise
 
 
 def fetch_player_career(player_id):
@@ -236,13 +288,19 @@ def fetch_player_career(player_id):
     if cached:
         cached["cached"] = True
         return cached
-    from nba_api.stats.endpoints import PlayerCareerStats
-    ep = PlayerCareerStats(player_id=int(player_id), per_mode36="PerGame", timeout=30)
-    dfs = ep.get_data_frames()
-    regular = _df_to_records(dfs[0]) if dfs else []
-    result = {"ok": True, "regular": regular, "cached": False}
-    _write(key, result)
-    return result
+    try:
+        from nba_api.stats.endpoints import PlayerCareerStats
+        ep = PlayerCareerStats(player_id=int(player_id), per_mode36="PerGame", timeout=25)
+        dfs = ep.get_data_frames()
+        regular = _df_to_records(dfs[0]) if dfs else []
+        result = {"ok": True, "regular": regular, "cached": False}
+        _write(key, result)
+        return result
+    except Exception as e:
+        stale = _read_stale(key)
+        if stale:
+            return stale
+        raise
 
 
 if __name__ == "__main__":
