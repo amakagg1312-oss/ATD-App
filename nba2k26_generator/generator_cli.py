@@ -8956,6 +8956,43 @@ def _first_non_empty(*values):
             return s
     return ""
 
+
+def _dual_position(primary: str, row: dict) -> str:
+    """Return display position like 'SG/PG' using season stats for secondary inference."""
+    pos = (primary or "").upper().strip()
+    if not pos or pos in {"N/A", "NA", "NONE"}:
+        return primary
+
+    h   = as_float(row, "player_info_ht_in_in", as_float(row, "height_in", 0.0))
+    ast = as_float(row, "per_game_ast_per_game")
+    pts = as_float(row, "per_game_pts_per_game")
+    blk = as_float(row, "advanced_blk_percent")
+
+    secondary = ""
+    if pos == "PG":
+        if pts >= 20 and ast < 6:
+            secondary = "SG"
+    elif pos == "SG":
+        if ast >= 5.0:
+            secondary = "PG"
+        elif h >= 78.0:
+            secondary = "SF"
+    elif pos == "SF":
+        if h >= 80.0:
+            secondary = "PF"
+        elif ast >= 4.0:
+            secondary = "SG"
+    elif pos == "PF":
+        if h >= 82.0:
+            secondary = "C"
+        else:
+            secondary = "SF"
+    elif pos == "C":
+        if h < 84.0:
+            secondary = "PF"
+
+    return f"{pos}/{secondary}" if secondary else pos
+
 def _format_height(row):
     explicit = _first_non_empty(row.get("height"), row.get("height_without_shoes"))
     if explicit:
@@ -9333,7 +9370,7 @@ def _compute_attributes_with_ml(
     info = {
         "name": repair_mojibake_text(row.get("player_name", "")),
         "team": str(row.get("team_abbr", "")),
-        "position": str(row.get("position", row.get("pos", ""))),
+        "position": _dual_position(str(row.get("position", row.get("pos", ""))), row),
         "season": str(row.get("season_label", "")),
         "age": float(row.get("age", 0) or 0),
         "height": _format_height(row),

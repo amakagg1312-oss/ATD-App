@@ -3766,6 +3766,31 @@ option {
   background: rgba(0,229,181,0.08);
 }
 
+.stats-qual-btn {
+  display: flex;
+  align-items: center;
+  background: var(--s1);
+  border: 1px solid var(--b1);
+  border-radius: var(--r-sm);
+  color: var(--t2);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  align-self: flex-end;
+  letter-spacing: 0.02em;
+}
+.stats-qual-btn:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+.stats-qual-btn.stats-qual-active {
+  background: rgba(0,229,181,0.12);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
 .stats-cache-label {
   font-size: 10px;
   font-weight: 700;

@@ -2798,6 +2798,7 @@ let statsState = {
   trackingSortCol: null, trackingSortDir: "desc",
   hustleSortCol: null, hustleSortDir: "desc",
   playerFilter: "",
+  qualified: true,
   playersData: null, teamsData: null, leadersData: null,
   trackingData: null, hustleData: null,
   initialized: false,
@@ -3233,6 +3234,13 @@ function statsGetFilters() {
     seasonType: st?.value || "Regular Season",
     perMode: pm?.value || "PerGame",
   };
+}
+
+function statsApplyQualified(rows, gpKey = "GP") {
+  if (!statsState.qualified || !rows.length) return rows;
+  const maxGP = Math.max(...rows.map((r) => r[gpKey] || 0));
+  const minGP = Math.max(10, Math.floor(maxGP * 0.2));
+  return rows.filter((r) => (r[gpKey] || 0) >= minGP);
 }
 
 function statsShowLoading(containerId, msg = "Loading stats from NBA API…") {
@@ -3896,7 +3904,8 @@ async function loadLeaders(category) {
 function renderLeaderCards(data, category) {
   const el = document.getElementById("statsLeaderCards");
   if (!el) return;
-  const top5 = (data || []).slice(0, 5);
+  const filtered = statsApplyQualified(data || [], "GP");
+  const top5 = filtered.slice(0, 5);
   const label = LEADER_LABELS[category] || category;
   const catCol = category === "FG_PCT" ? "FG_PCT" : category === "FG3_PCT" ? "FG3_PCT" : category === "FT_PCT" ? "FT_PCT" : category;
   const fmtCat = (v) => {
@@ -3969,7 +3978,8 @@ function renderLeaderTable(data, category) {
   const sortCol = statsState.leaderSortCol || category;
   const sortDir = statsState.leaderSortDir;
 
-  el.innerHTML = buildSortableTable(data, statCols, "PLAYER", "PLAYER", sortCol, sortDir,
+  const filteredLeaders = statsApplyQualified(data, "GP");
+  el.innerHTML = buildSortableTable(filteredLeaders, statCols, "PLAYER", "PLAYER", sortCol, sortDir,
     (col) => { statsState.leaderSortCol = col; statsState.leaderSortDir = statsState.leaderSortCol === col && statsState.leaderSortDir === "desc" ? "asc" : "desc"; statsState.leaderSortCol = col; renderLeaderTable(data, category); },
     null
   );
@@ -4010,9 +4020,10 @@ function renderPlayerTable() {
   if (!el || !statsState.playersData) return;
 
   const filter = statsState.playerFilter.toLowerCase();
-  const rows = filter
+  const nameFiltered = filter
     ? statsState.playersData.filter((r) => String(r.PLAYER_NAME || "").toLowerCase().includes(filter))
     : statsState.playersData;
+  const rows = statsApplyQualified(nameFiltered, "GP");
 
   if (countEl) countEl.textContent = `${rows.length} players`;
 
@@ -4087,7 +4098,8 @@ function renderTrackingTable() {
   const el = document.getElementById("statsTrackingTable");
   if (!el || !statsState.trackingData) return;
   const cols = TRACKING_COLS[statsState.trackingMeasure] || TRACKING_COLS.Drives;
-  el.innerHTML = buildSortableTable(statsState.trackingData, cols, "PLAYER_NAME", "PLAYER",
+  const trackingRows = statsApplyQualified(statsState.trackingData, "GP");
+  el.innerHTML = buildSortableTable(trackingRows, cols, "PLAYER_NAME", "PLAYER",
     statsState.trackingSortCol, statsState.trackingSortDir, null, null);
   attachTableSortHandlers(el, (col) => {
     if (statsState.trackingSortCol === col) statsState.trackingSortDir = statsState.trackingSortDir === "asc" ? "desc" : "asc";
@@ -4120,7 +4132,8 @@ async function loadHustle() {
 function renderHustleTable() {
   const el = document.getElementById("statsHustleTable");
   if (!el || !statsState.hustleData) return;
-  el.innerHTML = buildSortableTable(statsState.hustleData, HUSTLE_COLS, "PLAYER_NAME", "PLAYER",
+  const hustleRows = statsApplyQualified(statsState.hustleData, "G");
+  el.innerHTML = buildSortableTable(hustleRows, HUSTLE_COLS, "PLAYER_NAME", "PLAYER",
     statsState.hustleSortCol, statsState.hustleSortDir, null, null);
   attachTableSortHandlers(el, (col) => {
     if (statsState.hustleSortCol === col) statsState.hustleSortDir = statsState.hustleSortDir === "asc" ? "desc" : "asc";
@@ -4138,6 +4151,20 @@ function updateCacheLabel(cached) {
 }
 
 // ── Tab switching ─────────────────────────────────────────────────────────────
+
+function renderCurrentStatsTab() {
+  const tab = statsState.tab;
+  if (tab === "leaders" && statsState.leadersData) {
+    renderLeaderCards(statsState.leadersData, statsState.leaderCategory);
+    renderLeaderTable(statsState.leadersData, statsState.leaderCategory);
+  } else if (tab === "players" && statsState.playersData) {
+    renderPlayerTable();
+  } else if (tab === "tracking" && statsState.trackingData) {
+    renderTrackingTable();
+  } else if (tab === "hustle" && statsState.hustleData) {
+    renderHustleTable();
+  }
+}
 
 function switchStatsTab(tab) {
   showStatsMainContent(true);
@@ -4221,6 +4248,14 @@ function statsInit() {
         statsState.leadersData = null; statsState.trackingData = null; statsState.hustleData = null;
         switchStatsTab(statsState.tab);
       });
+    });
+
+    // Qualified toggle
+    document.getElementById("statsQualBtn")?.addEventListener("click", () => {
+      statsState.qualified = !statsState.qualified;
+      const btn = document.getElementById("statsQualBtn");
+      btn?.classList.toggle("stats-qual-active", statsState.qualified);
+      renderCurrentStatsTab();
     });
 
     // Refresh button
