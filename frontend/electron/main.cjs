@@ -2370,29 +2370,24 @@ ipcMain.handle("contracts:player", async (_event, p) => {
   });
 });
 
-// ── Gear Explorer (Electron net — no Python, no CORS) ─────────────────────────
+// ── Gear Explorer ────────────────────────────────────────────────────────────
+// Player list: nba_api (instant, reliable).
+// Gear data: colendri.com via Electron net.fetch (main-process, no CORS/403).
 
-const _gearMem = { playerList: null, playerListAt: 0, gear: {} };
-const _GEAR_LIST_TTL  = 6 * 3600 * 1000;
-const _GEAR_PLAYER_TTL = 3600 * 1000;
+const _gearMem = { slugMap: {}, gear: {} };
+const _GEAR_PLAYER_TTL = 3600 * 1000; // 1 hour
 
-function _colendriGet(url) {
-  return new Promise((resolve, reject) => {
-    const req = net.request({ url, method: "GET", redirect: "follow" });
-    req.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
-    req.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-    req.setHeader("Accept-Language", "en-US,en;q=0.5");
-    req.setHeader("Referer", "https://www.colendri.com/");
-    const chunks = [];
-    req.on("response", (res) => {
-      if (res.statusCode >= 400) { reject(new Error(`HTTP ${res.statusCode}`)); return; }
-      res.on("data", (c) => chunks.push(c));
-      res.on("end",  () => resolve(Buffer.concat(chunks).toString("utf-8")));
-      res.on("error", reject);
-    });
-    req.on("error", reject);
-    req.end();
-  });
+const _COLENDRI_HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.5",
+  "Referer": "https://www.colendri.com/",
+};
+
+async function _colendriGet(url) {
+  const res = await net.fetch(url, { headers: _COLENDRI_HEADERS });
+  if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
+  return res.text();
 }
 
 function _gearNextData(html) {
@@ -2405,73 +2400,32 @@ function _gearAllQueries(nd) {
   return nd?.props?.pageProps?.dehydratedState?.queries || [];
 }
 
-// ── Parse player list ──────────────────────────────────────────
 
-function _gearPlayersFromNextData(nd) {
-  if (!nd) return [];
-  const props = nd?.props?.pageProps || {};
-  const tryList = (v) => {
-    if (!Array.isArray(v) || !v.length) return null;
-    const mapped = v
-      .filter(p => p && typeof p === "object")
-      .map(p => ({
-        name: p.name || p.fullName || p.playerName || "",
-        slug: p.slug || p.urlSlug || (p.url || "").replace(/^\/players\/|\/$/g, "") || "",
-        team: p.team || p.teamName || p.teamSlug || "",
-        jersey: String(p.jersey || p.jerseyNumber || p.number || ""),
-      }))
-      .filter(p => p.name && p.slug);
-    return mapped.length ? mapped : null;
-  };
-  for (const key of ["players","allPlayers","playerList","data"]) {
-    const r = tryList(props[key]); if (r) return r;
-  }
-  for (const q of _gearAllQueries(nd)) {
-    const qd = q?.state?.data;
-    if (Array.isArray(qd)) { const r = tryList(qd); if (r) return r; }
-    if (qd && typeof qd === "object") {
-      for (const key of ["players","allPlayers","playerList","data"]) {
-        const r = tryList(qd[key]); if (r) return r;
-      }
-    }
-  }
-  return [];
-}
-
-function _gearPlayersFromHtml(html) {
-  const seen = new Set();
-  const out  = [];
-  const re   = /href=["']\/players\/([a-z0-9][a-z0-9-]*-\d+)\/?["']/g;
-  let m;
-  while ((m = re.exec(html)) !== null) {
-    const slug = m[1];
-    if (seen.has(slug)) continue;
-    seen.add(slug);
-    const parts = slug.split("-");
-    const base  = parts[parts.length - 1].match(/^\d+$/) ? parts.slice(0, -1) : parts;
-    const name  = base.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-    out.push({ name, slug, team: "", jersey: "" });
-  }
-  return out;
-}
-
-ipcMain.handle("gear:players", async (_event, p) => {
-  const force = Boolean(p?.force);
-  if (!force && _gearMem.playerList && (Date.now() - _gearMem.playerListAt) < _GEAR_LIST_TTL) {
-    return { ok: true, players: _gearMem.playerList };
-  }
-  try {
-    const html = await _colendriGet("https://www.colendri.com/players/");
-    const nd   = _gearNextData(html);
-    let players = _gearPlayersFromNextData(nd);
-    if (!players.length) players = _gearPlayersFromHtml(html);
-    if (!players.length) return { ok: false, error: "Could not parse player list from colendri.com" };
-    _gearMem.playerList   = players;
-    _gearMem.playerListAt = Date.now();
-    return { ok: true, players };
-  } catch (err) {
-    return { ok: false, error: String(err.message) };
-  }
+// gear:players — uses nba_api (no network dependency on colendri)
+ipcMain.handle("gear:players", async () => {
+  return new Promise((resolve) => {
+    const code = [
+      "import json",
+      "try:",
+      "    from nba_api.stats.static import players",
+      "    active = players.get_active_players()",
+      "    print(json.dumps({'ok':True,'players':[{'name':p['full_name'],'id':str(p['id'])} for p in active]}))",
+      "except Exception as e:",
+      "    print(json.dumps({'ok':False,'error':str(e)}))",
+    ].join("\n");
+    const child = spawn(resolvePythonPath(), ["-c", code], {
+      windowsHide: true,
+      env: { ...process.env, PYTHONIOENCODING: "utf-8" },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let out = "";
+    child.stdout.on("data", (d) => { out += d; });
+    child.on("close", () => {
+      try { resolve(JSON.parse(out.trim() || "{}")); }
+      catch { resolve({ ok: false, error: "Parse error reading nba_api player list" }); }
+    });
+    child.on("error", (err) => resolve({ ok: false, error: String(err.message) }));
+  });
 });
 
 // ── Parse player gear page ─────────────────────────────────────
@@ -2543,15 +2497,46 @@ function _slugToName(slug) {
   return base.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
-ipcMain.handle("gear:player", async (_event, p) => {
-  const slug  = String(p?.slug  || "").trim();
-  const force = Boolean(p?.force);
-  if (!slug) return { ok: false, error: "Missing player slug" };
+// Convert "LeBron James" → "lebron-james"
+function _nameToColendriSlug(name) {
+  return name.toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim().replace(/\s+/g, "-");
+}
 
-  const cached = _gearMem.gear[slug];
+// Find the colendri slug (name-number) for a given player name
+async function _findColendriSlug(playerName) {
+  const prefix = _nameToColendriSlug(playerName);
+  if (_gearMem.slugMap[prefix]) return _gearMem.slugMap[prefix];
+  // Fetch the players listing and scan for href="/players/{prefix}-{digits}/"
+  const html = await _colendriGet("https://www.colendri.com/players/");
+  const re   = new RegExp(`href=["']/players/(${prefix.replace(/-/g, "-")}-\\d+)/?["']`, "i");
+  const m    = re.exec(html);
+  const slug = m ? m[1] : null;
+  if (slug) _gearMem.slugMap[prefix] = slug;
+  return slug;
+}
+
+// gear:player — takes {name}, finds colendri slug, fetches gear page
+ipcMain.handle("gear:player", async (_event, p) => {
+  const playerName = String(p?.name || "").trim();
+  const force      = Boolean(p?.force);
+  if (!playerName) return { ok: false, error: "Missing player name" };
+
+  const cacheKey = _nameToColendriSlug(playerName);
+  const cached   = _gearMem.gear[cacheKey];
   if (!force && cached && (Date.now() - cached.at) < _GEAR_PLAYER_TTL) {
     return cached.data;
   }
+
+  let slug;
+  try {
+    slug = await _findColendriSlug(playerName);
+  } catch (err) {
+    return { ok: false, error: `Could not reach colendri.com: ${err.message}` };
+  }
+  if (!slug) return { ok: false, error: `${playerName} was not found on colendri.com` };
 
   try {
     const html = await _colendriGet(`https://www.colendri.com/players/${slug}/`);
@@ -2573,11 +2558,9 @@ ipcMain.handle("gear:player", async (_event, p) => {
     const topBrand = Object.keys(brandCounts).reduce((a, b) => brandCounts[a] > brandCounts[b] ? a : b, "");
     const topShoe  = Object.keys(modelCounts).reduce((a, b) => modelCounts[a] > modelCounts[b] ? a : b, "");
 
-    const playerName = playerInfo.name || playerInfo.fullName || playerInfo.playerName || _slugToName(slug);
-
     const result = {
       ok: true,
-      player_name: playerName,
+      player_name: playerInfo.name || playerInfo.fullName || playerName,
       player_slug: slug,
       player_info: {
         team:      String(playerInfo.team || playerInfo.teamName || ""),
@@ -2585,17 +2568,11 @@ ipcMain.handle("gear:player", async (_event, p) => {
         position:  String(playerInfo.position || playerInfo.pos || ""),
         image_url: String(playerInfo.image || playerInfo.imageUrl || ""),
       },
-      summary: {
-        total_games:     shoes.length,
-        top_brand:       topBrand,
-        top_shoe:        topShoe,
-        top_shoe_count:  modelCounts[topShoe] || 0,
-        brand_counts:    brandCounts,
-        model_counts:    modelCounts,
-      },
+      summary: { total_games: shoes.length, top_brand: topBrand, top_shoe: topShoe,
+                 top_shoe_count: modelCounts[topShoe] || 0, brand_counts: brandCounts, model_counts: modelCounts },
       shoes,
     };
-    _gearMem.gear[slug] = { data: result, at: Date.now() };
+    _gearMem.gear[cacheKey] = { data: result, at: Date.now() };
     return result;
   } catch (err) {
     return { ok: false, error: String(err.message) };

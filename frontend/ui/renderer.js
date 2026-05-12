@@ -7028,7 +7028,7 @@ function _grBindEvents() {
       _gr.gearData = null;
       _gr.gearLoading = true;
       _grRender();
-      const r = await window.nba2kDesktop.fetchGearPlayer({ slug: _gr.selectedSlug, force: true });
+      const r = await window.nba2kDesktop.fetchGearPlayer({ name: _gr.selectedSlug, force: true });
       _gr.gearLoading = false;
       _gr.gearData = r?.ok ? r : null;
       _grRender();
@@ -7053,18 +7053,17 @@ function _grShowDropdown(term) {
   if (!hits.length) { dd.classList.add("hidden"); return; }
 
   dd.innerHTML = hits.map(p => `
-    <button class="gr-dd-item" data-slug="${p.slug}" data-name="${p.name}">
+    <button class="gr-dd-item" data-name="${p.name}">
       <span class="gr-dd-name">${p.name}</span>
-      ${p.team ? `<span class="gr-dd-team">${p.team}</span>` : ""}
     </button>
   `).join("");
 
   dd.querySelectorAll(".gr-dd-item").forEach(btn => {
     btn.addEventListener("click", () => {
-      _grSelectPlayer(btn.dataset.slug, btn.dataset.name);
+      _grSelectPlayer(btn.dataset.name);
     });
     btn.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") _grSelectPlayer(btn.dataset.slug, btn.dataset.name);
+      if (e.key === "Enter") _grSelectPlayer(btn.dataset.name);
       if (e.key === "ArrowDown") btn.nextElementSibling?.focus();
       if (e.key === "ArrowUp") btn.previousElementSibling?.focus();
     });
@@ -7079,17 +7078,17 @@ function _grCloseDropdown() {
 
 // ── Load player gear ──────────────────────────────────────────
 
-async function _grSelectPlayer(slug, name) {
+async function _grSelectPlayer(name) {
   const inp = document.getElementById("gearSearchInput");
   if (inp) inp.value = name;
   _grCloseDropdown();
 
-  _gr.selectedSlug = slug;
+  _gr.selectedSlug = name;
   _gr.gearData     = null;
   _gr.gearLoading  = true;
   _grRender();
 
-  const r = await window.nba2kDesktop.fetchGearPlayer({ slug });
+  const r = await window.nba2kDesktop.fetchGearPlayer({ name });
   _gr.gearLoading = false;
 
   if (r?.ok && r.shoes?.length) {
