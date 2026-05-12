@@ -94,31 +94,35 @@ jobs:
           set -e
           mkdir -p frontend/resources
 
+          # python-build-standalone archives are .tar.zst since ~2024
+          brew install zstd 2>/dev/null || true
+
           download_python() {
             local PBS_ARCH=$1   # x86_64 or aarch64
             local OUT_DIR=$2    # destination folder
             local DOWNLOADED=false
 
-            for TAG in 20250316 20250212 20241219 20241010; do
-              for PY_VER in "3.12.9" "3.12.8"; do
-                URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-${PBS_ARCH}-apple-darwin-install_only.tar.gz"
+            # Try recent release dates (newest first) with current Python 3.12.x versions
+            for TAG in 20260203 20251224 20251112 20251009 20250812 20250702 20250409 20250316 20250212 20241219; do
+              for PY_VER in "3.12.10" "3.12.9" "3.12.8"; do
+                URL="https://github.com/astral-sh/python-build-standalone/releases/download/${TAG}/cpython-${PY_VER}+${TAG}-${PBS_ARCH}-apple-darwin-install_only.tar.zst"
                 echo "  Trying ${PBS_ARCH} Python ${PY_VER} (${TAG})..."
-                if curl -fsSL --retry 2 --max-time 120 -o /tmp/py_dl.tar.gz "$URL" 2>/dev/null; then
-                  if tar -xzf /tmp/py_dl.tar.gz -C /tmp/py_extract 2>/dev/null && [ -d "/tmp/py_extract/python/bin" ]; then
+                rm -rf /tmp/py_extract /tmp/py_dl.tar.zst
+                mkdir -p /tmp/py_extract
+                if curl -fsSL --retry 2 --max-time 300 -o /tmp/py_dl.tar.zst "$URL" 2>/dev/null; then
+                  if zstd -d --quiet /tmp/py_dl.tar.zst --stdout | tar -xf - -C /tmp/py_extract 2>/dev/null \
+                      && [ -d "/tmp/py_extract/python/bin" ]; then
                     mv /tmp/py_extract/python "$OUT_DIR"
-                    rm -rf /tmp/py_extract /tmp/py_dl.tar.gz
-                    echo "  Downloaded: ${PBS_ARCH} Python ${PY_VER}"
+                    rm -rf /tmp/py_extract /tmp/py_dl.tar.zst
+                    echo "  Downloaded: ${PBS_ARCH} Python ${PY_VER} (${TAG})"
                     DOWNLOADED=true
                     break 2
                   fi
                 fi
-                rm -rf /tmp/py_extract /tmp/py_dl.tar.gz
               done
             done
             [ "$DOWNLOADED" = "true" ] || (echo "ERROR: failed to download ${PBS_ARCH} Python" && exit 1)
           }
-
-          mkdir -p /tmp/py_extract
 
           # arm64 Python — runs natively
           echo "==> arm64 Python"
